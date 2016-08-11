@@ -66,4 +66,13 @@ public class AirportAssert extends AbstractAssert<AirportAssert, Airport> {
             .isCloseTo(expected, Percentage.withPercentage(.001));
         return myself;
     }
+
+    public AirportAssert hasElevation(float expected) {
+        isNotNull();
+
+        assertThat(actual.elevation)
+            .describedAs("airport elevation")
+            .isCloseTo(expected, Percentage.withPercentage(.001));
+        return myself;
+    }
 }

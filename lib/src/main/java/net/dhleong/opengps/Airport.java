@@ -50,6 +50,8 @@ public class Airport implements AeroObject {
     private final double lat;
     private final double lng;
 
+    public float elevation;
+
     public Airport(String number, Type type, String id, String name,
             double lat, double lng) {
         this.type = type;

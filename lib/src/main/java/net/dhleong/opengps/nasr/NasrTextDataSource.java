@@ -88,8 +88,12 @@ public class NasrTextDataSource implements DataSource {
             // geographic data
             double lat = apts.latOrLng();
             double lng = apts.latOrLng();
+            apts.skip(1); // reference point determination method
+            float elevation = apts.decimalNumber(7);
+            apts.skip(1); // elevation determination method
 
             result = new Airport(number, facilityType, id, name, lat, lng);
+            result.elevation = elevation;
         } else {
             result = null;
         }

@@ -78,6 +78,11 @@ public class Parser {
         return source.readString(maxLength, Charset.defaultCharset()).trim();
     }
 
+    public float decimalNumber(int byteCount) throws IOException {
+        ByteString string = source.readByteString(byteCount);
+        return Float.parseFloat(string.utf8().trim());
+    }
+
     /**
      * Reads a formatted + seconds sequence of either lat or lng
      * @throws IOException
