@@ -13,7 +13,11 @@ public interface Storage {
 
     void put(Airport airport);
 
+    void addIlsFrequency(String airportNumber, LabeledFrequency freq);
+
     void beginTransaction();
     void markTransactionSuccessful();
     void endTransaction();
+
+    Observable<Airport> airport(String airportId);
 }

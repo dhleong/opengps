@@ -2,6 +2,7 @@ package net.dhleong.opengps.nasr;
 
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.DataSource;
+import net.dhleong.opengps.LabeledFrequency;
 import net.dhleong.opengps.Storage;
 import net.dhleong.opengps.nasr.util.Parser;
 
@@ -25,6 +26,12 @@ public class NasrTextDataSource implements DataSource {
     );
     static final int APT_TYPE_MAIN = 0;
 
+    static final Options ILS_HEADERS = Options.of(
+        ByteString.encodeUtf8("ILS2")
+    );
+    static final int ILS_TYPE_LOC_INFO = 0;
+
+
     private final File zipFile;
 
     public NasrTextDataSource(File zipFile) {
@@ -47,10 +54,23 @@ public class NasrTextDataSource implements DataSource {
                 Airport airport = readAirport(apts);
                 if (airport != null) {
                     storage.put(airport);
+                } else {
+                    apts.skipToLineEnd();
                 }
             }
 
-            // TODO read in ILS frequencies
+            // read in ILS frequencies
+            Parser ils = Parser.of(Okio.buffer(openIlsFile()));
+            IlsRecord record = new IlsRecord();
+            while (!ils.exhausted()) {
+                if (readIlsRecord(ils, record)) {
+                    storage.addIlsFrequency(record.airportNumber, record.freq);
+                } else {
+                    System.out.println("skip");
+                    ils.skipToLineEnd();
+                }
+            }
+
             // TODO read in ATC/ATIS frequencies
             storage.markTransactionSuccessful();
             return true;
@@ -59,6 +79,10 @@ public class NasrTextDataSource implements DataSource {
 
     protected Source openAirportsFile() throws IOException {
         return openZipFile("APT.txt");
+    }
+
+    protected Source openIlsFile() throws IOException {
+        return openZipFile("ILS.txt");
     }
 
     private Source openZipFile(String fileName) throws IOException {
@@ -105,4 +129,48 @@ public class NasrTextDataSource implements DataSource {
         return result;
     }
 
+    static boolean readIlsRecord(Parser ils, IlsRecord record) throws IOException {
+        // TODO we probably want to read the ILS1 header to get the identifier...
+        final boolean read;
+        final int headerType = ils.select(ILS_HEADERS);
+        if (headerType == ILS_TYPE_LOC_INFO) {
+            record.airportNumber = ils.string(11);
+
+            final String runwayId = ils.string(3);
+
+            final String runwayType = ils.string(10); // ils system type; we probably want this at some point
+            record.workspace.setLength(0);
+            record.workspace.append(runwayType)
+                            .append(" ")
+                            .append(runwayId);
+
+            ils.skip(22); // system status
+            ils.skip(10); // effective date
+            ils.latOrLng(); // TODO lat
+            ils.latOrLng(); // TODO lng
+            ils.skip(2); // lat/lng source
+            ils.skip(7); // loc distance from approach end
+            ils.skip(4); // loc distance from centerline
+            ils.skip(1); // loc direction from centerline
+            ils.skip(2); // source of loc location info
+            ils.skip(7); // loc site elevation (tenth of a foot)
+
+            final double freq = ils.frequency();
+            record.freq = new LabeledFrequency(record.workspace.toString(), freq);
+
+            read = true;
+        } else {
+            read = false;
+        }
+
+        ils.skipToLineEnd();
+        return read;
+    }
+
+    static class IlsRecord {
+        String airportNumber;
+        LabeledFrequency freq;
+
+        StringBuilder workspace = new StringBuilder(10 + 1 + 3);
+    }
 }

@@ -24,6 +24,7 @@ public class Parser {
     private final BufferedSource source;
 
     Map<Class<?>, Options> options = new HashMap<>();
+    private boolean isClosed;
 
     private Parser(BufferedSource source) {
         this.source = source;
@@ -33,8 +34,15 @@ public class Parser {
         return new Parser(source);
     }
 
+    public void close() throws IOException {
+        if (!isClosed) {
+            source.close();
+            isClosed = true;
+        }
+    }
+
     public boolean exhausted() throws IOException {
-        return source.exhausted();
+        return isClosed || source.exhausted();
     }
 
     public int select(Options options) throws IOException {
@@ -71,7 +79,14 @@ public class Parser {
     }
 
     public void skipToLineEnd() throws IOException {
-        source.skip(source.indexOf((byte) '\n'));
+        long index = source.indexOf((byte) '\n');
+        if (index < 0) {
+            // "skip to end" of input
+            close();
+            return;
+        }
+
+        source.skip(index + 1);
     }
 
     public String string(int maxLength) throws IOException {
@@ -111,4 +126,19 @@ public class Parser {
         }
     }
 
+    public double frequency() throws IOException {
+        long baseFreq = source.readDecimalLong();
+
+        if ('.' != source.readByte()) {
+            throw new IllegalStateException("Expected decimal!");
+        }
+
+        int decimalPart = (int) source.readDecimalLong();
+        if (decimalPart < 100) {
+            source.skip(1);
+            decimalPart *= 10;
+        }
+
+        return baseFreq + (decimalPart / 1000.0);
+    }
 }

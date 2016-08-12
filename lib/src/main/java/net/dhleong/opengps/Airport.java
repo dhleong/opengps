@@ -1,6 +1,8 @@
 package net.dhleong.opengps;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -39,6 +41,9 @@ public class Airport implements AeroObject {
         DELIVERY,
         GROUND,
         TOWER,
+
+        /** Frequencies for navigating, especially ILS */
+        NAV
     }
 
     private final Type type;
@@ -51,6 +56,8 @@ public class Airport implements AeroObject {
     private final double lng;
 
     public float elevation;
+
+    private HashMap<FrequencyType, ArrayList<LabeledFrequency>> frequencies = new HashMap<>();
 
     public Airport(String number, Type type, String id, String name,
             double lat, double lng) {
@@ -86,8 +93,21 @@ public class Airport implements AeroObject {
     }
 
     public List<LabeledFrequency> frequencies(FrequencyType type) {
-        // TODO
-        return Collections.emptyList();
+        final List<LabeledFrequency> list = frequencies.get(type);
+        return list == null ? Collections.emptyList() : list;
+    }
+
+    public void addFrequency(FrequencyType type, LabeledFrequency freq) {
+        ArrayList<LabeledFrequency> existingList = frequencies.get(type);
+        ArrayList<LabeledFrequency> list;
+        if (existingList == null) {
+            list = new ArrayList<>(4);
+            frequencies.put(type, list);
+        } else {
+            list = existingList;
+        }
+
+        list.add(freq);
     }
 
 }

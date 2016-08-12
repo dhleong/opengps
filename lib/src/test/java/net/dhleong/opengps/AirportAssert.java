@@ -75,4 +75,13 @@ public class AirportAssert extends AbstractAssert<AirportAssert, Airport> {
             .isCloseTo(expected, Percentage.withPercentage(.001));
         return myself;
     }
+
+    public AirportAssert hasNavFrequencies(int expectedCount) {
+        isNotNull();
+
+        assertThat(actual.frequencies(Airport.FrequencyType.NAV))
+            .describedAs("ILS frequencies")
+            .hasSize(expectedCount);
+        return myself;
+    }
 }

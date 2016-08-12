@@ -11,4 +11,12 @@ public class LabeledFrequency {
         this.label = label;
         this.frequency = frequency;
     }
+
+    @Override
+    public String toString() {
+        return "LabeledFrequency{" +
+            "label='" + label + '\'' +
+            ", frequency=" + frequency +
+            '}';
+    }
 }

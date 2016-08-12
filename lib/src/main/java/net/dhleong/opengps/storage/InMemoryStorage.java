@@ -2,8 +2,10 @@ package net.dhleong.opengps.storage;
 
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.DataSource;
+import net.dhleong.opengps.LabeledFrequency;
 import net.dhleong.opengps.Storage;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import rx.Observable;
@@ -14,6 +16,10 @@ import rx.Observable;
 public class InMemoryStorage implements Storage {
 
     private HashSet<String> dataSources = new HashSet<>();
+
+    private HashMap<String, Airport> airportsByNumber = new HashMap<>();
+    private HashMap<String, Airport> airportsById = new HashMap<>();
+
 
     @Override
     public Observable<Storage> load() {
@@ -36,7 +42,14 @@ public class InMemoryStorage implements Storage {
 
     @Override
     public void put(Airport airport) {
+        airportsByNumber.put(airport.number(), airport);
+        airportsById.put(airport.id(), airport);
+    }
 
+    @Override
+    public void addIlsFrequency(String airportNumber, LabeledFrequency freq) {
+        Airport apt = airportsByNumber.get(airportNumber);
+        apt.addFrequency(Airport.FrequencyType.NAV, freq);
     }
 
     @Override
@@ -52,5 +65,10 @@ public class InMemoryStorage implements Storage {
     @Override
     public void endTransaction() {
         // nop
+    }
+
+    @Override
+    public Observable<Airport> airport(String airportId) {
+        return Observable.just(airportsById.get(airportId));
     }
 }
