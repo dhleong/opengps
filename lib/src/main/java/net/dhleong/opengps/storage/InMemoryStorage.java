@@ -38,4 +38,19 @@ public class InMemoryStorage implements Storage {
     public void put(Airport airport) {
 
     }
+
+    @Override
+    public void beginTransaction() {
+        // nop
+    }
+
+    @Override
+    public void markTransactionSuccessful() {
+        // nop
+    }
+
+    @Override
+    public void endTransaction() {
+        // nop
+    }
 }

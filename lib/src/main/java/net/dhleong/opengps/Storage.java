@@ -13,4 +13,7 @@ public interface Storage {
 
     void put(Airport airport);
 
+    void beginTransaction();
+    void markTransactionSuccessful();
+    void endTransaction();
 }

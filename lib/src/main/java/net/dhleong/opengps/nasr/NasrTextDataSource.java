@@ -39,6 +39,8 @@ public class NasrTextDataSource implements DataSource {
     @Override
     public Observable<Boolean> loadInto(Storage storage) {
         return Observable.fromCallable(() -> {
+            storage.beginTransaction();
+
             // read airports
             Parser apts = Parser.of(Okio.buffer(openAirportsFile()));
             while (!apts.exhausted()) {
@@ -50,8 +52,9 @@ public class NasrTextDataSource implements DataSource {
 
             // TODO read in ILS frequencies
             // TODO read in ATC/ATIS frequencies
+            storage.markTransactionSuccessful();
             return true;
-        });
+        }).doAfterTerminate(storage::endTransaction);
     }
 
     protected Source openAirportsFile() throws IOException {
