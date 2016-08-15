@@ -48,8 +48,13 @@ public class InMemoryStorage implements Storage {
 
     @Override
     public void addIlsFrequency(String airportNumber, LabeledFrequency freq) {
+        addFrequency(airportNumber, Airport.FrequencyType.NAV, freq);
+    }
+
+    @Override
+    public void addFrequency(String airportNumber, Airport.FrequencyType type, LabeledFrequency freq) {
         Airport apt = airportsByNumber.get(airportNumber);
-        apt.addFrequency(Airport.FrequencyType.NAV, freq);
+        apt.addFrequency(type, freq);
     }
 
     @Override

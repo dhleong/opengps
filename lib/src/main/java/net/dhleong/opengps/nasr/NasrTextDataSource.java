@@ -16,6 +16,7 @@ import okio.Okio;
 import okio.Options;
 import okio.Source;
 import rx.Observable;
+import rx.functions.Action1;
 
 /**
  * @author dhleong
@@ -30,6 +31,15 @@ public class NasrTextDataSource implements DataSource {
         ByteString.encodeUtf8("ILS2")
     );
     static final int ILS_TYPE_LOC_INFO = 0;
+
+    static final Options TWR_HEADERS = Options.of(
+        ByteString.encodeUtf8("TWR1"),
+        ByteString.encodeUtf8("TWR3")
+    );
+    static final int TWR_TYPE_INFO = 0;
+    static final int TWR_TYPE_FREQUENCIES = 1;
+
+    private static final int TWR_FREQUENCIES_COUNT = 9;
 
 
     private final File zipFile;
@@ -61,17 +71,23 @@ public class NasrTextDataSource implements DataSource {
 
             // read in ILS frequencies
             Parser ils = Parser.of(Okio.buffer(openIlsFile()));
-            IlsRecord record = new IlsRecord();
+            AirportFreqRecord record = new AirportFreqRecord();
+            record.type = Airport.FrequencyType.NAV;
             while (!ils.exhausted()) {
                 if (readIlsRecord(ils, record)) {
                     storage.addIlsFrequency(record.airportNumber, record.freq);
-                } else {
-                    System.out.println("skip");
-                    ils.skipToLineEnd();
                 }
             }
 
-            // TODO read in ATC/ATIS frequencies
+            // read in ATC/ATIS frequencies
+            Action1<AirportFreqRecord> freqObserver = rec ->
+                storage.addFrequency(rec.airportNumber, rec.type, rec.freq);
+            Parser twr = Parser.of(Okio.buffer(openTwrFile()));
+            record.airportNumber = null; // reset
+            while (!twr.exhausted()) {
+                readTwrRecord(twr, record, freqObserver);
+            }
+
             storage.markTransactionSuccessful();
             return true;
         }).doAfterTerminate(storage::endTransaction);
@@ -83,6 +99,10 @@ public class NasrTextDataSource implements DataSource {
 
     protected Source openIlsFile() throws IOException {
         return openZipFile("ILS.txt");
+    }
+
+    protected Source openTwrFile() throws IOException {
+        return openZipFile("TWR.txt");
     }
 
     private Source openZipFile(String fileName) throws IOException {
@@ -129,7 +149,7 @@ public class NasrTextDataSource implements DataSource {
         return result;
     }
 
-    static boolean readIlsRecord(Parser ils, IlsRecord record) throws IOException {
+    static boolean readIlsRecord(Parser ils, AirportFreqRecord record) throws IOException {
         // TODO we probably want to read the ILS1 header to get the identifier...
         final boolean read;
         final int headerType = ils.select(ILS_HEADERS);
@@ -167,9 +187,53 @@ public class NasrTextDataSource implements DataSource {
         return read;
     }
 
-    static class IlsRecord {
+    /**
+     * Attempt to read part of a TWR record. This is STATEFUL-ish;
+     *  if a TWR1 record is read, we will always update `record`
+     *  with the airport number; if TWR3 is read, we will always
+     *  call freqObserver with any found frequencies USING THE
+     *  AIRPORT NUMBER IN `record`.
+     * @throws IOException
+     */
+    static void readTwrRecord(Parser twr, AirportFreqRecord record,
+            Action1<AirportFreqRecord> freqObserver) throws IOException {
+        int type = twr.select(TWR_HEADERS);
+        switch (type) {
+        case TWR_TYPE_INFO:
+            // read in the identifier
+            twr.string(4); // airport id (we don't care)
+            twr.skip(10); // effective date
+            record.airportNumber = twr.string(11);
+            break;
+
+        case TWR_TYPE_FREQUENCIES:
+            twr.string(4); // airport id (we don't care)
+
+            for (int i=0; i < TWR_FREQUENCIES_COUNT; i++) {
+                record.freq = twr.ilsFrequency();
+
+                switch (record.freq.label.charAt(0)) {
+                case 'L': record.type = Airport.FrequencyType.TOWER; break;
+                case 'G': record.type = Airport.FrequencyType.GROUND; break;
+                case 'C': record.type = Airport.FrequencyType.DELIVERY; break;
+                case 'D': record.type = Airport.FrequencyType.ATIS; break;
+                }
+
+                freqObserver.call(record);
+            }
+
+            break;
+
+        // default:
+        }
+
+        twr.skipToLineEnd();
+    }
+
+    static class AirportFreqRecord {
         String airportNumber;
         LabeledFrequency freq;
+        Airport.FrequencyType type;
 
         StringBuilder workspace = new StringBuilder(10 + 1 + 3);
     }

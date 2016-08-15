@@ -1,10 +1,14 @@
 package net.dhleong.opengps.nasr.util;
 
+import net.dhleong.opengps.LabeledFrequency;
+
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
+import okio.Buffer;
 import okio.BufferedSource;
 import okio.ByteString;
 import okio.Options;
@@ -25,6 +29,8 @@ public class Parser {
 
     Map<Class<?>, Options> options = new HashMap<>();
     private boolean isClosed;
+
+    IlsFrequencyWorkspace ilsWorkspace = new IlsFrequencyWorkspace();
 
     private Parser(BufferedSource source) {
         this.source = source;
@@ -133,12 +139,75 @@ public class Parser {
             throw new IllegalStateException("Expected decimal!");
         }
 
-        int decimalPart = (int) source.readDecimalLong();
-        if (decimalPart < 100) {
-            source.skip(1);
-            decimalPart *= 10;
+        double decimalPart = addDecimalByte(0, source.readByte(), 10);
+        decimalPart = addDecimalByte(decimalPart, source.readByte(), 100);
+        decimalPart = addDecimalByte(decimalPart, source.readByte(), 1000);
+
+        return baseFreq + decimalPart;
+    }
+
+    public LabeledFrequency ilsFrequency() throws IOException {
+        IlsFrequencyWorkspace workspace = ilsWorkspace;
+        workspace.typedFreqBuffer.clear();
+        workspace.labelBuffer.clear();
+        workspace.builder.setLength(0);
+
+        source.read(workspace.typedFreqBuffer, 44);
+        source.read(workspace.labelBuffer, 50);
+        workspace.readTrimmed(workspace.labelBuffer);
+
+        final long decimalPos = workspace.typedFreqBuffer.indexOf((byte) '.');
+        long decimalLength = 0;
+        for (int i=1; i <= 3; i++, decimalLength++) {
+            final byte theByte = workspace.typedFreqBuffer.getByte(decimalPos + decimalLength + 1);
+            if (!Character.isDigit((char) theByte)) {
+                break;
+            }
         }
 
-        return baseFreq + (decimalPart / 1000.0);
+        final double base = workspace.typedFreqBuffer.readDecimalLong();
+        double decimal = 0;
+        workspace.typedFreqBuffer.readByte();
+        for (int i=0; i < decimalLength; i++) {
+            decimal = addDecimalByte(decimal, workspace.typedFreqBuffer.readByte(), Math.pow(10, i+1));
+        }
+
+        workspace.readTrimmed(workspace.typedFreqBuffer);
+
+        final double freq = base + decimal;
+        return new LabeledFrequency(workspace.builder.toString().trim(), freq);
+    }
+
+    private double addDecimalByte(double base, byte readByte, double place) {
+        if (readByte <= '0' || readByte > '9') {
+            return base;
+        }
+
+        int number = readByte - '0';
+        return base + (number / place);
+    }
+
+    static class IlsFrequencyWorkspace {
+        Buffer typedFreqBuffer = new Buffer();
+        Buffer labelBuffer = new Buffer();
+        StringBuilder builder = new StringBuilder(50);
+
+        /** read from the Buffer into builder, trimming whitespace off the right end */
+        void readTrimmed(Buffer buffer) throws EOFException {
+            long lastTrimmed = buffer.size();
+            for (; lastTrimmed > 0; lastTrimmed--) {
+                if (buffer.getByte(lastTrimmed - 1) != ' ') {
+                    break;
+                }
+            }
+
+            if (builder.length() > 0 && buffer.getByte(0) != ' ') {
+                builder.append(' ');
+            }
+
+            builder.append(
+                buffer.readString(lastTrimmed, Charset.defaultCharset())
+            );
+        }
     }
 }

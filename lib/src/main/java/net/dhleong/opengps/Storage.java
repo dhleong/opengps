@@ -14,6 +14,7 @@ public interface Storage {
     void put(Airport airport);
 
     void addIlsFrequency(String airportNumber, LabeledFrequency freq);
+    void addFrequency(String airportNumber, Airport.FrequencyType type, LabeledFrequency freq);
 
     void beginTransaction();
     void markTransactionSuccessful();
