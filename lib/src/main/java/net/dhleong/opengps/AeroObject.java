@@ -6,6 +6,7 @@ package net.dhleong.opengps;
 public interface AeroObject {
 
     String id();
+    String name();
 
     double lat();
     double lng();

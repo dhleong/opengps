@@ -34,8 +34,7 @@ public class OpenGps {
     }
 
     public Observable<AeroObject> find(String objectId) {
-        return withStorage(s ->
-            s.find(objectId));
+        return withStorage(s -> s.find(objectId));
     }
 
     public Observable<Airport> airport(String airportId) {
@@ -43,6 +42,17 @@ public class OpenGps {
             .flatMap(obj -> {
                 if (obj instanceof Airport) {
                     return Observable.just((Airport) obj);
+                } else {
+                    return Observable.empty();
+                }
+            });
+    }
+
+    public Observable<Navaid> navaid(String navaidId) {
+        return find(navaidId)
+            .flatMap(obj -> {
+                if (obj instanceof Navaid) {
+                    return Observable.just((Navaid) obj);
                 } else {
                     return Observable.empty();
                 }

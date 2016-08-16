@@ -2,6 +2,7 @@ package net.dhleong.opengps.nasr;
 
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.LabeledFrequency;
+import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.nasr.util.Parser;
 import net.dhleong.opengps.nasr.util.ParserTest;
 
@@ -37,6 +38,9 @@ public class NasrTextParsingTest {
         "TWR3SNA 118.0                                       CD/P                                              119.9(RWY 02R/20L)                          LCL/P                                             120.8 EAST                                  GND/P                                             121.85                                      CD/S                                              126.0                                       D-ATIS                                            126.8(RWY 02L/20R)                          LCL/P IC                                          128.35                                      LCL/S                                             132.25 WEST                                 GND/P                                             379.9                                       LCL/P                                             118.0                                                       119.9(RWY 02R/20L)                                          120.8 EAST                                                  121.85                                                      126.0                                                       126.8(RWY 02L/20R)                                          128.35                                                      132.25 WEST                                                 379.9";
 
     static final String SNA_TWR_COMBINED = SNA_TWR1 + SNA_TWR3;
+
+    static final String LGA_VORDME =
+        "NAV1LGA VOR/DME             LGA 07/21/2016LA GUARDIA                    NEW YORK                                NEW YORK                      NYAEA                                FEDERAL AVIATION ADMIN                            FEDERAL AVIATION ADMIN                            YYL-VOR/DME  24         ZNY NEW YORK                      ZNY NEW YORK                      40-47-01.376N 146821.376N073-52-06.962W265926.962W640-47-01.376N 146821.376N073-52-06.962W265926.962W    8.9  12W1980Y      N  1NEW YORK RADIO                078X113.10                                     LY                                  ISP NEW YORK                      24                                                                                                  LGA                 OPERATIONAL RESTRICTED        NNN   ";
 
     @Test
     public void readAirport() throws IOException {
@@ -85,6 +89,18 @@ public class NasrTextParsingTest {
                 new LabeledFrequency("GND/P WEST", 132.25),
                 new LabeledFrequency("LCL/P", 379.9)
             );
+    }
+
+    @Test
+    public void readNavaid() throws IOException {
+        assertThat(NasrTextDataSource.readNavRecord(ParserTest.parser(LGA_VORDME)))
+            .hasId("LGA")
+            .hasType(Navaid.Type.VORDME)
+            .hasName("LA GUARDIA")
+            .hasLat( 146821.376)
+            .hasLng(-265926.962)
+            ;
+
     }
 
 }

@@ -24,6 +24,16 @@ public class ParserTest {
     }
 
     @Test
+    public void readFrequency6() throws IOException {
+        assertThat(parser("118.0 ").frequency6())
+            .isEqualTo(118);
+        assertThat(parser("118.05").frequency6())
+            .isEqualTo(118.05);
+        assertThat(parser("118.15").frequency6())
+            .isEqualTo(118.15);
+    }
+
+    @Test
     public void ilsFrequency() throws IOException {
         assertThat(parser("118.0                                       CD/P                                              ")
             .ilsFrequency()
@@ -45,6 +55,18 @@ public class ParserTest {
             .isEqualTo(new LabeledFrequency("ATIS", 124.3));
         assertThat(parser.ilsFrequency())
             .isEqualTo(new LabeledFrequency("LCL/P", 127.2));
+    }
+
+    @Test
+    public void latOrLng_15() throws IOException {
+        assertThat(parser("40-46-38.1000N 146798.1000N").latOrLng())
+            .isEqualTo(146798.1);
+    }
+
+    @Test
+    public void latOrLng_14() throws IOException {
+        assertThat(parser("40-47-01.376N 146821.376N").latOrLng())
+            .isEqualTo(146821.376);
     }
 
     public static Parser parser(String string) {

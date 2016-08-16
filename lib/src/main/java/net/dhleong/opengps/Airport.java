@@ -75,6 +75,11 @@ public class Airport implements AeroObject {
     }
 
     @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
     public double lat() {
         return lat;
     }

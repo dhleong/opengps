@@ -111,20 +111,25 @@ public class Parser {
     public double latOrLng() throws IOException {
 
         // it's at least 14 bytes...
+        Buffer buffer = ilsWorkspace.typedFreqBuffer;
+        buffer.clear();
         source.skip(14);
 
         // if this selects something, it was 15 bytes;
         //  if not, it was 14, and no harm done
-        source.select(LATLNG15_FORMATTED_END);
+        boolean is15 = -1 != source.select(LATLNG15_FORMATTED_END);
 
-        final long base = source.readDecimalLong();
-        if ('.' != source.readByte()) {
+        source.readFully(buffer, is15 ? 12 : 11);
+
+        final long base = buffer.readDecimalLong();
+        if ('.' != buffer.readByte()) {
             throw new IllegalStateException("Expected decimal!");
         }
-        final long decimal = source.readDecimalLong();
-        final double value = base + (decimal / 10000.0);
+        int decimalPlaces = (int) buffer.size() - 1;
+        final long decimal = buffer.readDecimalLong();
+        final double value = base + (decimal / Math.pow(10.0, decimalPlaces));
 
-        final byte declination = source.readByte();
+        final byte declination = buffer.readByte();
         if (declination == 'S' || declination == 'W') {
             return -1 * value;
         } else {
@@ -133,6 +138,12 @@ public class Parser {
     }
 
     public double frequency() throws IOException {
+        return addDecimalByte(frequency6(), source.readByte(), 1000);
+    }
+
+    // 6-byte frequency
+    public double frequency6() throws IOException {
+
         long baseFreq = source.readDecimalLong();
 
         if ('.' != source.readByte()) {
@@ -141,10 +152,10 @@ public class Parser {
 
         double decimalPart = addDecimalByte(0, source.readByte(), 10);
         decimalPart = addDecimalByte(decimalPart, source.readByte(), 100);
-        decimalPart = addDecimalByte(decimalPart, source.readByte(), 1000);
 
         return baseFreq + decimalPart;
     }
+
 
     public LabeledFrequency ilsFrequency() throws IOException {
         IlsFrequencyWorkspace workspace = ilsWorkspace;

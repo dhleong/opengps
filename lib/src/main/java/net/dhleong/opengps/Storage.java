@@ -12,6 +12,7 @@ public interface Storage {
     boolean hasDataSource(DataSource source);
 
     void put(Airport airport);
+    void put(Navaid navaid);
 
     void addIlsFrequency(String airportNumber, LabeledFrequency freq);
     void addFrequency(String airportNumber, Airport.FrequencyType type, LabeledFrequency freq);
@@ -23,4 +24,5 @@ public interface Storage {
 //    Observable<Airport> airport(String airportId);
 
     Observable<AeroObject> find(String objectId);
+
 }

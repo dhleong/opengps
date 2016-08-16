@@ -3,6 +3,7 @@ package net.dhleong.opengps.nasr;
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.LabeledFrequency;
+import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.Storage;
 import net.dhleong.opengps.nasr.util.Parser;
 
@@ -30,10 +31,12 @@ public class NasrTextDataSource implements DataSource {
     );
     static final int APT_TYPE_MAIN = 0;
 
+
     static final Options ILS_HEADERS = Options.of(
         ByteString.encodeUtf8("ILS2")
     );
     static final int ILS_TYPE_LOC_INFO = 0;
+
 
     static final Options TWR_HEADERS = Options.of(
         ByteString.encodeUtf8("TWR1"),
@@ -43,6 +46,13 @@ public class NasrTextDataSource implements DataSource {
     static final int TWR_TYPE_FREQUENCIES = 1;
 
     private static final int TWR_FREQUENCIES_COUNT = 9;
+
+
+    static final Options NAV_HEADERS = Options.of(
+        ByteString.encodeUtf8("NAV1")
+    );
+    static final int NAV_TYPE_MAIN = 0;
+
 
     static final String DEFAULT_ZIP_URL =
         "https://nfdc.faa.gov/webContent/56DaySub/56DySubscription_July_21__2016_-_September_15__2016.zip";
@@ -103,6 +113,17 @@ public class NasrTextDataSource implements DataSource {
             }
             twr.close();
 
+            // read in navaids (this could potentially be done in
+            //  parallel with the airport stuff)
+            Parser nav = Parser.of(Okio.buffer(openNavFile()));
+            while (!nav.exhausted()) {
+                Navaid navaid = readNavRecord(nav);
+                if (navaid != null) {
+                    storage.put(navaid);
+                }
+            }
+            nav.close();
+
             storage.markTransactionSuccessful();
             return true;
         }).doAfterTerminate(storage::endTransaction));
@@ -133,6 +154,10 @@ public class NasrTextDataSource implements DataSource {
 
     protected Source openTwrFile() throws IOException {
         return openZipFile("TWR.txt");
+    }
+
+    protected Source openNavFile() throws IOException {
+        return openZipFile("NAV.txt");
     }
 
     private Source openZipFile(String fileName) throws IOException {
@@ -284,6 +309,65 @@ public class NasrTextDataSource implements DataSource {
         }
 
         twr.skipToLineEnd();
+    }
+
+    static Navaid readNavRecord(Parser nav) throws IOException {
+        Navaid result = null;
+
+        final int type = nav.select(NAV_HEADERS);
+        if (type == NAV_TYPE_MAIN) {
+            String id = nav.string(4);
+            Navaid.Type navType = nav.select(20, Navaid.Type.VALUES);
+            nav.skip(4); // "official" id
+            nav.skip(10); // effective date
+            String name = nav.string(30);
+
+            nav.skip(40); // city
+            nav.skip(30); // state
+            nav.skip(2); // state post office code
+            nav.skip(3); // FAA region
+            nav.skip(30); // country (if not US)
+            nav.skip(2); // country post office code (if not US)
+
+            nav.skip(50); // owner name
+            nav.skip(50); // operator name
+            nav.skip(1); // common system usage (Y or N)
+            nav.skip(1); // public use (Y or N)
+            nav.skip(11); // navaid class
+
+            nav.skip(11); // hours of operation (probably important)
+            nav.skip(4); // artcc with high altitude boundary containing navaid
+            nav.skip(30); // name of the above artcc
+            nav.skip(4); // artcc with low altitude boundary containing navaid
+            nav.skip(30); // name of the above artcc
+
+            double lat = nav.latOrLng();
+            double lng = nav.latOrLng();
+
+            nav.skip(1); // survey accuracy
+
+            nav.skip(25); // lat of tacan portion
+            nav.skip(25); // lng of tacan portion
+
+            nav.skip(7); // elevation
+            nav.skip(5); // magnetic variation in degrees (probably important)
+            nav.skip(4); // magnetic variation epoch year
+
+            // facilities/features
+            nav.skip(3); // simultaneous voice? (probably important)
+            nav.skip(4); // power output
+            nav.skip(3); // automatic voice identification
+            nav.skip(1); // monitoring category
+
+            nav.skip(30); // radio voice call
+            nav.skip(4); // tacan channel (probably important)
+            double freq = nav.frequency6();
+
+            result = new Navaid(navType, id, name, lat, lng, freq);
+        }
+
+        nav.skipToLineEnd();
+        return result;
     }
 
     static class AirportFreqRecord {
