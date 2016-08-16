@@ -18,7 +18,8 @@ public class Navaid implements AeroObject {
         NDBDME("NDB/DME"),
         TACAN,
         UHFNDB("UHF/NDB"),
-        VOR;
+        VOR,
+        DME;
 
         private final String asString;
 

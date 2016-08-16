@@ -147,7 +147,9 @@ public class Parser {
         long baseFreq = source.readDecimalLong();
 
         if ('.' != source.readByte()) {
-            throw new IllegalStateException("Expected decimal!");
+            // no decimal; eg: 530
+            source.skip(2);
+            return baseFreq;
         }
 
         double decimalPart = addDecimalByte(0, source.readByte(), 10);

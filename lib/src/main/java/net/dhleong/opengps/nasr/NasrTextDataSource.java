@@ -361,7 +361,24 @@ public class NasrTextDataSource implements DataSource {
 
             nav.skip(30); // radio voice call
             nav.skip(4); // tacan channel (probably important)
-            double freq = nav.frequency6();
+
+            final double freq;
+            switch (navType) {
+            case TACAN:
+            case FAN_MARKER:
+            case DME:
+                freq = 0;
+                break;
+
+            default:
+                try {
+                    freq = nav.frequency6();
+                } catch (Throwable e) {
+                    throw new RuntimeException("Failed to parse navaid frequency for "
+                        + id + " (" + name + ")",
+                        e);
+                }
+            }
 
             result = new Navaid(navType, id, name, lat, lng, freq);
         }
