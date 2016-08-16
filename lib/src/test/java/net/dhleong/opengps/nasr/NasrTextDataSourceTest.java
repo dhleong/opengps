@@ -25,13 +25,15 @@ public class NasrTextDataSourceTest {
         private final String apt;
         private final String ils;
         private final String twr;
+        private final String nav;
 
-        public TestableNasrDataSource(String apt, String ils, String twr) {
+        public TestableNasrDataSource(String apt, String ils, String twr, String nav) {
             super(new File(""));
 
             this.apt = apt;
             this.ils = ils;
             this.twr = twr;
+            this.nav = nav;
         }
 
         @Override
@@ -53,6 +55,11 @@ public class NasrTextDataSourceTest {
         protected Source openTwrFile() throws IOException {
             return source(twr);
         }
+
+        @Override
+        protected Source openNavFile() throws IOException {
+            return source(nav);
+        }
     }
 
     InMemoryStorage storage;
@@ -70,7 +77,8 @@ public class NasrTextDataSourceTest {
             NasrTextParsingTest.SNA_TWR_COMBINED.replace(
                 NasrTextParsingTest.SNA_NUMBER,
                 NasrTextParsingTest.LGA_NUMBER
-            )
+            ),
+            "" // TODO
         );
 
         assertThat(dataSource.loadInto(storage).toBlocking().single()).isTrue();
