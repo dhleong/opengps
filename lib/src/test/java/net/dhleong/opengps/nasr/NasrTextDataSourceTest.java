@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 import okio.Source;
+import rx.Observable;
 
 import static net.dhleong.opengps.OpenGpsAssertions.assertThat;
 import static net.dhleong.opengps.test.OkioTest.source;
@@ -31,6 +32,11 @@ public class NasrTextDataSourceTest {
             this.apt = apt;
             this.ils = ils;
             this.twr = twr;
+        }
+
+        @Override
+        protected Observable<File> ensureZipAvailable() {
+            return Observable.just(new File(""));
         }
 
         @Override

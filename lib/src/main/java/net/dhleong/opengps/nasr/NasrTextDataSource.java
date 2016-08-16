@@ -65,18 +65,8 @@ public class NasrTextDataSource implements DataSource {
 
     @Override
     public Observable<Boolean> loadInto(Storage storage) {
-        return Observable.fromCallable(() -> {
-            if (zipFile.exists()) return zipFile;
-
-            // download
-            BufferedSource in = Okio.buffer(Okio.source(new URL(DEFAULT_ZIP_URL).openStream()));
-            BufferedSink out = Okio.buffer(Okio.sink(zipFile));
-            in.readAll(out);
-            out.close();
-            in.close();
-
-            return zipFile;
-        }).flatMap(file -> Observable.fromCallable(() -> { // indirection to handle IOEs
+        return ensureZipAvailable()
+        .flatMap(file -> Observable.fromCallable(() -> { // indirection to handle IOEs
             storage.beginTransaction();
 
             // read airports
@@ -116,6 +106,21 @@ public class NasrTextDataSource implements DataSource {
             storage.markTransactionSuccessful();
             return true;
         }).doAfterTerminate(storage::endTransaction));
+    }
+
+    protected Observable<File> ensureZipAvailable() {
+        return Observable.fromCallable(() -> {
+            if (zipFile.exists()) return zipFile;
+
+            // download
+            BufferedSource in = Okio.buffer(Okio.source(new URL(DEFAULT_ZIP_URL).openStream()));
+            BufferedSink out = Okio.buffer(Okio.sink(zipFile));
+            in.readAll(out);
+            out.close();
+            in.close();
+
+            return zipFile;
+        });
     }
 
     protected Source openAirportsFile() throws IOException {
