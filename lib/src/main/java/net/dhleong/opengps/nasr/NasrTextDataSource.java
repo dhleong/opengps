@@ -8,9 +8,12 @@ import net.dhleong.opengps.nasr.util.Parser;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import okio.BufferedSink;
+import okio.BufferedSource;
 import okio.ByteString;
 import okio.Okio;
 import okio.Options;
@@ -41,11 +44,18 @@ public class NasrTextDataSource implements DataSource {
 
     private static final int TWR_FREQUENCIES_COUNT = 9;
 
+    static final String DEFAULT_ZIP_URL =
+        "https://nfdc.faa.gov/webContent/56DaySub/56DySubscription_July_21__2016_-_September_15__2016.zip";
 
     private final File zipFile;
+    private final String zipUrl;
 
     public NasrTextDataSource(File zipFile) {
+        this(zipFile, DEFAULT_ZIP_URL);
+    }
+    public NasrTextDataSource(File zipFile, String zipUrl) {
         this.zipFile = zipFile;
+        this.zipUrl = zipUrl;
     }
 
     @Override
@@ -56,18 +66,28 @@ public class NasrTextDataSource implements DataSource {
     @Override
     public Observable<Boolean> loadInto(Storage storage) {
         return Observable.fromCallable(() -> {
+            if (zipFile.exists()) return zipFile;
+
+            // download
+            BufferedSource in = Okio.buffer(Okio.source(new URL(DEFAULT_ZIP_URL).openStream()));
+            BufferedSink out = Okio.buffer(Okio.sink(zipFile));
+            in.readAll(out);
+            out.close();
+            in.close();
+
+            return zipFile;
+        }).flatMap(file -> Observable.fromCallable(() -> { // indirection to handle IOEs
             storage.beginTransaction();
 
             // read airports
             Parser apts = Parser.of(Okio.buffer(openAirportsFile()));
             while (!apts.exhausted()) {
-                Airport airport = readAirport(apts);
+                final Airport airport = readAirport(apts);
                 if (airport != null) {
                     storage.put(airport);
-                } else {
-                    apts.skipToLineEnd();
                 }
             }
+            apts.close();
 
             // read in ILS frequencies
             Parser ils = Parser.of(Okio.buffer(openIlsFile()));
@@ -78,8 +98,12 @@ public class NasrTextDataSource implements DataSource {
                     storage.addIlsFrequency(record.airportNumber, record.freq);
                 }
             }
+            ils.close();
 
             // read in ATC/ATIS frequencies
+            record.airportNumber = null;
+            record.freq = null;
+            record.workspace.setLength(0);
             Action1<AirportFreqRecord> freqObserver = rec ->
                 storage.addFrequency(rec.airportNumber, rec.type, rec.freq);
             Parser twr = Parser.of(Okio.buffer(openTwrFile()));
@@ -87,10 +111,11 @@ public class NasrTextDataSource implements DataSource {
             while (!twr.exhausted()) {
                 readTwrRecord(twr, record, freqObserver);
             }
+            twr.close();
 
             storage.markTransactionSuccessful();
             return true;
-        }).doAfterTerminate(storage::endTransaction);
+        }).doAfterTerminate(storage::endTransaction));
     }
 
     protected Source openAirportsFile() throws IOException {
@@ -201,25 +226,51 @@ public class NasrTextDataSource implements DataSource {
         switch (type) {
         case TWR_TYPE_INFO:
             // read in the identifier
-            twr.string(4); // airport id (we don't care)
+            String id = twr.string(4); // airport id (we don't care)
             twr.skip(10); // effective date
             record.airportNumber = twr.string(11);
+
+            if (record.airportNumber.trim().length() == 0) {
+                record.airportNumber = null;
+            }
             break;
 
         case TWR_TYPE_FREQUENCIES:
-            twr.string(4); // airport id (we don't care)
+            if (record.airportNumber == null) break;
+
+            String airportId = twr.string(4); // airport id (we don't care)
 
             for (int i=0; i < TWR_FREQUENCIES_COUNT; i++) {
-                record.freq = twr.ilsFrequency();
+                try {
+                    record.freq = twr.ilsFrequency();
+                } catch (Throwable e) {
+                    throw new RuntimeException("Failed to parse ILS frequency " + i + " for "
+                        + airportId + " (" + record.airportNumber + ")",
+                        e);
+                }
+
+                if (record.freq == null) {
+                    // no more frequencies
+                    break;
+                }
 
                 switch (record.freq.label.charAt(0)) {
                 case 'L': record.type = Airport.FrequencyType.TOWER; break;
                 case 'G': record.type = Airport.FrequencyType.GROUND; break;
                 case 'C': record.type = Airport.FrequencyType.DELIVERY; break;
-                case 'D': record.type = Airport.FrequencyType.ATIS; break;
+                case 'A':
+                case 'D':
+                    record.type = Airport.FrequencyType.ATIS;
+                    break;
+
+                default:
+                    // unknown frequency type (eg: PTD)
+                    record.type = null;
                 }
 
-                freqObserver.call(record);
+                if (record.type != null) {
+                    freqObserver.call(record);
+                }
             }
 
             break;

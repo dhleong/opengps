@@ -68,7 +68,10 @@ public class NasrTextDataSourceTest {
         );
 
         assertThat(dataSource.loadInto(storage).toBlocking().single()).isTrue();
-        Airport airport = storage.airport("LGA").toBlocking().single();
+        Airport airport = storage.find("LGA")
+                                 .map(obj -> (Airport) obj)
+                                 .toBlocking()
+                                 .single();
         assertThat(airport)
             .hasId("LGA")
             .hasNavFrequencies(1);

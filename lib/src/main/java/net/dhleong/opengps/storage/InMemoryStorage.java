@@ -1,5 +1,6 @@
 package net.dhleong.opengps.storage;
 
+import net.dhleong.opengps.AeroObject;
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.LabeledFrequency;
@@ -54,6 +55,13 @@ public class InMemoryStorage implements Storage {
     @Override
     public void addFrequency(String airportNumber, Airport.FrequencyType type, LabeledFrequency freq) {
         Airport apt = airportsByNumber.get(airportNumber);
+        if (apt == null) {
+            // TODO better logging
+//            System.err.println("No airport known for number " + airportNumber);
+//            return;
+            throw new RuntimeException("No airport known for number " + airportNumber);
+        }
+
         apt.addFrequency(type, freq);
     }
 
@@ -73,7 +81,10 @@ public class InMemoryStorage implements Storage {
     }
 
     @Override
-    public Observable<Airport> airport(String airportId) {
-        return Observable.just(airportsById.get(airportId));
+    public Observable<AeroObject> find(String objectId) {
+        // TODO support navaids
+        Airport apt = airportsById.get(objectId);
+        if (apt == null) return Observable.empty();
+        return Observable.just(apt);
     }
 }

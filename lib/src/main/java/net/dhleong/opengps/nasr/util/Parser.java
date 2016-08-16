@@ -152,9 +152,11 @@ public class Parser {
         workspace.labelBuffer.clear();
         workspace.builder.setLength(0);
 
-        source.read(workspace.typedFreqBuffer, 44);
-        source.read(workspace.labelBuffer, 50);
-        workspace.readTrimmed(workspace.labelBuffer);
+        source.readFully(workspace.typedFreqBuffer, 44);
+        source.readFully(workspace.labelBuffer, 50);
+        if (!workspace.readTrimmed(workspace.labelBuffer)) {
+            return null;
+        }
 
         final long decimalPos = workspace.typedFreqBuffer.indexOf((byte) '.');
         long decimalLength = 0;
@@ -193,13 +195,15 @@ public class Parser {
         StringBuilder builder = new StringBuilder(50);
 
         /** read from the Buffer into builder, trimming whitespace off the right end */
-        void readTrimmed(Buffer buffer) throws EOFException {
+        boolean readTrimmed(Buffer buffer) throws EOFException {
             long lastTrimmed = buffer.size();
             for (; lastTrimmed > 0; lastTrimmed--) {
                 if (buffer.getByte(lastTrimmed - 1) != ' ') {
                     break;
                 }
             }
+
+            if (lastTrimmed == 0) return false;
 
             if (builder.length() > 0 && buffer.getByte(0) != ' ') {
                 builder.append(' ');
@@ -208,6 +212,8 @@ public class Parser {
             builder.append(
                 buffer.readString(lastTrimmed, Charset.defaultCharset())
             );
+
+            return true;
         }
     }
 }

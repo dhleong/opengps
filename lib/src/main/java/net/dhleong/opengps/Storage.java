@@ -20,5 +20,7 @@ public interface Storage {
     void markTransactionSuccessful();
     void endTransaction();
 
-    Observable<Airport> airport(String airportId);
+//    Observable<Airport> airport(String airportId);
+
+    Observable<AeroObject> find(String objectId);
 }
