@@ -59,7 +59,7 @@ public class OpenGps {
             });
     }
 
-    public Observable<AeroObject> anyNear(double lat, double lng, double range) {
+    public Observable<AeroObject> anyNear(double lat, double lng, float range) {
         // TODO
         return Observable.empty();
     }
