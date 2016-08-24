@@ -116,12 +116,6 @@ public class InMemoryStorage implements Storage {
         }
     }
 
-    /**
-     * @param lat In degrees
-     * @param lng In degrees
-     * @param range Range in nautical miles
-     * @return
-     */
     @Override
     public Observable<AeroObject> findNear(double lat, double lng, float range) {
         // FIXME we should store the points in a QuadTree or something

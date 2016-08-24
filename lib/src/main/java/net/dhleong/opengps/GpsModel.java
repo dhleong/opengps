@@ -36,30 +36,31 @@ public class GpsModel {
     public GpsModel(OpenGps gps) {
         this.gps = gps;
 
-        updatesSub = updates.observeOn(Schedulers.io())
-                            .throttleLast(150, TimeUnit.MILLISECONDS)
-                            .flatMap(loc -> gps.anyNear(loc.lat, loc.lng, loc.range).toList())
-                            .subscribe(newVisibleList -> {
-                                workspaceSet.clear();
-                                for (int i=0, len=newVisibleList.size(); i < len; i++) {
-                                    AeroObject o = newVisibleList.get(i);
-                                    if (!visibleSet.contains(o)) {
-                                        discovered.onNext(o);
-                                    }
+        updatesSub =
+            updates.observeOn(Schedulers.io())
+                   .throttleLast(150, TimeUnit.MILLISECONDS)
+                   .flatMap(loc -> gps.anyNear(loc.lat, loc.lng, loc.range).toList())
+                   .subscribe(newVisibleList -> {
+                       workspaceSet.clear();
+                       for (int i=0, len=newVisibleList.size(); i < len; i++) {
+                           AeroObject o = newVisibleList.get(i);
+                           if (!visibleSet.contains(o)) {
+                               discovered.onNext(o);
+                           }
 
-                                    workspaceSet.add(o);
-                                }
+                           workspaceSet.add(o);
+                       }
 
-                                for (AeroObject o : visibleSet) {
-                                    if (!workspaceSet.contains(o)) {
-                                        removed.onNext(o);
-                                    }
-                                }
+                       for (AeroObject o : visibleSet) {
+                           if (!workspaceSet.contains(o)) {
+                               removed.onNext(o);
+                           }
+                       }
 
-                                final HashSet<AeroObject> oldVsible = visibleSet;
-                                visibleSet = workspaceSet;
-                                workspaceSet = oldVsible;
-                            });
+                       final HashSet<AeroObject> oldVisible = visibleSet;
+                       visibleSet = workspaceSet;
+                       workspaceSet = oldVisible;
+                   });
     }
 
     public void destroy() {
@@ -89,9 +90,8 @@ public class GpsModel {
      * Set the current location and range. This may result
      *  in new items being emitted from {@link #discoveredObjects()}
      *  and/or {@link #removedObjects()}
-     * @param lat
-     * @param lng
-     * @param range
+     *
+     * @param range Visible range around lat/lng, in nautical miles
      */
     public void setLocation(double lat, double lng, float range) {
         workspaceSet.clear();

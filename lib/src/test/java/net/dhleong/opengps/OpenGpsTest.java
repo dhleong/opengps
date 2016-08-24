@@ -35,7 +35,7 @@ public class OpenGpsTest {
     @Test
     public void near() {
         List<AeroObject> objects =
-            gps.anyNear(40.77, -73.86, 10)
+            gps.anyNear(40.77, -73.86, 41)
                .toList()
                .toBlocking()
                .single();

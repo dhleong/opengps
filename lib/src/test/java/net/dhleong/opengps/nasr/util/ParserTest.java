@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static net.dhleong.opengps.test.OkioTest.source;
+import static net.dhleong.opengps.test.TestUtil.dmsToDegrees;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -60,13 +61,13 @@ public class ParserTest {
     @Test
     public void latOrLng_15() throws IOException {
         assertThat(parser("40-46-38.1000N 146798.1000N").latOrLng())
-            .isEqualTo(146798.1);
+            .isEqualTo(dmsToDegrees(40, 46, 38.1));
     }
 
     @Test
     public void latOrLng_14() throws IOException {
         assertThat(parser("40-47-01.376N 146821.376N").latOrLng())
-            .isEqualTo(146821.376);
+            .isEqualTo(dmsToDegrees(40, 47, 1.376));
     }
 
     public static Parser parser(String string) {

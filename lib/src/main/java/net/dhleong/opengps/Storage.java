@@ -24,9 +24,15 @@ public interface Storage {
     void markTransactionSuccessful();
     void endTransaction();
 
-//    Observable<Airport> airport(String airportId);
-
     Observable<AeroObject> find(String objectId);
 
+    /**
+     * @param lat In degrees
+     * @param lng In degrees
+     * @param range Range in nautical miles
+     * @return An Observable that emits objects *roughly* within `range`
+     *  of the given lat, lng. There may be some items more than `range`
+     *  nm away from the given lat-lng, but they won't be very far.
+     */
     Observable<AeroObject> findNear(double lat, double lng, float range);
 }

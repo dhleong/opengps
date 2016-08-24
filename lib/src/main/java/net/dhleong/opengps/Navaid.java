@@ -89,6 +89,7 @@ public class Navaid implements AeroObject {
         return "Navaid{" +
             "type=" + type +
             ", id='" + id + '\'' +
+            ", name='" + name + '\'' +
             ", freq=" + freq +
             '}';
     }
