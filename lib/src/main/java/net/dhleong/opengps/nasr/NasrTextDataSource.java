@@ -125,6 +125,7 @@ public class NasrTextDataSource implements DataSource {
             nav.close();
 
             storage.markTransactionSuccessful();
+            storage.finishSource(this);
             return true;
         }).doAfterTerminate(storage::endTransaction));
     }

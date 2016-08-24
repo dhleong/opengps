@@ -9,6 +9,9 @@ public interface Storage {
     Observable<Storage> load();
 
     boolean isLoaded();
+
+    void finishSource(DataSource source);
+
     boolean hasDataSource(DataSource source);
 
     void put(Airport airport);

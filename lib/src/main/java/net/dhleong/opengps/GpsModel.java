@@ -82,7 +82,7 @@ public class GpsModel {
      *  that have been previously emitted from {@link #discoveredObjects()}
      */
     public Observable<AeroObject> removedObjects() {
-        return removedObjects();
+        return removed;
     }
 
     /**

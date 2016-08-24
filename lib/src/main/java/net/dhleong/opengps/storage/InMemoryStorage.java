@@ -44,6 +44,7 @@ public class InMemoryStorage implements Storage {
         return true;
     }
 
+    @Override
     public void finishSource(DataSource source) {
         dataSources.add(source.id());
     }
