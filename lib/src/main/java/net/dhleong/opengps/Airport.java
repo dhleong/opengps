@@ -115,4 +115,11 @@ public class Airport implements AeroObject {
         list.add(freq);
     }
 
+    @Override
+    public String toString() {
+        return "Airport{" +
+            "type=" + type +
+            ", id='" + id + '\'' +
+            '}';
+    }
 }

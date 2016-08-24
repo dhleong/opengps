@@ -27,12 +27,15 @@ public class InMemoryStorage implements Storage {
     private static final double MIN_LON = Math.toRadians(-180d); // -PI
     private static final double MAX_LON = Math.toRadians(180d);  //  PIkk0j
 
+    private static final int EXPECTED_AIRPORTS = 20480;
+    private static final int EXPECTED_NAVAIDS = 4096;
+
     private HashSet<String> dataSources = new HashSet<>();
 
-    private HashMap<String, Airport> airportsByNumber = new HashMap<>(4096);
-    private HashMap<String, Airport> airportsById = new HashMap<>(4096);
-    private HashMap<String, Navaid> navaidsById = new HashMap<>(4096);
-    private ArrayList<AeroObject> allObjects = new ArrayList<>(4096);
+    private HashMap<String, Airport> airportsByNumber = new HashMap<>(EXPECTED_AIRPORTS);
+    private HashMap<String, Airport> airportsById = new HashMap<>(EXPECTED_AIRPORTS);
+    private HashMap<String, Navaid> navaidsById = new HashMap<>(EXPECTED_NAVAIDS);
+    private ArrayList<AeroObject> allObjects = new ArrayList<>(EXPECTED_AIRPORTS + EXPECTED_NAVAIDS);
 
     @Override
     public Observable<Storage> load() {

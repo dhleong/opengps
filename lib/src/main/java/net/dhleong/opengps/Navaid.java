@@ -83,4 +83,13 @@ public class Navaid implements AeroObject {
     public double freq() {
         return freq;
     }
+
+    @Override
+    public String toString() {
+        return "Navaid{" +
+            "type=" + type +
+            ", id='" + id + '\'' +
+            ", freq=" + freq +
+            '}';
+    }
 }

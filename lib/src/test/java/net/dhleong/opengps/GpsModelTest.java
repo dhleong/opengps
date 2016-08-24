@@ -65,7 +65,7 @@ public class GpsModelTest {
 
         model.setLocation(dmsToDegrees(40, 47, 1.376), dmsToDegrees(-73, -52, -6.962), 10);
 
-        model.discoveredObjects().toBlocking().first();
+        model.discoveredObjects().skip(1).take(1).toBlocking().single();
         assertThat(discovered).hasSize(2);
         assertThat(removed).isEmpty();
     }
