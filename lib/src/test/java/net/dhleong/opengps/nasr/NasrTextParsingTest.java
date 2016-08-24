@@ -49,8 +49,8 @@ public class NasrTextParsingTest {
             .hasNumber("15794.*A")
             .hasId("LGA")
             .hasName("LAGUARDIA")
-            .hasLat( 146798.1000)
-            .hasLng(-265941.4000)
+            .hasLat(40, 46, 38.1)
+            .hasLng(-73, -52, -21.4)
         ;
     }
 
@@ -97,8 +97,8 @@ public class NasrTextParsingTest {
             .hasId("LGA")
             .hasType(Navaid.Type.VORDME)
             .hasName("LA GUARDIA")
-            .hasLat( 146821.376)
-            .hasLng(-265926.962)
+            .hasLat(40, 47, 1.376)
+            .hasLng(-73, -52, -6.962)
             ;
 
     }

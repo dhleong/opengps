@@ -25,4 +25,5 @@ public interface Storage {
 
     Observable<AeroObject> find(String objectId);
 
+    Observable<AeroObject> findNear(double lat, double lng, float range);
 }

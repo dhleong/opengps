@@ -25,6 +25,8 @@ public class Parser {
         ByteString.encodeUtf8(" ")
     );
 
+    static final double SECONDS_TO_DEGREES = 1. / 3600.;
+
     private final BufferedSource source;
 
     Map<Class<?>, Options> options = new HashMap<>();
@@ -130,11 +132,15 @@ public class Parser {
         final double value = base + (decimal / Math.pow(10.0, decimalPlaces));
 
         final byte declination = buffer.readByte();
+        final double signedInSeconds;
         if (declination == 'S' || declination == 'W') {
-            return -1 * value;
+            signedInSeconds = -1. * value;
         } else {
-            return value;
+            signedInSeconds = value;
         }
+
+        // now, convert to degrees
+        return signedInSeconds * SECONDS_TO_DEGREES;
     }
 
     public double frequency() throws IOException {

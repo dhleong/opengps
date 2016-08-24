@@ -7,6 +7,19 @@ import rx.Observable;
 import rx.functions.Func1;
 import rx.subjects.BehaviorSubject;
 
+/**
+ * OpenGps is the primary means of accessing data stored
+ *  in a {@link DataSource}. The data will be stored in
+ *  a {@link Storage}, which may take some time to prepare;
+ *  this class shields you from worrying about that, and
+ *  provides a unified interface that hides the details
+ *  of fetching, loading, and querying the underlying data.
+ *
+ * {@link net.dhleong.opengps.storage.InMemoryStorage} is provided
+ *  if reading the data set from disk on every access is acceptable,
+ *  and if you have sufficient RAM to hold the entire data set in
+ *  memory.
+ */
 public class OpenGps {
 
     BehaviorSubject<Storage> storage = BehaviorSubject.create();
@@ -60,8 +73,7 @@ public class OpenGps {
     }
 
     public Observable<AeroObject> anyNear(double lat, double lng, float range) {
-        // TODO
-        return Observable.empty();
+        return withStorage(storage -> storage.findNear(lat, lng, range));
     }
 
     private <T> Observable<T> withStorage(Func1<Storage, Observable<T>> func) {
