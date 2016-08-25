@@ -18,10 +18,7 @@ import static net.dhleong.opengps.OpenGpsAssertions.assertThat;
  */
 public class OpenGpsTest {
 
-    OpenGps gps = new OpenGps.Builder()
-        .storage(new InMemoryStorage())
-        .addDataSource(new NasrTextDataSource(new File("nasr-cache.zip")))
-        .build();
+    OpenGps gps = build();
 
     @Test
     public void test() {
@@ -52,4 +49,12 @@ public class OpenGpsTest {
             .toBlocking()
             .single();
     }
+
+    public static OpenGps build() {
+        return new OpenGps.Builder()
+            .storage(new InMemoryStorage())
+            .addDataSource(new NasrTextDataSource(new File("nasr-cache.zip")))
+            .build();
+    }
+
 }

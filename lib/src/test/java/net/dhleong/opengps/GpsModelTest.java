@@ -35,7 +35,7 @@ public class GpsModelTest {
     @Before
     public void setUp() {
         storage = new InMemoryStorage();
-        storage.put(new Airport("lga", Airport.Type.AIRPORT,
+        storage.put(new Airport("LGA", Airport.Type.AIRPORT,
             "LGA", "LAGUARDIA",
             dmsToDegrees(40, 46, 38.1), dmsToDegrees(-73, -52, -21.4)));
         storage.put(new Navaid(Navaid.Type.NDBDME,

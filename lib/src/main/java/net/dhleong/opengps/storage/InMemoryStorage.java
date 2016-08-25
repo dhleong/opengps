@@ -6,6 +6,7 @@ import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.LabeledFrequency;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.Storage;
+import net.dhleong.opengps.impl.Const;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,9 +19,6 @@ import rx.Observable;
  * @author dhleong
  */
 public class InMemoryStorage implements Storage {
-
-    static final float EARTH_RADIUS_KM = 6371.01f;
-    static final float NM_TO_KM = 1.852f;
 
     private static final double MIN_LAT = Math.toRadians(-90d);  // -PI/2
     private static final double MAX_LAT = Math.toRadians(90d);   //  PI/2
@@ -121,10 +119,10 @@ public class InMemoryStorage implements Storage {
         // FIXME we should store the points in a QuadTree or something
 
         // "radius" of search area around lat,lng in km
-        final float R = range * NM_TO_KM;
+        final float R = range * Const.NM_TO_KM;
 
         // angular distance in radians on earth's surface
-        final float radDist = R / EARTH_RADIUS_KM;
+        final float radDist = R / Const.EARTH_RADIUS_KM;
 
         // lat,lng in radians
         final double radLat = Math.toRadians(lat);

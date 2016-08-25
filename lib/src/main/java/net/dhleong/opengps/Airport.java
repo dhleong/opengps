@@ -1,5 +1,7 @@
 package net.dhleong.opengps;
 
+import net.dhleong.opengps.impl.BaseAeroObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,7 +10,7 @@ import java.util.List;
 /**
  * @author dhleong
  */
-public class Airport implements AeroObject {
+public class Airport extends BaseAeroObject {
 
     public enum Type {
         AIRPORT,
@@ -113,6 +115,27 @@ public class Airport implements AeroObject {
         }
 
         list.add(freq);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Airport)) return false;
+
+        Airport airport = (Airport) o;
+
+        if (type != airport.type) return false;
+        if (!number.equals(airport.number)) return false;
+        return id.equals(airport.id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type.hashCode();
+        result = 31 * result + number.hashCode();
+        result = 31 * result + id.hashCode();
+        return result;
     }
 
     @Override

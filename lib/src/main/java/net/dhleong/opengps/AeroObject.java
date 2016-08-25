@@ -10,4 +10,7 @@ public interface AeroObject {
 
     double lat();
     double lng();
+
+    /** @return distance in nm */
+    float distanceTo(AeroObject other);
 }

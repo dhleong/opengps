@@ -1,9 +1,11 @@
 package net.dhleong.opengps;
 
+import net.dhleong.opengps.impl.BaseAeroObject;
+
 /**
  * @author dhleong
  */
-public class Navaid implements AeroObject {
+public class Navaid extends BaseAeroObject {
 
     public enum Type {
 
@@ -82,6 +84,25 @@ public class Navaid implements AeroObject {
 
     public double freq() {
         return freq;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Navaid)) return false;
+
+        Navaid navaid = (Navaid) o;
+
+        if (type != navaid.type) return false;
+        return id.equals(navaid.id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type.hashCode();
+        result = 31 * result + id.hashCode();
+        return result;
     }
 
     @Override
