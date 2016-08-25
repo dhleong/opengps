@@ -9,11 +9,10 @@ import java.util.List;
  */
 public class Airway extends BaseAeroObject {
 
-    private final String id;
     private final List<AeroObject> points;
 
     public Airway(String id, List<AeroObject> points) {
-        this.id = id;
+        super(id, id, points.get(0).lat(), points.get(1).lng()); // I guess?
         this.points = points;
     }
 
@@ -61,28 +60,6 @@ public class Airway extends BaseAeroObject {
         }
 
         return closest;
-    }
-
-    @Override
-    public String id() {
-        return id;
-    }
-
-    @Override
-    public String name() {
-        return id;
-    }
-
-    @Override
-    public double lat() {
-        // TODO ?
-        return points.get(0).lat();
-    }
-
-    @Override
-    public double lng() {
-        // TODO ?
-        return points.get(0).lng();
     }
 
     @Override

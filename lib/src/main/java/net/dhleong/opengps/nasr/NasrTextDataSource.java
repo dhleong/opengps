@@ -21,6 +21,7 @@ import okio.Options;
 import okio.Source;
 import rx.Observable;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author dhleong
@@ -79,7 +80,7 @@ public class NasrTextDataSource implements DataSource {
         .flatMap(file -> Observable.fromCallable(() -> { // indirection to handle IOEs
             storage.beginTransaction();
 
-            // read airports
+            // read airports *first* so we can read frequencies into them
             Parser apts = Parser.of(Okio.buffer(openAirportsFile()));
             while (!apts.exhausted()) {
                 final Airport airport = readAirport(apts);
@@ -89,45 +90,61 @@ public class NasrTextDataSource implements DataSource {
             }
             apts.close();
 
+            return true;
+        }))
+        .flatMap(any -> Observable.merge(
+            // do these all in parallel:
+
             // read in ILS frequencies
-            Parser ils = Parser.of(Okio.buffer(openIlsFile()));
-            AirportFreqRecord record = new AirportFreqRecord();
-            record.type = Airport.FrequencyType.NAV;
-            while (!ils.exhausted()) {
-                if (readIlsRecord(ils, record)) {
-                    storage.addIlsFrequency(record.airportNumber, record.freq);
+            Observable.fromCallable(() -> {
+                Parser ils = Parser.of(Okio.buffer(openIlsFile()));
+                AirportFreqRecord record = new AirportFreqRecord();
+                record.type = Airport.FrequencyType.NAV;
+                while (!ils.exhausted()) {
+                    if (readIlsRecord(ils, record)) {
+                        storage.addIlsFrequency(record.airportNumber, record.freq);
+                    }
                 }
-            }
-            ils.close();
+                ils.close();
+                return true;
+            }).subscribeOn(Schedulers.io()),
 
-            // read in ATC/ATIS frequencies
-            record.airportNumber = null;
-            record.freq = null;
-            record.workspace.setLength(0);
-            Action1<AirportFreqRecord> freqObserver = rec ->
-                storage.addFrequency(rec.airportNumber, rec.type, rec.freq);
-            Parser twr = Parser.of(Okio.buffer(openTwrFile()));
-            record.airportNumber = null; // reset
-            while (!twr.exhausted()) {
-                readTwrRecord(twr, record, freqObserver);
-            }
-            twr.close();
-
-            // read in navaids (this could potentially be done in
-            //  parallel with the airport stuff)
-            Parser nav = Parser.of(Okio.buffer(openNavFile()));
-            while (!nav.exhausted()) {
-                Navaid navaid = readNavRecord(nav);
-                if (navaid != null) {
-                    storage.put(navaid);
+            Observable.fromCallable(() -> {
+                // read in ATC/ATIS frequencies
+                AirportFreqRecord record = new AirportFreqRecord();
+                Action1<AirportFreqRecord> freqObserver = rec ->
+                    storage.addFrequency(rec.airportNumber, rec.type, rec.freq);
+                Parser twr = Parser.of(Okio.buffer(openTwrFile()));
+                record.airportNumber = null; // reset
+                while (!twr.exhausted()) {
+                    readTwrRecord(twr, record, freqObserver);
                 }
-            }
-            nav.close();
+                twr.close();
 
+                return true;
+            }).subscribeOn(Schedulers.io()),
+
+            // navaids:
+            Observable.fromCallable(() -> {
+                Parser nav = Parser.of(Okio.buffer(openNavFile()));
+                while (!nav.exhausted()) {
+                    Navaid navaid = readNavRecord(nav);
+                    if (navaid != null) {
+                        storage.put(navaid);
+                    }
+                }
+                nav.close();
+                return true;
+            }).subscribeOn(Schedulers.io())
+
+            // TODO fixes
+        ).last())
+        // TODO now that we have fixes and navaids, read in airways
+        .doOnNext(any -> {
             storage.markTransactionSuccessful();
             storage.finishSource(this);
-            return true;
-        }).doAfterTerminate(storage::endTransaction));
+        })
+        .doAfterTerminate(storage::endTransaction);
     }
 
     protected Observable<File> ensureZipAvailable() {
