@@ -1,9 +1,10 @@
 package net.dhleong.opengps.nasr;
 
-import net.dhleong.NavFix;
+import net.dhleong.opengps.AeroObject;
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.LabeledFrequency;
+import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.Storage;
 import net.dhleong.opengps.nasr.util.Parser;
@@ -11,11 +12,12 @@ import net.dhleong.opengps.nasr.util.Parser;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.ByteString;
@@ -65,6 +67,13 @@ public class NasrTextDataSource implements DataSource {
     static final int FIX_TYPE_MAIN = 0;
     static final int FIX_TYPE_NAVAID = 1;
 
+    private static final Options SLASH_OR_BLANK = Options.of(
+        ByteString.encodeUtf8("/"),
+        ByteString.encodeUtf8(" ")
+    );
+    static final int VALUE = -1;
+    static final int HAS_SLASH = 0;
+    static final int HAS_BLANK = 1;
 
     static final String DEFAULT_ZIP_URL =
         "https://nfdc.faa.gov/webContent/56DaySub/56DySubscription_July_21__2016_-_September_15__2016.zip";
@@ -447,8 +456,61 @@ public class NasrTextDataSource implements DataSource {
         final double lng = fix.latOrLngFmt();
         fix.skipToLineEnd();
 
-        // TODO read refs
-        List<NavFix.Reference> refs = Collections.emptyList();
+        // read refs
+        final List<NavFix.Reference> refs = new ArrayList<>(4);
+        while (fix.select(FIX_HEADERS) == FIX_TYPE_NAVAID) {
+            // read main info
+            fix.skip(30); // id
+            fix.skip(30); // state name
+            fix.skip(2); // ICAO region code
+
+            Buffer b = fix.readFully(23);
+            long refIdEnd = b.indexOf((byte) '*');
+            String refId = b.readUtf8(refIdEnd);
+
+            AeroObject refObj =
+                storage.find(refId)
+                       .filter(o -> !(o instanceof Airport))
+                       .toBlocking()
+                       .firstOrDefault(null);
+
+            if (refObj != null) {
+                if ('*' != b.readByte()) throw new IllegalStateException();
+                b.readByte(); // ref obj type
+
+                float bearing = 0;
+                float distance = 0;
+                if ('*' == b.readByte()) {
+
+                    final boolean hasSlash;
+                    switch (b.select(SLASH_OR_BLANK)) {
+                    case HAS_SLASH:
+                        // no bearing, JUST distance
+                        hasSlash = true;
+                        break;
+
+                    case VALUE:
+                        // no slash; read bearing
+                        bearing = (float) Parser.readDecimalNumber(b, 100.);
+                        hasSlash = b.select(SLASH_OR_BLANK) == HAS_SLASH;
+                        break;
+
+                    default:
+                    case HAS_BLANK:
+                        hasSlash = false;
+                        break;
+                    }
+
+                    if (hasSlash) {
+                        distance = (float) Parser.readDecimalNumber(b, 100.);
+                    }
+                }
+
+                refs.add(new NavFix.Reference(refObj, bearing, distance));
+            }
+
+            fix.skipToLineEnd();
+        }
 
         return new NavFix(id, id, lat, lng, refs);
     }

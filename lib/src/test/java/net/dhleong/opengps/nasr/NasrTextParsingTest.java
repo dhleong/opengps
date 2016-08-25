@@ -16,6 +16,7 @@ import java.util.List;
 import rx.functions.Action1;
 
 import static net.dhleong.opengps.OpenGpsAssertions.assertThat;
+import static net.dhleong.opengps.test.Navaids.HFD;
 
 /**
  * @author dhleong
@@ -120,15 +121,17 @@ public class NasrTextParsingTest {
     @Test
     public void readNavFix() throws IOException {
 
-        // TODO pre-fill with appropriate refs
+        // pre-fill with some appropriate refs
         InMemoryStorage storage = new InMemoryStorage();
+        storage.put(HFD);
 
         assertThat(NasrTextDataSource.readNavFix(ParserTest.parser(FIX_MERIT), storage))
             .hasId("MERIT")
             .hasName("MERIT")
             .hasLat(41, 22, 55.02)
             .hasLng(-73, -8, -14.75)
-        // TODO test refs
+            // test refs:
+            .hasRef(HFD, 252.9f)
         ;
     }
 }

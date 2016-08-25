@@ -5,6 +5,12 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static net.dhleong.opengps.test.Navaids.BDR;
+import static net.dhleong.opengps.test.Navaids.HFD;
+import static net.dhleong.opengps.test.Navaids.LGA;
+import static net.dhleong.opengps.test.Navaids.MAD;
+import static net.dhleong.opengps.test.Navaids.ORW;
+import static net.dhleong.opengps.test.Navaids.PVD;
 import static net.dhleong.opengps.test.TestUtil.dmsToDegrees;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,34 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AirwayTest {
 
-    static final AeroObject LGA = new Navaid(Navaid.Type.VORDME, "LGA", "LA GUARDIA",
-        dmsToDegrees(40, 47, 1.376),
-        dmsToDegrees(-73, -52, -6.962),
-        0); // we don't care about frequencies...
-    static final AeroObject BDR = new Navaid(Navaid.Type.VORDME, "BDR", "BRIDGEPORT",
-        dmsToDegrees(41, 9, 38.495),
-        dmsToDegrees(-73, -7, -28.188),
-        0);
-    static final AeroObject MAD = new Navaid(Navaid.Type.VORDME, "MAD", "MADISON",
-        dmsToDegrees(41, 18, 49.811),
-        dmsToDegrees(-72, -41, -31.893),
-        0);
-    static final AeroObject ORW = new Navaid(Navaid.Type.VORDME, "ORW", "NORWICH",
-        dmsToDegrees(41, 33, 23.053),
-        dmsToDegrees(-71, -59, -57.672),
-        0);
-    static final AeroObject PVD = new Navaid(Navaid.Type.VORTAC, "PVD", "PROVIDENCE",
-        dmsToDegrees(41, 43, 27.639),
-        dmsToDegrees(-71, -25, -46.699),
-        0);
-
     Airway airway = new Airway("V475", Arrays.asList(
-        // TODO fixes
-        LGA,
-        BDR,
-        MAD,
-        ORW,
-        PVD));
+        // NB: should also be fixes, but... shouldn't matter
+        LGA, BDR, MAD, ORW, PVD
+    ));
 
     @Test
     public void appendBetween_fullForward() {
@@ -84,9 +66,7 @@ public class AirwayTest {
 
     @Test
     public void nearest_middle() {
-        Navaid hfd = new Navaid(Navaid.Type.VORDME, "HFD", "HARTFORD",
-            dmsToDegrees(41, 38, 27.997), dmsToDegrees(-72, -32, -50.705), 0);
-        assertThat(airway.nearestTo(hfd))
+        assertThat(airway.nearestTo(HFD))
             .isEqualTo(MAD);
     }
 

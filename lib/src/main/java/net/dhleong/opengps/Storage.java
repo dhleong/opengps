@@ -1,7 +1,5 @@
 package net.dhleong.opengps;
 
-import net.dhleong.NavFix;
-
 import rx.Observable;
 
 /**

@@ -25,6 +25,10 @@ public class Parser {
         ByteString.encodeUtf8(" ")
     );
 
+    static final Options HAS_DECIMAL = Options.of(
+        ByteString.encodeUtf8(".")
+    );
+
     static final double SECONDS_TO_DEGREES = 1. / 3600.;
 
     private final BufferedSource source;
@@ -238,6 +242,26 @@ public class Parser {
 
         int number = readByte - '0';
         return base + (number / place);
+    }
+
+    public Buffer readFully(int bytes) throws IOException {
+        Buffer b = ilsWorkspace.labelBuffer;
+        b.clear();
+        source.readFully(b, bytes);
+        return b;
+    }
+
+    public static double readDecimalNumber(BufferedSource source, double decimalDivisor) throws IOException {
+        double result = 0;
+        if (source.select(HAS_DECIMAL) != 0) {
+            result += source.readDecimalLong();
+        }
+
+        if (source.select(HAS_DECIMAL) == 0) {
+            result += source.readDecimalLong() / decimalDivisor;
+        }
+
+        return result;
     }
 
     static class IlsFrequencyWorkspace {

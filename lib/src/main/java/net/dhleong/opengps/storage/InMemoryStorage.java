@@ -1,10 +1,10 @@
 package net.dhleong.opengps.storage;
 
-import net.dhleong.NavFix;
 import net.dhleong.opengps.AeroObject;
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.LabeledFrequency;
+import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.Storage;
 import net.dhleong.opengps.impl.Const;

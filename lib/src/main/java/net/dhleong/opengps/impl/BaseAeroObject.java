@@ -1,6 +1,5 @@
 package net.dhleong.opengps.impl;
 
-import net.dhleong.NavFix;
 import net.dhleong.opengps.AeroObject;
 
 /**
@@ -43,11 +42,11 @@ public abstract class BaseAeroObject implements AeroObject {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof NavFix)) return false;
+        if (!(o instanceof BaseAeroObject)) return false;
 
-        NavFix navFix = (NavFix) o;
+        BaseAeroObject baseAeroObject = (BaseAeroObject) o;
 
-        return id.equals(navFix.id);
+        return id.equals(baseAeroObject.id);
     }
 
     @Override
