@@ -7,7 +7,6 @@ import net.dhleong.opengps.nasr.util.Parser;
 import net.dhleong.opengps.nasr.util.ParserTest;
 import net.dhleong.opengps.storage.InMemoryStorage;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -119,7 +118,6 @@ public class NasrTextParsingTest {
     }
 
     @Test
-    @Ignore("TODO")
     public void readNavFix() throws IOException {
 
         // TODO pre-fill with appropriate refs
@@ -127,7 +125,7 @@ public class NasrTextParsingTest {
 
         assertThat(NasrTextDataSource.readNavFix(ParserTest.parser(FIX_MERIT), storage))
             .hasId("MERIT")
-            .hasName("LA GUARDIA")
+            .hasName("MERIT")
             .hasLat(41, 22, 55.02)
             .hasLng(-73, -8, -14.75)
         // TODO test refs

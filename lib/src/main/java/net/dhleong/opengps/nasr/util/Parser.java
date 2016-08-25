@@ -143,6 +143,38 @@ public class Parser {
         return signedInSeconds * SECONDS_TO_DEGREES;
     }
 
+    /**
+     * Reads a single, formatted lat or lng. This is
+     *  as opposed to {@link #latOrLng()}, which reads
+     *  a pair of formatted and decimal versions of
+     *  the same lat/lng.
+     */
+    public double latOrLngFmt() throws IOException {
+        // read into the buffer
+        Buffer buffer = ilsWorkspace.labelBuffer;
+        buffer.clear();
+        source.readFully(buffer, 14);
+
+        final long degrees = buffer.readDecimalLong();
+        if (buffer.readByte() != '-') throw new IllegalStateException();
+
+        final long minutes = buffer.readDecimalLong();
+        if (buffer.readByte() != '-') throw new IllegalStateException();
+
+        final long seconds = buffer.readDecimalLong();
+        if (buffer.readByte() != '.') throw new IllegalStateException();
+
+        final double secondsDecimal = buffer.readDecimalLong() / 1000;
+        final double value = degrees + (minutes / 60.) + (seconds / 3600.) + secondsDecimal;
+
+        final byte declination = buffer.readByte();
+        if (declination == 'S' || declination == 'W') {
+            return -1. * value;
+        } else {
+            return value;
+        }
+    }
+
     public double frequency() throws IOException {
         return addDecimalByte(frequency6(), source.readByte(), 1000);
     }

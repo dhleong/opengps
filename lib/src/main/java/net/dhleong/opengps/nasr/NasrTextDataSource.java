@@ -11,6 +11,8 @@ import net.dhleong.opengps.nasr.util.Parser;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -54,6 +56,14 @@ public class NasrTextDataSource implements DataSource {
         ByteString.encodeUtf8("NAV1")
     );
     static final int NAV_TYPE_MAIN = 0;
+
+
+    static final Options FIX_HEADERS = Options.of(
+        ByteString.encodeUtf8("FIX1"),
+        ByteString.encodeUtf8("FIX2")
+    );
+    static final int FIX_TYPE_MAIN = 0;
+    static final int FIX_TYPE_NAVAID = 1;
 
 
     static final String DEFAULT_ZIP_URL =
@@ -145,6 +155,7 @@ public class NasrTextDataSource implements DataSource {
                     }
                 }
                 fix.close();
+
                 return true;
             }).subscribeOn(Schedulers.io())
 
@@ -421,10 +432,25 @@ public class NasrTextDataSource implements DataSource {
 
     static NavFix readNavFix(Parser fix, Storage storage) throws IOException {
 
+        final int type = fix.select(FIX_HEADERS);
+        if (type != FIX_TYPE_MAIN) {
+            fix.skipToLineEnd();
+            return null;
+        }
+
+        // read main info
+        final String id = fix.string(30);
+        fix.skip(30); // state name
+        fix.skip(2); // ICAO region code
+
+        final double lat = fix.latOrLngFmt();
+        final double lng = fix.latOrLngFmt();
         fix.skipToLineEnd();
 
-        // TODO
-        return null;
+        // TODO read refs
+        List<NavFix.Reference> refs = Collections.emptyList();
+
+        return new NavFix(id, id, lat, lng, refs);
     }
 
     static class AirportFreqRecord {
