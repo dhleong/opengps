@@ -5,7 +5,9 @@ import net.dhleong.opengps.LabeledFrequency;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.nasr.util.Parser;
 import net.dhleong.opengps.nasr.util.ParserTest;
+import net.dhleong.opengps.storage.InMemoryStorage;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -42,6 +44,19 @@ public class NasrTextParsingTest {
     static final String LGA_VORDME =
         "NAV1LGA VOR/DME             LGA 07/21/2016LA GUARDIA                    NEW YORK                                NEW YORK                      NYAEA                                FEDERAL AVIATION ADMIN                            FEDERAL AVIATION ADMIN                            YYL-VOR/DME  24         ZNY NEW YORK                      ZNY NEW YORK                      40-47-01.376N 146821.376N073-52-06.962W265926.962W640-47-01.376N 146821.376N073-52-06.962W265926.962W    8.9  12W1980Y      N  1NEW YORK RADIO                078X113.10                                     LY                                  ISP NEW YORK                      24                                                                                                  LGA                 OPERATIONAL RESTRICTED        NNN   ";
 
+    static final String FIX_MERIT =
+        "FIX1MERIT                         CONNECTICUT                   K641-22-55.020N 073-08-14.750WFIX                                                                             RNAV                                  YREP-PT         MERITZBW ZBW                               NNN                                                                                                                                                                                                \n" +
+        "FIX2MERIT                         CONNECTICUT                   K6CMK*D*084.92                                                                                                                                                                                                                                                                                                                                                                                                    \n" +
+        "FIX2MERIT                         CONNECTICUT                   K6HFD*D*252.90                                                                                                                                                                                                                                                                                                                                                                                                    \n" +
+        "FIX2MERIT                         CONNECTICUT                   K6HTO*C*320.00                                                                                                                                                                                                                                                                                                                                                                                                    \n" +
+        "FIX2MERIT                         CONNECTICUT                   K6LGA*D*054.52/48.86                                                                                                                                                                                                                                                                                                                                                                                              \n" +
+        "FIX2MERIT                         CONNECTICUT                   K6MAD*D*294.62                                                                                                                                                                                                                                                                                                                                                                                                    \n" +
+        "FIX5MERIT                         CONNECTICUT                   K6CONTROLLER                                                                                                                                                                                                                                                                                                                                                                                                      \n" +
+        "FIX5MERIT                         CONNECTICUT                   K6ENROUTE HIGH                                                                                                                                                                                                                                                                                                                                                                                                    \n" +
+        "FIX5MERIT                         CONNECTICUT                   K6ENROUTE LOW                                                                                                                                                                                                                                                                                                                                                                                                     \n" +
+        "FIX5MERIT                         CONNECTICUT                   K6SID                                                                                                                                                                                                                                                                                                                                                                                                             \n" +
+        "FIX5MERIT                         CONNECTICUT                   K6STAR                                                                                                                                                                                                                                                                                                                                                                                                            \n";
+
     @Test
     public void readAirport() throws IOException {
         assertThat(NasrTextDataSource.readAirport(ParserTest.parser(LAGUARDIA)))
@@ -58,7 +73,7 @@ public class NasrTextParsingTest {
     public void readIls() throws IOException {
         NasrTextDataSource.AirportFreqRecord record = new NasrTextDataSource.AirportFreqRecord();
         assertThat(NasrTextDataSource.readIlsRecord(ParserTest.parser(LGA_ILS_13_LOC), record))
-                  .isTrue();
+            .isTrue();
 
         assertThat(record.airportNumber).isEqualTo("15794.*A");
         assertThat(record.freq.label).isEqualTo("ILS/DME 13");
@@ -99,8 +114,23 @@ public class NasrTextParsingTest {
             .hasName("LA GUARDIA")
             .hasLat(40, 47, 1.376)
             .hasLng(-73, -52, -6.962)
-            ;
+        ;
 
     }
 
+    @Test
+    @Ignore("TODO")
+    public void readNavFix() throws IOException {
+
+        // TODO pre-fill with appropriate refs
+        InMemoryStorage storage = new InMemoryStorage();
+
+        assertThat(NasrTextDataSource.readNavFix(ParserTest.parser(FIX_MERIT), storage))
+            .hasId("MERIT")
+            .hasName("LA GUARDIA")
+            .hasLat(41, 22, 55.02)
+            .hasLng(-73, -8, -14.75)
+        // TODO test refs
+        ;
+    }
 }

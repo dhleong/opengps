@@ -1,5 +1,6 @@
 package net.dhleong.opengps.nasr;
 
+import net.dhleong.NavFix;
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.LabeledFrequency;
@@ -97,8 +98,8 @@ public class NasrTextDataSource implements DataSource {
 
             // read in ILS frequencies
             Observable.fromCallable(() -> {
-                Parser ils = Parser.of(Okio.buffer(openIlsFile()));
                 AirportFreqRecord record = new AirportFreqRecord();
+                Parser ils = Parser.of(Okio.buffer(openIlsFile()));
                 record.type = Airport.FrequencyType.NAV;
                 while (!ils.exhausted()) {
                     if (readIlsRecord(ils, record)) {
@@ -109,8 +110,8 @@ public class NasrTextDataSource implements DataSource {
                 return true;
             }).subscribeOn(Schedulers.io()),
 
+            // read in ATC/ATIS frequencies
             Observable.fromCallable(() -> {
-                // read in ATC/ATIS frequencies
                 AirportFreqRecord record = new AirportFreqRecord();
                 Action1<AirportFreqRecord> freqObserver = rec ->
                     storage.addFrequency(rec.airportNumber, rec.type, rec.freq);
@@ -124,7 +125,7 @@ public class NasrTextDataSource implements DataSource {
                 return true;
             }).subscribeOn(Schedulers.io()),
 
-            // navaids:
+            // navaids & fixes:
             Observable.fromCallable(() -> {
                 Parser nav = Parser.of(Okio.buffer(openNavFile()));
                 while (!nav.exhausted()) {
@@ -134,11 +135,20 @@ public class NasrTextDataSource implements DataSource {
                     }
                 }
                 nav.close();
+
+                // now read fixes here, since they reference navaids
+                Parser fix = Parser.of(Okio.buffer(openFixFile()));
+                while (!fix.exhausted()) {
+                    NavFix obj = readNavFix(fix, storage);
+                    if (obj != null) {
+                        storage.put(obj);
+                    }
+                }
+                fix.close();
                 return true;
             }).subscribeOn(Schedulers.io())
 
-            // TODO fixes
-        ).last())
+        ).last()) // just wait for the last to finish
         // TODO now that we have fixes and navaids, read in airways
         .doOnNext(any -> {
             storage.markTransactionSuccessful();
@@ -164,6 +174,10 @@ public class NasrTextDataSource implements DataSource {
 
     protected Source openAirportsFile() throws IOException {
         return openZipFile("APT.txt");
+    }
+
+    protected Source openFixFile() throws IOException {
+        return openZipFile("FIX.txt");
     }
 
     protected Source openIlsFile() throws IOException {
@@ -403,6 +417,14 @@ public class NasrTextDataSource implements DataSource {
 
         nav.skipToLineEnd();
         return result;
+    }
+
+    static NavFix readNavFix(Parser fix, Storage storage) throws IOException {
+
+        fix.skipToLineEnd();
+
+        // TODO
+        return null;
     }
 
     static class AirportFreqRecord {

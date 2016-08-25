@@ -1,5 +1,6 @@
 package net.dhleong.opengps.storage;
 
+import net.dhleong.NavFix;
 import net.dhleong.opengps.AeroObject;
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.DataSource;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import rx.Observable;
 
@@ -27,13 +29,16 @@ public class InMemoryStorage implements Storage {
 
     private static final int EXPECTED_AIRPORTS = 20480;
     private static final int EXPECTED_NAVAIDS = 4096;
+    private static final int EXPECTED_FIXES = 4096;
 
     private HashSet<String> dataSources = new HashSet<>();
 
-    private HashMap<String, Airport> airportsByNumber = new HashMap<>(EXPECTED_AIRPORTS);
+    private final HashMap<String, Airport> airportsByNumber = new HashMap<>(EXPECTED_AIRPORTS);
     private HashMap<String, Airport> airportsById = new HashMap<>(EXPECTED_AIRPORTS);
     private HashMap<String, Navaid> navaidsById = new HashMap<>(EXPECTED_NAVAIDS);
-    private ArrayList<AeroObject> allObjects = new ArrayList<>(EXPECTED_AIRPORTS + EXPECTED_NAVAIDS);
+    private HashMap<String, NavFix> fixesById = new HashMap<>(EXPECTED_FIXES);
+    private ArrayList<AeroObject> allObjects = new ArrayList<>(
+        EXPECTED_AIRPORTS + EXPECTED_NAVAIDS + EXPECTED_FIXES);
 
     @Override
     public Observable<Storage> load() {
@@ -69,18 +74,26 @@ public class InMemoryStorage implements Storage {
     }
 
     @Override
+    public void put(NavFix navFix) {
+        fixesById.put(navFix.id(), navFix);
+        allObjects.add(navFix);
+    }
+
+    @Override
     public void addIlsFrequency(String airportNumber, LabeledFrequency freq) {
         addFrequency(airportNumber, Airport.FrequencyType.NAV, freq);
     }
 
     @Override
     public void addFrequency(String airportNumber, Airport.FrequencyType type, LabeledFrequency freq) {
-        Airport apt = airportsByNumber.get(airportNumber);
-        if (apt == null) {
-            throw new RuntimeException("No airport known for number " + airportNumber);
-        }
+        synchronized (airportsByNumber) {
+            Airport apt = airportsByNumber.get(airportNumber);
+            if (apt == null) {
+                throw new RuntimeException("No airport known for number " + airportNumber);
+            }
 
-        apt.addFrequency(type, freq);
+            apt.addFrequency(type, freq);
+        }
     }
 
     @Override
@@ -100,18 +113,16 @@ public class InMemoryStorage implements Storage {
 
     @Override
     public Observable<AeroObject> find(String objectId) {
-        final Navaid navaid = navaidsById.get(objectId);
         final Airport apt = airportsById.get(objectId);
+        final NavFix navFix = fixesById.get(objectId);
+        final Navaid navaid = navaidsById.get(objectId);
 
-        if (apt == null && navaid == null) {
-            return Observable.empty();
-        } else if (apt != null && navaid != null) {
-            return Observable.just(apt, navaid);
-        } else if (apt != null) {
-            return Observable.just(apt);
-        } else {
-            return Observable.just(navaid);
-        }
+        // TODO would be nice to avoid allocating an array here:
+        final List<AeroObject> list = new ArrayList<>(3);
+        if (apt != null) list.add(apt);
+        if (navaid != null) list.add(navaid);
+        if (navFix != null) list.add(navFix);
+        return Observable.from(list);
     }
 
     @Override

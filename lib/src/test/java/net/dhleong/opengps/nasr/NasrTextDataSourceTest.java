@@ -60,6 +60,11 @@ public class NasrTextDataSourceTest {
         protected Source openNavFile() throws IOException {
             return source(nav);
         }
+
+        @Override
+        protected Source openFixFile() throws IOException {
+            return source("\n"); // TODO
+        }
     }
 
     InMemoryStorage storage;

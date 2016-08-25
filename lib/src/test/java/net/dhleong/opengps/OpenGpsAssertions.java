@@ -1,5 +1,7 @@
 package net.dhleong.opengps;
 
+import net.dhleong.NavFix;
+
 import org.assertj.core.api.Assertions;
 
 /**
@@ -13,5 +15,9 @@ public class OpenGpsAssertions extends Assertions {
 
     public static NavaidAssert assertThat(Navaid obj) {
         return new NavaidAssert(obj);
+    }
+
+    public static NavFixAssert assertThat(NavFix obj) {
+        return new NavFixAssert(obj);
     }
 }

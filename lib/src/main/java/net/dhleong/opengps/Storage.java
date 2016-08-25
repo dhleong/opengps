@@ -1,5 +1,7 @@
 package net.dhleong.opengps;
 
+import net.dhleong.NavFix;
+
 import rx.Observable;
 
 /**
@@ -16,6 +18,7 @@ public interface Storage {
 
     void put(Airport airport);
     void put(Navaid navaid);
+    void put(NavFix fix);
 
     void addIlsFrequency(String airportNumber, LabeledFrequency freq);
     void addFrequency(String airportNumber, Airport.FrequencyType type, LabeledFrequency freq);
