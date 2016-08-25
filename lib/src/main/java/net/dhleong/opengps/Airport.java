@@ -50,12 +50,6 @@ public class Airport extends BaseAeroObject {
 
     private final Type type;
     private final String number;
-    private final String id;
-
-    public final String name;
-
-    private final double lat;
-    private final double lng;
 
     public float elevation;
 
@@ -63,32 +57,10 @@ public class Airport extends BaseAeroObject {
 
     public Airport(String number, Type type, String id, String name,
             double lat, double lng) {
+        super(id, name, lat, lng);
+
         this.type = type;
         this.number = number;
-        this.id = id;
-        this.name = name;
-        this.lat = lat;
-        this.lng = lng;
-    }
-
-    @Override
-    public String id() {
-        return id;
-    }
-
-    @Override
-    public String name() {
-        return name;
-    }
-
-    @Override
-    public double lat() {
-        return lat;
-    }
-
-    @Override
-    public double lng() {
-        return lng;
     }
 
     public Type airportType() {

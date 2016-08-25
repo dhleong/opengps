@@ -1,11 +1,59 @@
 package net.dhleong.opengps.impl;
 
+import net.dhleong.NavFix;
 import net.dhleong.opengps.AeroObject;
 
 /**
  * @author dhleong
  */
 public abstract class BaseAeroObject implements AeroObject {
+
+    protected final String id;
+    protected final String name;
+    protected final double lat;
+    protected final double lng;
+
+    public BaseAeroObject(String id, String name, double lat, double lng) {
+        this.id = id;
+        this.name = name;
+        this.lat = lat;
+        this.lng = lng;
+    }
+
+    @Override
+    public String id() {
+        return id;
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public double lat() {
+        return lat;
+    }
+
+    @Override
+    public double lng() {
+        return lng;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NavFix)) return false;
+
+        NavFix navFix = (NavFix) o;
+
+        return id.equals(navFix.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 
     @Override
     public float distanceTo(AeroObject other) {

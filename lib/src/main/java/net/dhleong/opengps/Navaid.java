@@ -43,39 +43,13 @@ public class Navaid extends BaseAeroObject {
     }
 
     private final Type type;
-    private final String id;
-    private final String name;
-    private final double lat;
-    private final double lng;
     private final double freq;
 
     public Navaid(Type type, String id, String name, double lat, double lng, double freq) {
+        super(id, name, lat, lng);
+
         this.type = type;
-        this.id = id;
-        this.name = name;
-        this.lat = lat;
-        this.lng = lng;
         this.freq = freq;
-    }
-
-    @Override
-    public String id() {
-        return id;
-    }
-
-    @Override
-    public String name() {
-        return name;
-    }
-
-    @Override
-    public double lat() {
-        return lat;
-    }
-
-    @Override
-    public double lng() {
-        return lng;
     }
 
     public Type type() {
@@ -90,18 +64,17 @@ public class Navaid extends BaseAeroObject {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Navaid)) return false;
+        if (!super.equals(o)) return false;
 
         Navaid navaid = (Navaid) o;
 
-        if (type != navaid.type) return false;
-        return id.equals(navaid.id);
-
+        return type == navaid.type;
     }
 
     @Override
     public int hashCode() {
-        int result = type.hashCode();
-        result = 31 * result + id.hashCode();
+        int result = super.hashCode();
+        result = 31 * result + type.hashCode();
         return result;
     }
 
