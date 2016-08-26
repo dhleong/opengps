@@ -182,7 +182,7 @@ public class NasrTextDataSource implements DataSource {
             if (zipFile.exists()) return zipFile;
 
             // download
-            BufferedSource in = Okio.buffer(Okio.source(new URL(DEFAULT_ZIP_URL).openStream()));
+            BufferedSource in = Okio.buffer(Okio.source(new URL(zipUrl).openStream()));
             BufferedSink out = Okio.buffer(Okio.sink(zipFile));
             in.readAll(out);
             out.close();

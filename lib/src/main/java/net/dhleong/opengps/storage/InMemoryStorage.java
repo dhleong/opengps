@@ -29,7 +29,7 @@ public class InMemoryStorage implements Storage {
 
     private static final int EXPECTED_AIRPORTS = 20480;
     private static final int EXPECTED_NAVAIDS = 4096;
-    private static final int EXPECTED_FIXES = 4096;
+    private static final int EXPECTED_FIXES = 66560;
 
     private HashSet<String> dataSources = new HashSet<>();
 
