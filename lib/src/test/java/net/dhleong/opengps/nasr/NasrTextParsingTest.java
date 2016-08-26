@@ -7,6 +7,7 @@ import net.dhleong.opengps.nasr.util.Parser;
 import net.dhleong.opengps.nasr.util.ParserTest;
 import net.dhleong.opengps.storage.InMemoryStorage;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -56,6 +57,36 @@ public class NasrTextParsingTest {
         "FIX5MERIT                         CONNECTICUT                   K6ENROUTE LOW                                                                                                                                                                                                                                                                                                                                                                                                     \n" +
         "FIX5MERIT                         CONNECTICUT                   K6SID                                                                                                                                                                                                                                                                                                                                                                                                             \n" +
         "FIX5MERIT                         CONNECTICUT                   K6STAR                                                                                                                                                                                                                                                                                                                                                                                                            \n";
+
+    static final String AWY_V99 =
+        "AWY1V99      1007/21/2016                   000.00000.00                  04000             BND      1700            BND         BND      12WZNY25730*NY                         V99  *OUTTE*CT                                            BND                                         0000001\n" +
+        "AWY2V99      10LA GUARDIA                    VOR/DME                           NY  40-47-01.376N 073-52-06.962W     LGA V99  *LGA*D                                                                                                                                                    0000002\n" +
+        "AWY1V99      2007/21/2016                   000.00000.00                  04000             BND      1700            BND         BND         ZNYOUTTE*CT                                                                                   BND                                         0000001\n" +
+        "AWY2V99      2025730                         ARTCC-BDRY         FIX            NYK640-51-30.5N   073-46-41.8W           V99  *25730*NY                                                                                                                                                 0000002\n" +
+        "AWY1V99      3007/21/2016                   000.00000.00                  04000             BND      2600            BND         BND         ZBW25007*CT                         V99  *SORRY*CT                                            BND                                         0000001\n" +
+        "AWY2V99      30OUTTE                         REP-PT             FIX            CTK641-04-41.48N  073-30-39.78W          V99  *OUTTE*CT                                                                                                                                                 0000002\n" +
+        "AWY1V99      4007/21/2016                   000.00000.00                  04000             BND      2600            BND         BND         ZBWVAGUS*CT                                                                                   BND                                         0000001\n" +
+        "AWY2V99      4025007                         AWY-INTXN          FIX            CTK641-06-12.0N   073-28-49.1W           V99  *25007*CT                                                                                                                                                 0000002\n" +
+        "AWY1V99      5007/21/2016                   000.00000.00                  04000             BND      2600            BND         BND         ZBW25146*CT                                                                                   BND                                         0000001\n" +
+        "AWY2V99      50VAGUS                         REP-PT             FIX            CTK641-09-49.87N  073-24-22.27W          V99  *VAGUS*CT                                                                                                                                                 0000002\n" +
+        "AWY1V99      6007/21/2016                   000.00000.00                  04000             BND      2600            BND         BND         ZBWANNEI*CT                                                                                   BND                                         0000001\n" +
+        "AWY2V99      6025146                         AWY-INTXN          FIX            CTK641-14-48.4N   073-18-15.5W           V99  *25146*CT                                                                                                                                                 0000002\n" +
+        "AWY1V99      7007/21/2016                   000.00000.00                  04000             BND      2600            BND         BND         ZBW25124*CT                                                                                   BND                                         0000001\n" +
+        "AWY2V99      70ANNEI                         REP-PT             FIX            CTK641-17-09.83N  073-15-21.24W          V99  *ANNEI*CT                                                                                                                                                 0000002\n" +
+        "AWY1V99      8007/21/2016                   000.00000.00                  04000             BND      2600            BND         BND         ZBWTRUDE*CT                                                                                   BND                                         0000001\n" +
+        "AWY2V99      8025124                         AWY-INTXN          FIX            CTK641-17-28.64N  073-14-58.11W          V99  *25124*CT                                                                                                                                                 0000002\n" +
+        "AWY1V99      9007/21/2016                   000.00000.00                  04000             BND      2600            BND         BND         ZBW25679*CT                                                                                   BND                                         0000001\n" +
+        "AWY2V99      90TRUDE                         REP-PT             FIX            CTK641-20-01.96N  073-11-48.73W          V99  *TRUDE*CT                                                                                                                                                 0000002\n" +
+        "AWY1V99     10007/21/2016                   000.00000.00                  04000             BND      2600            BND         BND         ZBWMERIT*CT                                                                                   BND                                         0000001\n" +
+        "AWY2V99     10025679                         AWY-INTXN          FIX            CTK641-20-27.8N   073-11-16.8W           V99  *25679*CT                                                                                                                                                 0000002\n" +
+        "AWY1V99     11007/21/2016                   000.00000.00                  04000             BND      2600            BND         BND         ZBWSORRY*CT                                                                                   BND                                         0000001\n" +
+        "AWY2V99     110MERIT                         REP-PT             FIX            CTK641-22-55.02N  073-08-14.75W          V99  *MERIT*CT                                                                                                                                                 0000002\n" +
+        "AWY1V99     12007/21/2016                   000.00000.00                  03000             BND                      BND         BND         ZBWYALER*CT                         V99  *HFD*D                                               BND                                         0000001\n" +
+        "AWY2V99     120SORRY                         REP-PT             FIX            CTK641-28-43.1N   073-01-02.67W          V99  *SORRY*CT                                                                                                                                                 0000002\n" +
+        "AWY1V99     13007/21/2016                   000.00000.00                  03000             BND                      BND         BND         ZBWHFD*D                                                                                      BND                                         0000001\n" +
+        "AWY2V99     130YALER                         REP-PT             FIX            CTK641-30-56.61N  072-54-39.09W          V99  *YALER*CT                                                                                                                                                 0000002\n" +
+        "AWY1V99     14007/21/2016                   000.00000.00                  03000             BND                      BND         BND      13WZBW                                                                                           BND                                         0000001\n" +
+        "AWY2V99     140HARTFORD                      VOR/DME                           CT  41-38-27.977N 072-32-50.705W     HFD V99  *HFD*D                                                                                                                                                    0000002\n";
 
     @Test
     public void readAirport() throws IOException {
@@ -133,5 +164,11 @@ public class NasrTextParsingTest {
             // test refs:
             .hasRef(HFD, 252.9f)
         ;
+    }
+
+    @Test
+    @Ignore("TODO")
+    public void readAirway() throws IOException {
+
     }
 }

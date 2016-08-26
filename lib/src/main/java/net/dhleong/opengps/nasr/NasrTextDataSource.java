@@ -2,6 +2,7 @@ package net.dhleong.opengps.nasr;
 
 import net.dhleong.opengps.AeroObject;
 import net.dhleong.opengps.Airport;
+import net.dhleong.opengps.Airway;
 import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.LabeledFrequency;
 import net.dhleong.opengps.NavFix;
@@ -74,6 +75,12 @@ public class NasrTextDataSource implements DataSource {
     static final int VALUE = -1;
     static final int HAS_SLASH = 0;
     static final int HAS_BLANK = 1;
+
+    static final Options AWY_HEADERS = Options.of(
+        ByteString.encodeUtf8("AWY2")
+    );
+    static final int AWY_TYPE_FIX = 0;
+
 
     static final String DEFAULT_ZIP_URL =
         "https://nfdc.faa.gov/webContent/56DaySub/56DySubscription_July_21__2016_-_September_15__2016.zip";
@@ -169,7 +176,13 @@ public class NasrTextDataSource implements DataSource {
             }).subscribeOn(Schedulers.io())
 
         ).last()) // just wait for the last to finish
-        // TODO now that we have fixes and navaids, read in airways
+        .flatMap(any -> Observable.fromCallable(() -> {
+            // now that we have fixes and navaids, read in airways
+            Parser awy = Parser.of(Okio.buffer(openAirwaysFile()));
+            readAirways(awy, storage);
+            awy.close();
+            return true;
+        }))
         .doOnNext(any -> {
             storage.markTransactionSuccessful();
             storage.finishSource(this);
@@ -194,6 +207,10 @@ public class NasrTextDataSource implements DataSource {
 
     protected Source openAirportsFile() throws IOException {
         return openZipFile("APT.txt");
+    }
+
+    protected Source openAirwaysFile() throws IOException {
+        return openZipFile("AWY.txt");
     }
 
     protected Source openFixFile() throws IOException {
@@ -308,7 +325,7 @@ public class NasrTextDataSource implements DataSource {
         switch (type) {
         case TWR_TYPE_INFO:
             // read in the identifier
-            String id = twr.string(4); // airport id (we don't care)
+            twr.skip(4); // airport id (we don't care)
             twr.skip(10); // effective date
             record.airportNumber = twr.string(11);
 
@@ -515,11 +532,53 @@ public class NasrTextDataSource implements DataSource {
         return new NavFix(id, id, lat, lng, refs);
     }
 
+    static void readAirways(Parser awy, Storage storage) throws IOException {
+        AirwayRecord record = new AirwayRecord();
+        while (!awy.exhausted()) {
+            if (awy.select(AWY_HEADERS) == AWY_TYPE_FIX) {
+                final String id = awy.string(5);
+                if (!id.equals(record.id) && record.id != null) {
+                    record.buildAndStore(storage);
+                }
+
+                record.id = id;
+                readAirwayPoint(awy, record);
+            }
+
+            awy.skipToLineEnd();
+        }
+
+        // store the last one read
+        record.buildAndStore(storage);
+    }
+
+    static void readAirwayPoint(Parser awy, AirwayRecord record) {
+        // TODO
+    }
+
     static class AirportFreqRecord {
         String airportNumber;
         LabeledFrequency freq;
         Airport.FrequencyType type;
 
         StringBuilder workspace = new StringBuilder(10 + 1 + 3);
+    }
+
+    static class AirwayRecord {
+        String id;
+        ArrayList<String> fixes = new ArrayList<>(8);
+
+        public void buildAndStore(Storage storage) {
+            List<AeroObject> objs =
+                Observable.from(fixes)
+                          .flatMap(storage::find)
+                          .toList()
+                          .toBlocking()
+                          .single();
+
+            if (objs.isEmpty()) return;
+
+            storage.put(new Airway(id, objs));
+        }
     }
 }

@@ -9,10 +9,17 @@ import java.util.List;
  */
 public class Airway extends BaseAeroObject {
 
+    /*
+     TODO: airways have a bunch more information:
+      - Minimum Enroute Altitude (MEA) at a point
+      - Non-standard changeover points between
+        navaids (IE: where you should change your radio)
+     */
+
     private final List<AeroObject> points;
 
     public Airway(String id, List<AeroObject> points) {
-        super(id, id, points.get(0).lat(), points.get(1).lng()); // I guess?
+        super(id, id, points.get(0).lat(), points.get(0).lng()); // I guess?
         this.points = points;
     }
 
