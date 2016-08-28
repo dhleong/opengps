@@ -16,7 +16,7 @@ public class Airway extends BaseAeroObject {
         navaids (IE: where you should change your radio)
      */
 
-    private final List<AeroObject> points;
+    final List<AeroObject> points;
 
     public Airway(String id, List<AeroObject> points) {
         super(id, id, points.get(0).lat(), points.get(0).lng()); // I guess?

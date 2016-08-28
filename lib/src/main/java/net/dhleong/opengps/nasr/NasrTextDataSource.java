@@ -103,6 +103,7 @@ public class NasrTextDataSource implements DataSource {
 
     @Override
     public Observable<Boolean> loadInto(Storage storage) {
+        final long start = System.currentTimeMillis();
         return ensureZipAvailable()
         .flatMap(file -> Observable.fromCallable(() -> { // indirection to handle IOEs
             storage.beginTransaction();
@@ -186,6 +187,10 @@ public class NasrTextDataSource implements DataSource {
         .doOnNext(any -> {
             storage.markTransactionSuccessful();
             storage.finishSource(this);
+
+            // TODO better logging
+            final long end = System.currentTimeMillis();
+            System.out.println("Loaded NASR data in " + (end - start) + "ms");
         })
         .doAfterTerminate(storage::endTransaction);
     }
@@ -552,7 +557,29 @@ public class NasrTextDataSource implements DataSource {
         record.buildAndStore(storage);
     }
 
-    static void readAirwayPoint(Parser awy, AirwayRecord record) {
+    static void readAirwayPoint(Parser awy, AirwayRecord record) throws IOException {
+        awy.skip(1); // awy type
+        awy.skip(5); // sequence number
+        awy.skip(30); // facility/fix name
+        awy.skip(19); // facility/fix type
+        awy.skip(15); // fix type - publication category
+        awy.skip(2); // facility/fix state PO code
+        awy.skip(2); // icao region (for fix)
+        awy.skip(28); // lat/lng
+        awy.skip(5); // minimum reception altitude (TODO probably should read?)
+        awy.skip(4); // navaid ID (we'll get it below)
+
+        Buffer b = awy.readFully(40);
+        long idStart = 1 + b.indexOf((byte) '*');
+        if (idStart > 0) {
+            b.skip(idStart);
+            long idEnd = b.indexOf((byte) '*');
+            if (idEnd > 0) {
+                String id = b.readUtf8(idEnd);
+                record.fixes.add(id);
+            }
+        }
+
         // TODO
     }
 
@@ -575,6 +602,8 @@ public class NasrTextDataSource implements DataSource {
                           .toList()
                           .toBlocking()
                           .single();
+
+            fixes.clear(); // reset
 
             if (objs.isEmpty()) return;
 

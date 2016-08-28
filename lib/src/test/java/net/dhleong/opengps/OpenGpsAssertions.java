@@ -11,6 +11,10 @@ public class OpenGpsAssertions extends Assertions {
         return new AirportAssert(obj);
     }
 
+    public static AirwayAssert assertThat(Airway obj) {
+        return new AirwayAssert(obj);
+    }
+
     public static NavaidAssert assertThat(Navaid obj) {
         return new NavaidAssert(obj);
     }

@@ -33,6 +33,7 @@ public class OpenGps {
                               return dataSource
                                   .loadInto(s)
                                   .flatMap(result -> {
+                                      // TODO better logging
                                       if (!result) {
                                           System.err.println("Failed to load " + dataSource);
                                           return Observable.empty();

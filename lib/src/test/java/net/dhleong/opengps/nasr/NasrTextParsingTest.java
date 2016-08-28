@@ -1,13 +1,13 @@
 package net.dhleong.opengps.nasr;
 
 import net.dhleong.opengps.Airport;
+import net.dhleong.opengps.Airway;
 import net.dhleong.opengps.LabeledFrequency;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.nasr.util.Parser;
 import net.dhleong.opengps.nasr.util.ParserTest;
 import net.dhleong.opengps.storage.InMemoryStorage;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -18,6 +18,7 @@ import rx.functions.Action1;
 
 import static net.dhleong.opengps.OpenGpsAssertions.assertThat;
 import static net.dhleong.opengps.test.Navaids.HFD;
+import static net.dhleong.opengps.test.Navaids.LGA;
 
 /**
  * @author dhleong
@@ -167,8 +168,20 @@ public class NasrTextParsingTest {
     }
 
     @Test
-    @Ignore("TODO")
     public void readAirway() throws IOException {
 
+        // pre-fill with some appropriate refs
+        InMemoryStorage storage = new InMemoryStorage();
+        storage.put(LGA);
+        storage.put(HFD);
+
+        // TODO fixes
+
+        NasrTextDataSource.readAirways(ParserTest.parser(AWY_V99), storage);
+
+        Airway airway = (Airway) storage.find("V99").toBlocking().first();
+        assertThat(airway)
+            .isNotNull()
+            .containsExactly(LGA, HFD);
     }
 }

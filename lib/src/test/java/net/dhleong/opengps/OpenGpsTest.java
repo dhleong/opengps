@@ -18,7 +18,7 @@ import static net.dhleong.opengps.OpenGpsAssertions.assertThat;
  */
 public class OpenGpsTest {
 
-    OpenGps gps = build();
+    static OpenGps gps = build();
 
     @Test
     public void test() {
