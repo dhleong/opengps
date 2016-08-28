@@ -55,6 +55,19 @@ public abstract class BaseAeroObject implements AeroObject {
     }
 
     @Override
+    public float bearingTo(AeroObject other) {
+        final double lat1 = lat();
+        final double lat2 = other.lat();
+        final double lng1 = lng();
+        final double lng2 = other.lng();
+
+        return (float) Math.toDegrees(Math.atan2(
+            lat2 - lat1,
+            lng2 - lng1
+        ));
+    }
+
+    @Override
     public float distanceTo(AeroObject other) {
         // haversine function, adapted from:
         //  http://www.movable-type.co.uk/scripts/latlong.html

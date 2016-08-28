@@ -13,4 +13,7 @@ public interface AeroObject {
 
     /** @return distance in nm */
     float distanceTo(AeroObject other);
+
+    /** @return bearing in degrees */
+    float bearingTo(AeroObject other);
 }

@@ -1,0 +1,92 @@
+package net.dhleong.opengps;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * @author dhleong
+ */
+public class GpsRoute {
+    public static class Step {
+
+        public enum Type {
+            BEARING_TO,
+            BEARING_FROM,
+            FIX
+        }
+
+        final Type type;
+        final AeroObject ref;
+        final float bearing;
+        final float distance;
+
+        Step(Type type, AeroObject ref, float bearing, float distance) {
+            this.type = type;
+            this.ref = ref;
+            this.bearing = bearing;
+            this.distance = distance;
+        }
+
+        @Override
+        public String toString() {
+            return "Step{" +
+                "type=" + type +
+                ", ref=" + ref +
+                ", bearing=" + bearing +
+                ", distance=" + distance +
+                '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Step)) return false;
+
+            Step step = (Step) o;
+
+            if (Float.compare(step.bearing, bearing) != 0) return false;
+            if (Float.compare(step.distance, distance) != 0) return false;
+            if (type != step.type) return false;
+            return ref.equals(step.ref);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = type.hashCode();
+            result = 31 * result + ref.hashCode();
+            result = 31 * result + (bearing != +0.0f ? Float.floatToIntBits(bearing) : 0);
+            result = 31 * result + (distance != +0.0f ? Float.floatToIntBits(distance) : 0);
+            return result;
+        }
+
+        public static Step fix(AeroObject obj) {
+            return new Step(Type.FIX, obj, 0, 0);
+        }
+
+    }
+
+    final List<Step> steps = new ArrayList<>();
+
+    public void add(AeroObject obj) {
+        if (!steps.isEmpty()) {
+            Step prev = steps.get(steps.size() - 1);
+            float bearing = prev.ref.bearingTo(obj);
+            float distance = prev.ref.distanceTo(obj);
+            float halfDistance = distance * 0.5f;
+            steps.add(new Step(Step.Type.BEARING_FROM, prev.ref, bearing, halfDistance));
+            steps.add(new Step(Step.Type.BEARING_TO, obj, bearing, halfDistance));
+        }
+
+        steps.add(Step.fix(obj));
+    }
+
+    public List<Step> steps() {
+        return Collections.unmodifiableList(steps);
+    }
+
+    public int size() {
+        return steps.size();
+    }
+}
