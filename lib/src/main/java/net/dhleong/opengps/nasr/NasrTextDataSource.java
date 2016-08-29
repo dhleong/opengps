@@ -267,9 +267,11 @@ public class NasrTextDataSource implements DataSource {
             apts.skip(1); // reference point determination method
             float elevation = apts.decimalNumber(7);
             apts.skip(1); // elevation determination method
+            float magVar = apts.readMagVar();
 
             result = new Airport(number, facilityType, id, name, lat, lng);
             result.elevation = elevation;
+            result.magVar = magVar;
         } else {
             result = null;
         }
@@ -426,15 +428,8 @@ public class NasrTextDataSource implements DataSource {
             nav.skip(7); // elevation
 
             // magnetic variation in degrees
-            Buffer magVarBuffer = nav.readFully(5);
-            magVarBuffer.skip(2);
-            float magVar = 0;
-            if (-1 == magVarBuffer.select(SLASH_OR_BLANK)) {
-                magVar = (float) magVarBuffer.readDecimalLong();
-                if (magVarBuffer.readByte() == 'W') {
-                    magVar *= -1;
-                }
-            }
+            nav.skip(2);
+            float magVar = nav.readMagVar();
 
             nav.skip(4); // magnetic variation epoch year
 

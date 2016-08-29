@@ -29,6 +29,11 @@ public class Parser {
         ByteString.encodeUtf8(".")
     );
 
+    static final Options IS_BLANK = Options.of(
+        ByteString.encodeUtf8(" ")
+    );
+
+
     static final double SECONDS_TO_DEGREES = 1. / 3600.;
 
     private final BufferedSource source;
@@ -262,6 +267,20 @@ public class Parser {
         }
 
         return result;
+    }
+
+    public float readMagVar() throws IOException {
+        final Buffer magVarBuffer = readFully(3);
+        if (-1 == magVarBuffer.select(IS_BLANK)) {
+            final float magVar = (float) magVarBuffer.readDecimalLong();
+            if (magVarBuffer.readByte() == 'W') {
+                return magVar * -1;
+            } else {
+                return magVar;
+            }
+        }
+
+        return 0;
     }
 
     static class IlsFrequencyWorkspace {
