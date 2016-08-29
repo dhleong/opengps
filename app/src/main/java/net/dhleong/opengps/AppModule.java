@@ -7,6 +7,8 @@ import net.dhleong.opengps.storage.InMemoryStorage;
 
 import java.io.File;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -26,7 +28,7 @@ public class AppModule {
         return appContext;
     }
 
-    @Provides OpenGps gps(Context context) {
+    @Provides @Singleton OpenGps gps(Context context) {
 
         final File nasrZipFile = new File(context.getCacheDir(), "nasr-data.zip");
 

@@ -63,6 +63,17 @@ public class OpenGps {
             });
     }
 
+    public Observable<Airway> airway(String airwayId) {
+        return find(airwayId)
+            .flatMap(obj -> {
+                if (obj instanceof Airway) {
+                    return Observable.just((Airway) obj);
+                } else {
+                    return Observable.empty();
+                }
+            });
+    }
+
     public Observable<Navaid> navaid(String navaidId) {
         return find(navaidId)
             .flatMap(obj -> {

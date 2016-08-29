@@ -11,6 +11,10 @@ buildscript {
     }
 }
 
+plugins {
+    id "me.tatarka.retrolambda" version "3.2.5"
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.neenbedankt.android-apt'
@@ -33,6 +37,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -40,6 +48,11 @@ dependencies {
 
     apt deps.butterknife.processor
     compile deps.butterknife.api
+
+    compile deps.rx.android
+    compile deps.rx.relay
+
+    compile deps.timber
 
     /*
      * Dagger Stuff
@@ -62,4 +75,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile deps.test.junit
+}
+
+retrolambda {
+    //noinspection GroovyAssignabilityCheck
+    javaVersion JavaVersion.VERSION_1_7
 }
