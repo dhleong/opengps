@@ -29,4 +29,5 @@ public class NavaidAssert extends AeroObjectAssert<NavaidAssert, Navaid> {
 
         return myself;
     }
+
 }

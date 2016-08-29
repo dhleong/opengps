@@ -7,6 +7,8 @@ import net.dhleong.opengps.AeroObject;
  */
 public abstract class BaseAeroObject implements AeroObject {
 
+    public float magVar;
+
     protected final String id;
     protected final String name;
     protected final double lat;
@@ -56,15 +58,17 @@ public abstract class BaseAeroObject implements AeroObject {
 
     @Override
     public float bearingTo(AeroObject other) {
-        final double lat1 = lat();
-        final double lat2 = other.lat();
-        final double lng1 = lng();
-        final double lng2 = other.lng();
+        final double lat1 = Math.toRadians(lat());
+        final double lat2 = Math.toRadians(other.lat());
+        final double lng1 = Math.toRadians(lng());
+        final double lng2 = Math.toRadians(other.lng());
 
-        return (float) Math.toDegrees(Math.atan2(
-            lat2 - lat1,
-            lng2 - lng1
-        ));
+        final double deltaLng = lng2 - lng1;
+        final double x = Math.cos(lat2) * Math.sin(deltaLng);
+        final double y = (Math.cos(lat1) * Math.sin(lat2))
+                - (Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLng));
+
+        return (float) Math.toDegrees(Math.atan2(x, y)) - magVar;
     }
 
     @Override

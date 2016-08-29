@@ -146,6 +146,7 @@ public class NasrTextParsingTest {
             .hasName("LA GUARDIA")
             .hasLat(40, 47, 1.376)
             .hasLng(-73, -52, -6.962)
+            .hasMagVar(-12)
         ;
 
     }

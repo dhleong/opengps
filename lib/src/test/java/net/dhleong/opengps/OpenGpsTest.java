@@ -59,7 +59,7 @@ public class OpenGpsTest {
             .containsFixesExactly(
                 Airports.LGA,
                 LGA, BDR, MAD, ORW, PVD,
-                Airports.PVD);
+                Airports.PVD).isNull();
     }
 
     static List<AeroObject> filterBy(List<AeroObject> obj, Func1<AeroObject, Boolean> filter) {

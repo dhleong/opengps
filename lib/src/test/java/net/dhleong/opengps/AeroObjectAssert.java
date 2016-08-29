@@ -1,6 +1,9 @@
 package net.dhleong.opengps;
 
+import net.dhleong.opengps.impl.BaseAeroObject;
+
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.data.Offset;
 
 import static net.dhleong.opengps.test.TestUtil.dmsToDegrees;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +56,7 @@ public abstract class AeroObjectAssert<S extends AbstractAssert<S, A>, A extends
 
         assertThat(actual.lng())
             .describedAs("AeroObject longitude")
-            .isStrictlyBetween(expected - 0.001, expected + 0.001);
+            .isCloseTo(expected, Offset.offset(0.001));
         return myself;
     }
 
@@ -62,5 +65,14 @@ public abstract class AeroObjectAssert<S extends AbstractAssert<S, A>, A extends
         return myself;
     }
 
+    public S hasMagVar(float expectedVariation) {
+        isNotNull();
+
+        assertThat(((BaseAeroObject) actual).magVar)
+            .describedAs("Magnetic variation")
+            .isCloseTo(expectedVariation, Offset.offset(.2f));
+
+        return myself;
+    }
 
 }

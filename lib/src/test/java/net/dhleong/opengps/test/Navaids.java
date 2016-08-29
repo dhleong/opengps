@@ -33,4 +33,7 @@ public class Navaids {
     public static final Navaid HFD = new Navaid(Navaid.Type.VORDME, "HFD", "HARTFORD",
         dmsToDegrees(41, 38, 27.997), dmsToDegrees(-72, -32, -50.705), 0);
 
+    static {
+        LGA.magVar = -12;
+    }
 }

@@ -424,7 +424,18 @@ public class NasrTextDataSource implements DataSource {
             nav.skip(25); // lng of tacan portion
 
             nav.skip(7); // elevation
-            nav.skip(5); // magnetic variation in degrees (probably important)
+
+            // magnetic variation in degrees
+            Buffer magVarBuffer = nav.readFully(5);
+            magVarBuffer.skip(2);
+            float magVar = 0;
+            if (-1 == magVarBuffer.select(SLASH_OR_BLANK)) {
+                magVar = (float) magVarBuffer.readDecimalLong();
+                if (magVarBuffer.readByte() == 'W') {
+                    magVar *= -1;
+                }
+            }
+
             nav.skip(4); // magnetic variation epoch year
 
             // facilities/features
@@ -455,6 +466,7 @@ public class NasrTextDataSource implements DataSource {
             }
 
             result = new Navaid(navType, id, name, lat, lng, freq);
+            result.magVar = magVar;
         }
 
         nav.skipToLineEnd();
