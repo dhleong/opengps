@@ -32,15 +32,22 @@ public class Airway extends BaseAeroObject {
      * @throws IllegalArgumentException if entry or exit are not on this Airway,
      *  or if `route` is null
      */
-    public void appendPointsBetween(AeroObject entry, AeroObject exit, List<AeroObject> route) {
+    public void appendPointsBetween(AeroObject entry, AeroObject exit, GpsRoute route) {
         final int startIndex = points.indexOf(entry);
         final int endIndex = points.indexOf(exit);
 
         final int direction = (endIndex - startIndex) / Math.abs(endIndex - startIndex);
 
         for (int i=startIndex; i != endIndex + direction; i += direction) {
-            route.add(points.get(i));
+            final AeroObject o = points.get(i);
+            if (!(o instanceof NavFix) || (route.flags & GpsRoute.FLAG_INCLUDE_FIXES) != 0) {
+                route.add(o);
+            }
         }
+    }
+
+    public boolean contains(AeroObject obj) {
+        return points.contains(obj);
     }
 
     /**
@@ -91,4 +98,5 @@ public class Airway extends BaseAeroObject {
             ", points=" + points +
             "} " + super.toString();
     }
+
 }

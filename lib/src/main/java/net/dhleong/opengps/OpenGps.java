@@ -5,6 +5,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
 /**
@@ -75,6 +76,56 @@ public class OpenGps {
 
     public Observable<AeroObject> anyNear(double lat, double lng, float range) {
         return withStorage(storage -> storage.findNear(lat, lng, range));
+    }
+
+    public Observable<GpsRoute> parseRoute(Airport start, Airport end, List<String> rawRouteParts) {
+        return parseRoute(start, end, rawRouteParts, GpsRoute.FLAGS_DEFAULT);
+    }
+    public Observable<GpsRoute> parseRoute(Airport start, Airport end, List<String> rawRouteParts, int flags) {
+        return withStorage(storage -> Observable.from(rawRouteParts)
+            .flatMap(storage::findFix)
+            .subscribeOn(Schedulers.io())
+        ).filter(obj -> obj != null)
+         .toList()
+         .observeOn(Schedulers.computation())
+         .map(objs -> {
+             final GpsRoute route = new GpsRoute(flags);
+             route.add(start);
+
+             System.out.println("FOUND: " + objs);
+             for (int i=0, len=objs.size(); i < len; i++) {
+                 final AeroObject obj = objs.get(i);
+                 final Airway awy = obj instanceof Airway
+                     ? ((Airway) obj)
+                     : null;
+                 if (awy == null) {
+                     // simple
+                     route.add(obj);
+                 } else {
+
+                     // airway points
+                     AeroObject prev = i == 0
+                         ? start
+                         : objs.get(i - 1);
+
+                     AeroObject next = i >= len - 1
+                         ? end
+                         : objs.get(i + 1);
+
+                     if (!awy.contains(prev)) {
+                         prev = awy.nearestTo(prev);
+                     }
+                     if (!awy.contains(next)) {
+                         next = awy.nearestTo(next);
+                     }
+
+                    awy.appendPointsBetween(prev, next, route);
+                 }
+             }
+
+             route.add(end);
+             return route;
+         });
     }
 
     private <T> Observable<T> withStorage(Func1<Storage, Observable<T>> func) {

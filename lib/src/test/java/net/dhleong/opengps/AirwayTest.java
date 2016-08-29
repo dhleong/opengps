@@ -27,7 +27,7 @@ public class AirwayTest {
     @Test
     public void appendBetween_fullForward() {
         ArrayList<AeroObject> list = new ArrayList<>();
-        airway.appendPointsBetween(LGA, PVD, list);
+        appendAirwayPoints(LGA, PVD, list);
 
         assertThat(list).containsExactly(LGA, BDR, MAD, ORW, PVD);
     }
@@ -35,7 +35,7 @@ public class AirwayTest {
     @Test
     public void appendBetween_fullBackward() {
         ArrayList<AeroObject> list = new ArrayList<>();
-        airway.appendPointsBetween(PVD, LGA, list);
+        appendAirwayPoints(PVD, LGA, list);
 
         assertThat(list).containsExactly(PVD, ORW, MAD, BDR, LGA);
     }
@@ -43,7 +43,7 @@ public class AirwayTest {
     @Test
     public void appendBetween_partialForward() {
         ArrayList<AeroObject> list = new ArrayList<>();
-        airway.appendPointsBetween(MAD, ORW, list);
+        appendAirwayPoints(MAD, ORW, list);
 
         assertThat(list).containsExactly(MAD, ORW);
     }
@@ -51,7 +51,7 @@ public class AirwayTest {
     @Test
     public void appendBetween_partialBackward() {
         ArrayList<AeroObject> list = new ArrayList<>();
-        airway.appendPointsBetween(ORW, MAD, list);
+        appendAirwayPoints(ORW, MAD, list);
 
         assertThat(list).containsExactly(ORW, MAD);
     }
@@ -77,4 +77,15 @@ public class AirwayTest {
         assertThat(airway.nearestTo(kbos))
             .isEqualTo(PVD);
     }
+
+    private void appendAirwayPoints(AeroObject from, AeroObject to, ArrayList<AeroObject> list) {
+        GpsRoute route = new GpsRoute();
+        airway.appendPointsBetween(from, to, route);
+        for (GpsRoute.Step s : route.steps()) {
+            if (s.type == GpsRoute.Step.Type.FIX) {
+                list.add(s.ref);
+            }
+        }
+    }
+
 }

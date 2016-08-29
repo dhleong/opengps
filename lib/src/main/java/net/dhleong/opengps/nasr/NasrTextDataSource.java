@@ -598,7 +598,7 @@ public class NasrTextDataSource implements DataSource {
         public void buildAndStore(Storage storage) {
             List<AeroObject> objs =
                 Observable.from(fixes)
-                          .flatMap(storage::find)
+                          .flatMap(storage::findFix)
                           .toList()
                           .toBlocking()
                           .single();

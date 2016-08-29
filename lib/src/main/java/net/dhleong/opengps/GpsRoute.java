@@ -67,16 +67,36 @@ public class GpsRoute {
 
     }
 
+    public static final int FLAG_INCLUDE_FIXES = 1;
+
+    public static final int FLAGS_DEFAULT = FLAG_INCLUDE_FIXES;
+
+    static final float MIN_BEARING_FROM_DISTANCE = 1f;
+
     final List<Step> steps = new ArrayList<>();
+    final int flags;
+
+    public GpsRoute() {
+        this(FLAG_INCLUDE_FIXES);
+    }
+
+    public GpsRoute(int flags) {
+        this.flags = flags;
+    }
 
     public void add(AeroObject obj) {
         if (!steps.isEmpty()) {
             Step prev = steps.get(steps.size() - 1);
             float bearing = prev.ref.bearingTo(obj);
             float distance = prev.ref.distanceTo(obj);
-            float halfDistance = distance * 0.5f;
-            steps.add(new Step(Step.Type.BEARING_FROM, prev.ref, bearing, halfDistance));
-            steps.add(new Step(Step.Type.BEARING_TO, obj, bearing, halfDistance));
+            if (distance > MIN_BEARING_FROM_DISTANCE) {
+                float halfDistance = distance * 0.5f;
+                steps.add(new Step(Step.Type.BEARING_FROM, prev.ref, bearing, halfDistance));
+                steps.add(new Step(Step.Type.BEARING_TO, obj, bearing, halfDistance));
+            } else {
+
+                steps.add(new Step(Step.Type.BEARING_TO, obj, bearing, distance));
+            }
         }
 
         steps.add(Step.fix(obj));
@@ -89,4 +109,12 @@ public class GpsRoute {
     public int size() {
         return steps.size();
     }
+
+    @Override
+    public String toString() {
+        return "GpsRoute{" +
+            "steps=" + steps +
+            '}';
+    }
+
 }

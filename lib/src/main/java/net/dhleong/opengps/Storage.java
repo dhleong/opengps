@@ -29,6 +29,12 @@ public interface Storage {
     Observable<AeroObject> find(String objectId);
 
     /**
+     * Convenience version of {@link #find(String)} that returns
+     *  the first matching non-Airport
+     */
+    Observable<AeroObject> findFix(String fixId);
+
+    /**
      * @param lat In degrees
      * @param lng In degrees
      * @param range Range in nautical miles

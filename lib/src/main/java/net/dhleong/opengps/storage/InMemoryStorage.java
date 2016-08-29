@@ -72,6 +72,10 @@ public class InMemoryStorage implements Storage {
 
     @Override
     public void put(Navaid navaid) {
+
+        // NB: drop "test facility"
+        if (navaid.type() == Navaid.Type.VOT) return;
+
         navaidsById.put(navaid.id(), navaid);
         allObjects.add(navaid);
     }
@@ -134,6 +138,11 @@ public class InMemoryStorage implements Storage {
         if (navaid != null) list.add(navaid);
         if (navFix != null) list.add(navFix);
         return Observable.from(list);
+    }
+
+    @Override
+    public Observable<AeroObject> findFix(String fixId) {
+        return find(fixId).filter(obj -> !(obj instanceof Airport)).take(1);
     }
 
     @Override
