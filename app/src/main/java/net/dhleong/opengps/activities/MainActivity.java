@@ -1,7 +1,9 @@
-package net.dhleong.opengps;
+package net.dhleong.opengps.activities;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import net.dhleong.opengps.R;
 
 public class MainActivity
     extends AppCompatActivity {

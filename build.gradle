@@ -16,8 +16,85 @@ allprojects {
     repositories {
         jcenter()
     }
+
+    ext {
+        androidBuildToolsVersion = '24.0.1'
+        androidTargetSdkVersion = 23
+    }
+
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext.vs = [
+        supportLib: '24.2.0',
+        playServices: '9.2.1',
+
+        assertjAndroid: '1.1.1',
+        butterknife: '8.2.1',
+        dagger: '2.6',
+        icepick: '3.2.0',
+        leakCanary: '1.4-beta2',
+        rxbinding: '0.4.0',
+]
+
+ext.deps = [
+    butterknife: [
+        api: "com.jakewharton:butterknife:${vs.butterknife}",
+        processor: "com.jakewharton:butterknife-compiler:${vs.butterknife}",
+    ],
+
+    dagger: [
+        api: "com.google.dagger:dagger:${vs.dagger}",
+        processor: "com.google.dagger:dagger-compiler:${vs.dagger}",
+    ],
+
+    okio: 'com.squareup.okio:okio:1.9.0',
+    prex: 'net.dhleong.prex:lib:0.2.1',
+    retrofit: "com.squareup.retrofit2:retrofit:${vs.retrofit}",
+    retrofitRxJava: "com.squareup.retrofit2:adapter-rxjava:${vs.retrofit}",
+    stetho: "com.facebook.stetho:stetho:1.2.0",
+    timber: 'com.jakewharton.timber:timber:4.3.0',
+
+    icepick: [
+        api: "frankiesardo:icepick:${vs.icepick}",
+        processor: "frankiesardo:icepick-processor:${vs.icepick}",
+    ],
+
+    leakCanary: [
+        core: "com.squareup.leakcanary:leakcanary-android:${vs.leakCanary}",
+        nop: "com.squareup.leakcanary:leakcanary-android-no-op:${vs.leakCanary}",
+    ],
+
+    rx: [
+        android: 'io.reactivex:rxandroid:1.2.1',
+        java: 'io.reactivex:rxjava:1.1.9',
+        prefs: 'com.f2prateek.rx.preferences:rx-preferences:1.0.2',
+        relay: 'com.jakewharton.rxrelay:rxrelay:1.1.0',
+        binding: [
+            core: "com.jakewharton.rxbinding:rxbinding:${vs.rxbinding}",
+            support: "com.jakewharton.rxbinding:rxbinding-support-v4:${vs.rxbinding}",
+            appcompat: "com.jakewharton.rxbinding:rxbinding-appcompat-v7:${vs.rxbinding}",
+        ]
+    ],
+
+    playServices: [
+        location: "com.google.android.gms:play-services-location:${vs.playServices}",
+    ],
+
+    support: [
+        annotations: "com.android.support:support-annotations:${vs.supportLib}",
+        appcompat: "com.android.support:appcompat-v7:${vs.supportLib}",
+        design: "com.android.support:design:${vs.supportLib}",
+        recyclerview: "com.android.support:recyclerview-v7:${vs.supportLib}",
+    ],
+
+    test: [
+        assertj: 'org.assertj:assertj-core:2.5.0',
+        junit: 'junit:junit:4.12',
+        mockito: 'org.mockito:mockito-core:1.10.19',
+        robolectric: 'org.robolectric:robolectric:3.0',
+    ],
+]

@@ -1,12 +1,28 @@
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.5.6'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "24.0.1"
+    compileSdkVersion androidTargetSdkVersion
+    buildToolsVersion androidBuildToolsVersion
+
     defaultConfig {
         applicationId "net.dhleong.opengps"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion androidTargetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -20,10 +36,30 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':lib')
+
+    apt deps.butterknife.processor
+    compile deps.butterknife.api
+
+    /*
+     * Dagger Stuff
+     */
+
+    apt deps.dagger.processor
+    compile deps.dagger.api
+    provided 'org.glassfish:javax.annotation:10.0-b28' // for dagger-generated classes
+
+    /*
+     * Support libs
+     */
+
+    compile deps.support.recyclerview
+    compile deps.support.annotations
+    compile deps.support.appcompat
+    compile deps.support.design
+
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    testCompile 'junit:junit:4.12'
+    testCompile deps.test.junit
 }
