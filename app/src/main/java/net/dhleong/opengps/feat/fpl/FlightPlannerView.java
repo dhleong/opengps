@@ -146,7 +146,7 @@ public class FlightPlannerView extends CoordinatorLayout {
 
         public void setRoute(GpsRoute route) {
             GpsRoute oldRoute = this.route;
-            this.route = route;
+            this.route = route.copy();
 
             DiffUtil.calculateDiff(new DiffCallback(oldRoute, route))
                     .dispatchUpdatesTo(this);

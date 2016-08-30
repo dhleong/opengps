@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author dhleong
  */
-public class GpsRoute {
+public final class GpsRoute {
 
     public static class Step {
 
@@ -101,6 +101,12 @@ public class GpsRoute {
         }
 
         steps.add(Step.fix(obj));
+    }
+
+    public GpsRoute copy() {
+        GpsRoute newRoute = new GpsRoute(flags);
+        newRoute.steps.addAll(steps);
+        return newRoute;
     }
 
     /** @deprecated Don't access the list directly; use {@link #step(int)} */
