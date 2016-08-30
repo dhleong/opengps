@@ -31,4 +31,22 @@ public class GpsRouteAssert extends AbstractAssert<GpsRouteAssert, GpsRoute> {
 
         return myself;
     }
+
+    public GpsRouteAssert hasSize(int expected) {
+        isNotNull();
+
+        assertThat(actual.steps)
+            .hasSize(expected);
+
+        return myself;
+    }
+
+    public GpsRouteAssert containsExactly(GpsRoute.Step... expectedSteps) {
+        isNotNull();
+
+        assertThat(actual.steps)
+            .containsExactly(expectedSteps);
+
+        return myself;
+    }
 }

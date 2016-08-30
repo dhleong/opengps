@@ -35,5 +35,10 @@ public class Navaids {
 
     static {
         LGA.magVar = -12;
+        BDR.magVar = -12;
+        MAD.magVar = -13;
+        ORW.magVar = -14;
+        PVD.magVar = -14;
+        HFD.magVar = -13;
     }
 }

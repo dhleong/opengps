@@ -66,6 +66,14 @@ public final class GpsRoute {
             return new Step(Type.FIX, obj, 0, 0);
         }
 
+        public static Step from(AeroObject obj, float bearing, float distance) {
+            return new Step(Type.BEARING_FROM, obj, bearing, distance);
+        }
+
+        public static Step to(AeroObject obj, float bearing, float distance) {
+            return new Step(Type.BEARING_TO, obj, bearing, distance);
+        }
+
     }
 
     public static final int FLAG_INCLUDE_FIXES = 1;
@@ -86,27 +94,65 @@ public final class GpsRoute {
     }
 
     public void add(AeroObject obj) {
+        add(obj, steps.size());
+    }
+
+    public void add(AeroObject obj, int index) {
         if (!steps.isEmpty()) {
-            Step prev = steps.get(steps.size() - 1);
+            Step prev = steps.get(index - 1);
             float bearing = prev.ref.bearingTo(obj);
             float distance = prev.ref.distanceTo(obj);
             if (distance > MIN_BEARING_FROM_DISTANCE) {
                 float halfDistance = distance * 0.5f;
-                steps.add(new Step(Step.Type.BEARING_FROM, prev.ref, bearing, halfDistance));
-                steps.add(new Step(Step.Type.BEARING_TO, obj, bearing, halfDistance));
+                steps.add(index++, new Step(Step.Type.BEARING_FROM, prev.ref, bearing, halfDistance));
+                steps.add(index++, new Step(Step.Type.BEARING_TO, obj, bearing, halfDistance));
             } else {
 
-                steps.add(new Step(Step.Type.BEARING_TO, obj, bearing, distance));
+                steps.add(index++, new Step(Step.Type.BEARING_TO, obj, bearing, distance));
             }
         }
 
-        steps.add(Step.fix(obj));
+        steps.add(index, Step.fix(obj));
     }
 
     public GpsRoute copy() {
         GpsRoute newRoute = new GpsRoute(flags);
         newRoute.steps.addAll(steps);
         return newRoute;
+    }
+
+    /**
+     * NB: You can ONLY remove {@link Step.Type#FIX}-type steps
+     */
+    public void removeStep(int step) {
+        final Step victim = steps.get(step);
+        if (victim.type != Step.Type.FIX) {
+            throw new IllegalArgumentException("Cannot directly remove " + victim);
+        }
+
+        int nextFixIdx = findFix(steps, step, 1);
+        int prevFixIdx = findFix(steps, step, -1);
+
+        if (nextFixIdx != -1) {
+            // dec FIRST so we don't remove the next fix
+            while (--nextFixIdx != step) {
+                steps.remove(nextFixIdx);
+            }
+        }
+
+        steps.remove(step);
+
+        if (prevFixIdx != -1) {
+            int prevFixStep = prevFixIdx + 1;
+            for (int i=0, limit=step - prevFixStep; i < limit; i++) {
+                steps.remove(prevFixStep);
+            }
+
+            // just remove and re-add
+            if (nextFixIdx != -1) {
+                add(steps.remove(prevFixStep).ref, prevFixStep);
+            }
+        }
     }
 
     /** @deprecated Don't access the list directly; use {@link #step(int)} */
@@ -128,6 +174,15 @@ public final class GpsRoute {
         return "GpsRoute{" +
             "steps=" + steps +
             '}';
+    }
+
+    static int findFix(List<Step> steps, int start, int increment) {
+        for (int i=start+increment, len=steps.size(); i < len && i >= 0; i += increment) {
+            if (steps.get(i).type == Step.Type.FIX) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 }
