@@ -1,10 +1,13 @@
 package net.dhleong.opengps;
 
+import net.dhleong.opengps.test.Navaids;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static net.dhleong.opengps.OpenGpsAssertions.assertThat;
 import static net.dhleong.opengps.test.Navaids.BDR;
 import static net.dhleong.opengps.test.Navaids.HFD;
 import static net.dhleong.opengps.test.Navaids.LGA;
@@ -12,7 +15,6 @@ import static net.dhleong.opengps.test.Navaids.MAD;
 import static net.dhleong.opengps.test.Navaids.ORW;
 import static net.dhleong.opengps.test.Navaids.PVD;
 import static net.dhleong.opengps.test.TestUtil.dmsToDegrees;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author dhleong
@@ -54,6 +56,25 @@ public class AirwayTest {
         appendAirwayPoints(ORW, MAD, list);
 
         assertThat(list).containsExactly(ORW, MAD);
+    }
+
+    @Test
+    public void appendBetween_existingEntry() {
+        GpsRoute route = new GpsRoute(0);
+        route.add(Navaids.BDR);
+        airway.appendPointsBetween(BDR, ORW, route);
+
+        assertThat(route).containsFixesExactly(BDR, MAD, ORW);
+    }
+
+    @Test
+    public void appendBetween_nop() {
+        GpsRoute route = new GpsRoute(0);
+        route.add(Navaids.BDR);
+        route.add(Navaids.MAD);
+        airway.appendPointsBetween(BDR, MAD, route, 0);
+
+        assertThat(route).containsFixesExactly(BDR, MAD);
     }
 
     @Test

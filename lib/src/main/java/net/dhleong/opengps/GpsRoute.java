@@ -94,11 +94,11 @@ public final class GpsRoute {
     }
 
     public void add(AeroObject obj) {
-        add(obj, steps.size());
+        add(steps.size(), obj);
     }
 
-    public void add(AeroObject obj, int index) {
-        if (!steps.isEmpty()) {
+    public void add(int index, AeroObject obj) {
+        if (!steps.isEmpty() && index > 0) {
             Step prev = steps.get(index - 1);
             float bearing = prev.ref.bearingTo(obj);
             float distance = prev.ref.distanceTo(obj);
@@ -119,6 +119,16 @@ public final class GpsRoute {
         GpsRoute newRoute = new GpsRoute(flags);
         newRoute.steps.addAll(steps);
         return newRoute;
+    }
+
+    public int indexOfWaypoint(AeroObject entry) {
+        for (int i=0, len=steps.size(); i < len; i++) {
+            if (steps.get(i).ref.equals(entry)) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     /**
@@ -150,7 +160,7 @@ public final class GpsRoute {
 
             // just remove and re-add
             if (nextFixIdx != -1) {
-                add(steps.remove(prevFixStep).ref, prevFixStep);
+                add(prevFixStep, steps.remove(prevFixStep).ref);
             }
         }
     }

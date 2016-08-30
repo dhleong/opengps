@@ -24,6 +24,10 @@ public class Airway extends BaseAeroObject {
         this.points = points;
     }
 
+    public void appendPointsBetween(AeroObject entry, AeroObject exit, GpsRoute route) {
+        appendPointsBetween(entry, exit, route, route.size());
+    }
+
     /**
      * Given valid entry and exit points ON THIS AIRWAY, append all intervening
      *  AeroObjects on this airway to the given route
@@ -33,16 +37,33 @@ public class Airway extends BaseAeroObject {
      * @throws IllegalArgumentException if entry or exit are not on this Airway,
      *  or if `route` is null
      */
-    public void appendPointsBetween(AeroObject entry, AeroObject exit, GpsRoute route) {
-        final int startIndex = points.indexOf(entry);
-        final int endIndex = points.indexOf(exit);
+    public void appendPointsBetween(AeroObject entry, AeroObject exit, GpsRoute route, int index) {
+        int startIndex = points.indexOf(entry);
+        int endIndex = points.indexOf(exit);
 
-        final int direction = (endIndex - startIndex) / Math.abs(endIndex - startIndex);
+        // TODO this ought to be simplified...
+        if ((index > 0 && route.step(index - 1).ref.equals(entry))
+                || (index == 0 && route.size() > 0 && route.step(0).ref.equals(entry))) {
+            startIndex++;
+        }
 
+        if (index < route.size() - 1 && route.step(index + 1).ref.equals(exit)) {
+            endIndex--;
+        }
+
+        int delta = endIndex - startIndex;
+        if (delta == 0) {
+            // nothing to do
+            return;
+        }
+
+        final int direction = delta / Math.abs(delta);
         for (int i=startIndex; i != endIndex + direction; i += direction) {
             final AeroObject o = points.get(i);
             if (!(o instanceof NavFix) || (route.flags & GpsRoute.FLAG_INCLUDE_FIXES) != 0) {
-                route.add(o);
+                int oldSize = route.size();
+                route.add(index, o);
+                index += route.size() - oldSize;
             }
         }
     }

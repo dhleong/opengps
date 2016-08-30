@@ -47,7 +47,8 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
                     DialogPrompter.prompt(context, AirwaySearchView.class, R.layout.feat_airway, airwayStart))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    result.airway.appendPointsBetween(result.entry, result.exit, route);
+                    final int index = route.indexOfWaypoint(result.entry);
+                    result.airway.appendPointsBetween(result.entry, result.exit, route, index);
                     view.setRoute(route);
                 })
         );
