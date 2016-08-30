@@ -3,14 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="@dimen/padding_large"
+    android:background="?attr/selectableItemBackground"
+    >
 
     <TextView
         android:id="@+id/id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_normal"
-        android:textSize="16sp"
+        android:textSize="20sp"
         tools:text="LGA"/>
 
     <TextView

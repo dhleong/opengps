@@ -23,14 +23,22 @@
                 android:maxLength="6"
                 android:inputType="textCapCharacters|textNoSuggestions"
                 android:hint="@string/waypoint_input_hint"
+                android:imeOptions="actionDone"
                 tools:text="BDR"
                 />
 
         </android.support.design.widget.TextInputLayout>
 
+        <!--<Button-->
+            <!--android:id="@+id/confirm"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--tools:text="Bridgeport APT"-->
+            <!--/>-->
+
         <Button
-            android:id="@+id/confirm"
-            android:layout_width="wrap_content"
+            android:id="@+id/quick_match"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="Bridgeport VOR"
             />
