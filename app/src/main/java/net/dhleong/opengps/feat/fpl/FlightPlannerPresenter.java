@@ -6,6 +6,7 @@ import net.dhleong.opengps.GpsRoute;
 import net.dhleong.opengps.OpenGps;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.feat.airway.AirwaySearchView;
+import net.dhleong.opengps.feat.waypoint.WaypointSearchView;
 import net.dhleong.opengps.ui.DialogPrompter;
 import net.dhleong.opengps.util.BasePresenter;
 
@@ -32,7 +33,8 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
         subscribe(
             view.addWaypointEvents()
                 .observeOn(Schedulers.io())
-                .flatMap(request -> gps.find("BDR").first()) // TODO real prompt
+                .flatMap(request ->
+                    DialogPrompter.prompt(context, WaypointSearchView.class, R.layout.feat_waypoint, null))
                 .doOnNext(route::add)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(any -> {
