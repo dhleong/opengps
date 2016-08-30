@@ -125,6 +125,13 @@ public class InMemoryStorage implements Storage {
     }
 
     @Override
+    public Observable<Airway> airwaysFor(AeroObject object) {
+        // lazy hacks
+        return Observable.from(airwaysById.values())
+            .filter(airway -> airway.contains(object));
+    }
+
+    @Override
     public Observable<AeroObject> find(String objectId) {
         final Airport apt = airportsById.get(objectId);
         final Airway awy = airwaysById.get(objectId);

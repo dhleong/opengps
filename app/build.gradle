@@ -51,6 +51,7 @@ dependencies {
 
     compile deps.rx.android
     compile deps.rx.relay
+    compile deps.rx.binding.core
 
     compile deps.timber
 

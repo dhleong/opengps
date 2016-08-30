@@ -26,6 +26,8 @@ public interface Storage {
     void markTransactionSuccessful();
     void endTransaction();
 
+    Observable<Airway> airwaysFor(AeroObject object);
+
     Observable<AeroObject> find(String objectId);
 
     /**

@@ -74,6 +74,10 @@ public class OpenGps {
             });
     }
 
+    public Observable<Airway> airwaysFor(AeroObject object) {
+        return withStorage(storage -> storage.airwaysFor(object));
+    }
+
     public Observable<Navaid> navaid(String navaidId) {
         return find(navaidId)
             .flatMap(obj -> {

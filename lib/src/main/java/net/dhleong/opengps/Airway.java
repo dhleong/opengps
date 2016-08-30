@@ -2,6 +2,7 @@ package net.dhleong.opengps;
 
 import net.dhleong.opengps.impl.BaseAeroObject;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,6 +49,10 @@ public class Airway extends BaseAeroObject {
 
     public boolean contains(AeroObject obj) {
         return points.contains(obj);
+    }
+
+    public List<AeroObject> getPoints() {
+        return Collections.unmodifiableList(points);
     }
 
     /**

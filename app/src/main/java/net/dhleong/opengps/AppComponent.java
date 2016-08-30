@@ -1,5 +1,6 @@
 package net.dhleong.opengps;
 
+import net.dhleong.opengps.feat.airway.AirwaySearchComponent;
 import net.dhleong.opengps.feat.fpl.FlightPlannerComponent;
 
 import dagger.Component;
@@ -11,4 +12,6 @@ import dagger.Component;
 public interface AppComponent {
 
     FlightPlannerComponent newFlightPlannerComponent();
+
+    AirwaySearchComponent newAirwaySearchComponent();
 }
