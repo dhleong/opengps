@@ -9,13 +9,17 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.jakewharton.rxrelay.PublishRelay;
 
 import net.dhleong.opengps.AeroObject;
 import net.dhleong.opengps.App;
 import net.dhleong.opengps.GpsRoute;
+import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.R;
+
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -68,37 +72,57 @@ public class FlightPlannerView extends CoordinatorLayout {
     }
 
     public Observable<AeroObject> loadAirwayEvents() {
-        return Observable.empty(); // TODO
+        return adapter.loadAirwayEvents;
     }
 
     static class Adapter extends RecyclerView.Adapter<FPLItemHolder> {
 
         private GpsRoute route;
         public PublishRelay<Void> addWaypointEvents = PublishRelay.create();
+        public PublishRelay<AeroObject> loadAirwayEvents = PublishRelay.create();
 
         @Inject Adapter() {}
 
         @Override
         public FPLItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            FPLItemHolder holder = new FPLItemHolder(
-                LayoutInflater.from(parent.getContext())
-                              .inflate(viewType, parent, false));
+            final View view = LayoutInflater.from(parent.getContext())
+                                            .inflate(viewType, parent, false);
 
-            if (viewType == R.layout.fpl_item_add) {
-                holder.itemView.setOnClickListener(v -> addWaypointEvents.call(null));
+            switch (viewType) {
+            default:
+            case R.layout.fpl_item_add:
+                view.setOnClickListener(v -> addWaypointEvents.call(null));
+                return new FPLItemHolder(view);
+
+            case R.layout.fpl_item_fix:
+                // TODO menu of options, actually
+                FixHolder holder = new FixHolder(view);
+                view.setOnClickListener(v ->
+                    loadAirwayEvents.call(
+                        route.step(holder.getAdapterPosition()).ref
+                    ));
+                return holder;
+
+            case R.layout.fpl_item_bearing_to:
+                return new BearingHolder(view);
             }
-
-            return holder;
         }
 
         @Override
         public void onBindViewHolder(FPLItemHolder holder, int position) {
-            // TODO
+            final GpsRoute route = this.route;
+            if (route != null && position < route.size()) {
+                holder.bind(route.step(position));
+            }
         }
 
         @Override
         public int getItemCount() {
-            return 1; // TODO
+            final GpsRoute route = this.route;
+            final int routeSize = route == null
+                ? 0
+                : route.size();
+            return routeSize + 1;
         }
 
         @Override
@@ -108,8 +132,16 @@ public class FlightPlannerView extends CoordinatorLayout {
                 return R.layout.fpl_item_add;
             }
 
-            // TODO step types
-            return R.layout.fpl_item_add;
+            GpsRoute.Step step = route.step(position);
+            switch (step.type) {
+            default:
+            case FIX: return R.layout.fpl_item_fix;
+
+            // TODO actual layouts:
+            case BEARING_TO:
+            case BEARING_FROM:
+                return R.layout.fpl_item_bearing_to;
+            }
         }
 
         public void setRoute(GpsRoute route) {
@@ -146,8 +178,8 @@ public class FlightPlannerView extends CoordinatorLayout {
 
             @Override
             public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                return oldRoute.steps().get(oldItemPosition)
-                               .equals(newRoute.steps().get(newItemPosition));
+                return oldRoute.step(oldItemPosition)
+                               .equals(newRoute.step(newItemPosition));
             }
         }
     }
@@ -155,6 +187,52 @@ public class FlightPlannerView extends CoordinatorLayout {
     static class FPLItemHolder extends RecyclerView.ViewHolder {
         public FPLItemHolder(View view) {
             super(view);
+        }
+
+        public void bind(GpsRoute.Step step) {
+            // nop
+        }
+    }
+
+    static class BearingHolder extends FPLItemHolder {
+
+        @BindView(R.id.bearing) TextView bearing;
+        @BindView(R.id.distance) TextView distance;
+
+        public BearingHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+
+        @Override
+        public void bind(GpsRoute.Step step) {
+            // FIXME degree symbol; remove @
+            bearing.setText(String.format(Locale.US, "%.1f", step.bearing));
+            distance.setText(String.format(Locale.US, " @ %.1f nm", step.distance));
+        }
+    }
+
+    static class FixHolder extends FPLItemHolder {
+
+        @BindView(R.id.id) TextView id;
+        @BindView(R.id.freq) TextView freq;
+
+        public FixHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+
+        @Override
+        public void bind(GpsRoute.Step step) {
+            // TODO name, ident morse, ...
+            id.setText(step.ref.id());
+
+            if (step.ref instanceof Navaid) {
+                freq.setText(String.format(Locale.US, "%.2f", ((Navaid) step.ref).freq()));
+                freq.setVisibility(VISIBLE);
+            } else {
+                freq.setVisibility(GONE);
+            }
         }
     }
 }

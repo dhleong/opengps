@@ -8,6 +8,7 @@ import java.util.List;
  * @author dhleong
  */
 public class GpsRoute {
+
     public static class Step {
 
         public enum Type {
@@ -16,10 +17,10 @@ public class GpsRoute {
             FIX
         }
 
-        final Type type;
-        final AeroObject ref;
-        final float bearing;
-        final float distance;
+        public final Type type;
+        public final AeroObject ref;
+        public final float bearing;
+        public final float distance;
 
         Step(Type type, AeroObject ref, float bearing, float distance) {
             this.type = type;
@@ -102,8 +103,14 @@ public class GpsRoute {
         steps.add(Step.fix(obj));
     }
 
+    /** @deprecated Don't access the list directly; use {@link #step(int)} */
+    @Deprecated
     public List<Step> steps() {
         return Collections.unmodifiableList(steps);
+    }
+
+    public Step step(int index) {
+        return steps.get(index);
     }
 
     public int size() {
