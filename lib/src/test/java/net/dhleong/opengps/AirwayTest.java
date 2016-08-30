@@ -3,6 +3,7 @@ package net.dhleong.opengps;
 import net.dhleong.opengps.test.Airports;
 import net.dhleong.opengps.test.Navaids;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -93,6 +94,12 @@ public class AirwayTest {
         airway.appendPointsBetween(BDR, MAD, route, 0);
 
         assertThat(route).containsFixesExactly(BDR, MAD);
+    }
+
+    @Test
+    @Ignore("TODO test appending to an index in reverse order")
+    public void appendBetween_indexed_reverse() {
+        // NB make sure it doesn't crash
     }
 
     @Test

@@ -41,16 +41,6 @@ public class Airway extends BaseAeroObject {
         int startIndex = points.indexOf(entry);
         int endIndex = points.indexOf(exit);
 
-        // TODO this ought to be simplified...
-        if ((index > 0 && route.step(index - 1).ref.equals(entry))
-                || (index == 0 && route.size() > 0 && route.step(0).ref.equals(entry))) {
-            startIndex++;
-        }
-
-        if (index < route.size() - 1 && route.step(index + 1).ref.equals(exit)) {
-            endIndex--;
-        }
-
         int delta = endIndex - startIndex;
         if (delta == 0) {
             // nothing to do
@@ -58,6 +48,22 @@ public class Airway extends BaseAeroObject {
         }
 
         final int direction = delta / Math.abs(delta);
+
+        // TODO this ought to be simplifiable...
+        if ((index > 0 && route.step(index - 1).ref.equals(entry))
+                || (index == 0 && route.size() > 0 && route.step(0).ref.equals(entry))) {
+            startIndex += direction;
+        }
+
+        if (index < route.size() - 1 && route.step(index + 1).ref.equals(exit)) {
+            endIndex -= direction;
+        }
+
+        if (endIndex == startIndex) {
+            // nothing to do
+            return;
+        }
+
         for (int i=startIndex; i != endIndex + direction; i += direction) {
             final AeroObject o = points.get(i);
             if (!(o instanceof NavFix) || (route.flags & GpsRoute.FLAG_INCLUDE_FIXES) != 0) {
