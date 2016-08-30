@@ -1,5 +1,6 @@
 package net.dhleong.opengps;
 
+import net.dhleong.opengps.test.Airports;
 import net.dhleong.opengps.test.Navaids;
 
 import org.junit.Test;
@@ -61,10 +62,27 @@ public class AirwayTest {
     @Test
     public void appendBetween_existingEntry() {
         GpsRoute route = new GpsRoute(0);
-        route.add(Navaids.BDR);
+        route.add(BDR);
         airway.appendPointsBetween(BDR, ORW, route);
 
-        assertThat(route).containsFixesExactly(BDR, MAD, ORW);
+        assertThat(route)
+            .hasSize(7)
+            .containsFixesExactly(BDR, MAD, ORW)
+        ;
+    }
+
+    @Test
+    public void appendBetween_existingEntry_indexed() {
+        GpsRoute route = new GpsRoute(0);
+        route.add(Airports.LGA);
+        route.add(BDR);
+
+        int bdrIndex = route.indexOfWaypoint(BDR);
+        airway.appendPointsBetween(BDR, ORW, route, bdrIndex + 1);
+
+        assertThat(route)
+            .hasSize(10)
+            .containsFixesExactly(Airports.LGA, BDR, MAD, ORW);
     }
 
     @Test

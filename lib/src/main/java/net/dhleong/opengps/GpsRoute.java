@@ -123,7 +123,8 @@ public final class GpsRoute {
 
     public int indexOfWaypoint(AeroObject entry) {
         for (int i=0, len=steps.size(); i < len; i++) {
-            if (steps.get(i).ref.equals(entry)) {
+            final Step step = steps.get(i);
+            if (step.type == Step.Type.FIX && step.ref.equals(entry)) {
                 return i;
             }
         }
