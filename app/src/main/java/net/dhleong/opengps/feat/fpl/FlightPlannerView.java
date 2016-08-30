@@ -120,6 +120,7 @@ public class FlightPlannerView extends CoordinatorLayout {
                 return holder;
 
             case R.layout.feat_fpl_item_bearing_to:
+            case R.layout.feat_fpl_item_bearing_from:
                 return new BearingHolder(view);
             }
         }
@@ -148,20 +149,17 @@ public class FlightPlannerView extends CoordinatorLayout {
                 return R.layout.feat_fpl_item_add;
             }
 
-            GpsRoute.Step step = route.step(position);
+            final GpsRoute.Step step = route.step(position);
             switch (step.type) {
             default:
             case FIX: return R.layout.feat_fpl_item_fix;
-
-            // TODO actual layouts:
-            case BEARING_TO:
-            case BEARING_FROM:
-                return R.layout.feat_fpl_item_bearing_to;
+            case BEARING_TO: return R.layout.feat_fpl_item_bearing_to;
+            case BEARING_FROM: return R.layout.feat_fpl_item_bearing_from;
             }
         }
 
         public void setRoute(GpsRoute route) {
-            GpsRoute oldRoute = this.route;
+            final GpsRoute oldRoute = this.route;
             this.route = route.copy();
 
             DiffUtil.calculateDiff(new DiffCallback(oldRoute, route))
@@ -179,7 +177,7 @@ public class FlightPlannerView extends CoordinatorLayout {
 
             @Override
             public int getOldListSize() {
-                GpsRoute oldRoute = this.oldRoute;
+                final GpsRoute oldRoute = this.oldRoute;
                 if (oldRoute == null) return 0;
                 return oldRoute.size();
             }

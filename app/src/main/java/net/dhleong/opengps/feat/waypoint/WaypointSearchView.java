@@ -17,6 +17,7 @@ import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.OpenGps;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.ui.DialogPrompter;
+import net.dhleong.opengps.ui.UiUtil;
 import net.dhleong.opengps.util.RxUtil;
 
 import java.util.List;
@@ -95,6 +96,8 @@ public class WaypointSearchView
                           bindQuickMatch();
                       }, Timber::e)
         );
+
+        UiUtil.requestKeyboard(input);
     }
 
     @Override

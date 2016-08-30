@@ -4,7 +4,8 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/padding_large"
+    android:paddingLeft="@dimen/padding_large"
+    android:paddingRight="@dimen/padding_large"
     android:background="?attr/selectableItemBackground"
     >
 

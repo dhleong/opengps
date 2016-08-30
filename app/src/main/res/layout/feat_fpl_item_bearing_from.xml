@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/padding_more">
+    android:paddingBottom="@dimen/padding_more">
 
     <TextView
         android:id="@+id/bearing"
