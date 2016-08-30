@@ -26,7 +26,7 @@ public class InMemoryStorage implements Storage {
     private static final double MIN_LAT = Math.toRadians(-90d);  // -PI/2
     private static final double MAX_LAT = Math.toRadians(90d);   //  PI/2
     private static final double MIN_LON = Math.toRadians(-180d); // -PI
-    private static final double MAX_LON = Math.toRadians(180d);  //  PIkk0j
+    private static final double MAX_LON = Math.toRadians(180d);  //  PI
 
     private static final int EXPECTED_AIRPORTS = 20480;
     private static final int EXPECTED_AIRWAYS = 4096;
@@ -128,7 +128,10 @@ public class InMemoryStorage implements Storage {
     @Override
     public Observable<Airway> airwaysFor(AeroObject object) {
         // lazy hacks
-        return Observable.from(airwaysById.values())
+//        return Observable.from(airwaysById.values())
+        return Observable.from(allObjects)
+            .filter(obj -> obj instanceof Airway)
+            .map(obj -> (Airway) obj)
             .filter(airway -> airway.contains(object));
     }
 
@@ -148,6 +151,9 @@ public class InMemoryStorage implements Storage {
         if (navaid != null) list.add(navaid);
         if (navFix != null) list.add(navFix);
         return Observable.from(list);
+
+//        return Observable.from(allObjects)
+//            .filter(obj -> obj.id().equals(objectId));
     }
 
     @Override

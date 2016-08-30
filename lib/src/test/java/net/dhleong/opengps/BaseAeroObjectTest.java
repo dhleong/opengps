@@ -14,6 +14,11 @@ public class BaseAeroObjectTest {
 
     @Test
     public void bearing() {
-        assertThat(LGA.bearingTo(BDR)).isCloseTo(68, Offset.offset(.2f));
+        assertThat(LGA.bearingTo(BDR)).isCloseTo(68, Offset.offset(.5f));
+    }
+
+    @Test
+    public void bearing_back() {
+        assertThat(BDR.bearingTo(LGA)).isCloseTo(248, Offset.offset(.5f));
     }
 }

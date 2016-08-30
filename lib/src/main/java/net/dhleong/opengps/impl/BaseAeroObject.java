@@ -64,11 +64,12 @@ public abstract class BaseAeroObject implements AeroObject {
         final double lng2 = Math.toRadians(other.lng());
 
         final double deltaLng = lng2 - lng1;
-        final double x = Math.cos(lat2) * Math.sin(deltaLng);
-        final double y = (Math.cos(lat1) * Math.sin(lat2))
+        final double y = Math.cos(lat2) * Math.sin(deltaLng);
+        final double x = (Math.cos(lat1) * Math.sin(lat2))
                 - (Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLng));
 
-        return (float) Math.toDegrees(Math.atan2(x, y)) - magVar;
+        final float raw = (float) Math.toDegrees(Math.atan2(y, x)) - magVar;
+        return (raw + 360) % 360;
     }
 
     @Override
