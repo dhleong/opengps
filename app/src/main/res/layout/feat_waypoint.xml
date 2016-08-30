@@ -2,20 +2,38 @@
 <net.dhleong.opengps.feat.waypoint.WaypointSearchView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="@dimen/padding_large"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
 
-        <EditText
-            android:id="@+id/input"
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="6"
+                android:inputType="textCapCharacters|textNoSuggestions"
+                android:hint="@string/waypoint_input_hint"
+                tools:text="BDR"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLength="6"
-            android:inputType="textCapCharacters|textNoSuggestions"
-            android:hint="@string/waypoint_input_hint"
+            tools:text="Bridgeport VOR"
             />
 
-    </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
 </net.dhleong.opengps.feat.waypoint.WaypointSearchView>
