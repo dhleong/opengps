@@ -10,8 +10,10 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Single;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * @author dhleong
@@ -47,6 +49,7 @@ public class DialogPrompter {
 
     public static <R, T, V extends PrompterView<T, R>> Observable<R> prompt(
             Context context, Class<V> viewClass, @LayoutRes int res, T input) {
+        Timber.v("prompt via %s <- %s...", viewClass, input);
         final View v = LayoutInflater.from(context).inflate(res, null);
         if (!viewClass.isAssignableFrom(v.getClass())) {
             throw new IllegalArgumentException("Inflated " + v + " but expected " + viewClass);
@@ -57,6 +60,8 @@ public class DialogPrompter {
     }
 
     public static <R, T, V extends PrompterView<T, R>> Observable<R> prompt(V view, T input) {
+
+        Timber.v("prompt via %s <- %s", view, input);
 
         if (!(view instanceof View)) {
             throw new IllegalArgumentException(view + " is not actually a View");
@@ -71,9 +76,12 @@ public class DialogPrompter {
                 .setOnDismissListener(any -> results.onCompleted())
                 .show();
 
-        view.result(input).subscribe(result -> {
-            results.onNext(result);
-            dialog.dismiss();
+        view.result(input)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(result -> {
+                Timber.v("Got %s; dismiss dialog", result);
+                results.onNext(result);
+                dialog.dismiss();
         }, error -> dialog.dismiss());
 
         return results;

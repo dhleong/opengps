@@ -23,6 +23,10 @@ import rx.subjects.BehaviorSubject;
  */
 public class OpenGps {
 
+    public interface OnErrorListener {
+        void onError(Throwable e);
+    }
+
     BehaviorSubject<Storage> storage = BehaviorSubject.create();
 
     private OpenGps(Builder builder) {
@@ -45,7 +49,14 @@ public class OpenGps {
                               return Observable.just(s);
                           }
                       })
-        ).last().subscribe(storage::onNext);
+        ).last().subscribe(storage::onNext, e -> {
+            if (builder.onError != null) {
+                builder.onError.onError(e);
+            } else {
+                System.err.println("ERR loading data");
+                e.printStackTrace();
+            }
+        });
     }
 
     public Observable<AeroObject> find(String objectId) {
@@ -150,6 +161,7 @@ public class OpenGps {
     public static class Builder {
         Storage storage;
         List<DataSource> sources = new ArrayList<>();
+        OnErrorListener onError;
 
         public Builder storage(Storage storage) {
             this.storage = storage;
@@ -158,6 +170,11 @@ public class OpenGps {
 
         public Builder addDataSource(DataSource dataSource) {
             sources.add(dataSource);
+            return this;
+        }
+
+        public Builder onError(OnErrorListener errorListener) {
+            this.onError = errorListener;
             return this;
         }
 

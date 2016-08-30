@@ -1,8 +1,7 @@
 package net.dhleong.opengps;
 
-import net.dhleong.opengps.feat.airway.AirwaySearchComponent;
-import net.dhleong.opengps.feat.fpl.FlightPlannerComponent;
-import net.dhleong.opengps.feat.waypoint.WaypointSearchComponent;
+import net.dhleong.opengps.core.ActivityComponent;
+import net.dhleong.opengps.core.ActivityModule;
 
 import javax.inject.Singleton;
 
@@ -15,7 +14,5 @@ import dagger.Component;
 @Component(modules = AppModule.class)
 public interface AppComponent {
 
-    AirwaySearchComponent newAirwaySearchComponent();
-    FlightPlannerComponent newFlightPlannerComponent();
-    WaypointSearchComponent newWaypointSearchComponent();
+    ActivityComponent newActivityComponent(ActivityModule module);
 }

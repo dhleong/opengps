@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * @author dhleong
@@ -53,7 +54,7 @@ public class FlightPlannerView extends CoordinatorLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.bind(this);
-        App.component(this)
+        App.activityComponent(this)
            .newFlightPlannerComponent()
            .inject(this);
 
@@ -61,6 +62,18 @@ public class FlightPlannerView extends CoordinatorLayout {
         recycler.setAdapter(adapter);
 
         presenter.onViewCreated(this);
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        presenter.onViewAttached(this);
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        presenter.onViewDetached(this);
     }
 
     public void setRoute(GpsRoute route) {
@@ -90,11 +103,14 @@ public class FlightPlannerView extends CoordinatorLayout {
 
             switch (viewType) {
             default:
-            case R.layout.fpl_item_add:
-                view.setOnClickListener(v -> addWaypointEvents.call(null));
+            case R.layout.feat_fpl_item_add:
+                view.setOnClickListener(v -> {
+                    Timber.v("Add new waypoint!");
+                    addWaypointEvents.call(null);
+                });
                 return new FPLItemHolder(view);
 
-            case R.layout.fpl_item_fix:
+            case R.layout.feat_fpl_item_fix:
                 // TODO menu of options, actually
                 FixHolder holder = new FixHolder(view);
                 view.setOnClickListener(v ->
@@ -103,7 +119,7 @@ public class FlightPlannerView extends CoordinatorLayout {
                     ));
                 return holder;
 
-            case R.layout.fpl_item_bearing_to:
+            case R.layout.feat_fpl_item_bearing_to:
                 return new BearingHolder(view);
             }
         }
@@ -129,18 +145,18 @@ public class FlightPlannerView extends CoordinatorLayout {
         public int getItemViewType(int position) {
             final GpsRoute route = this.route;
             if (route == null || position >= route.size()) {
-                return R.layout.fpl_item_add;
+                return R.layout.feat_fpl_item_add;
             }
 
             GpsRoute.Step step = route.step(position);
             switch (step.type) {
             default:
-            case FIX: return R.layout.fpl_item_fix;
+            case FIX: return R.layout.feat_fpl_item_fix;
 
             // TODO actual layouts:
             case BEARING_TO:
             case BEARING_FROM:
-                return R.layout.fpl_item_bearing_to;
+                return R.layout.feat_fpl_item_bearing_to;
             }
         }
 
@@ -163,6 +179,8 @@ public class FlightPlannerView extends CoordinatorLayout {
 
             @Override
             public int getOldListSize() {
+                GpsRoute oldRoute = this.oldRoute;
+                if (oldRoute == null) return 0;
                 return oldRoute.size();
             }
 

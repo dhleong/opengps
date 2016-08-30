@@ -4,15 +4,18 @@ import android.app.Application;
 import android.content.Context;
 import android.view.View;
 
-import java.lang.reflect.Method;
+import net.dhleong.opengps.core.ActivityComponent;
+
 import java.lang.reflect.Proxy;
 
-import dagger.Subcomponent;
+import timber.log.Timber;
 
 /**
  * @author dhleong
  */
 public class App extends Application {
+
+    public static final String ACTIVITY_COMPONENT = "net.dhleong.opengps.activity.COMPONENT_SERVICE";
 
     /** Enables stubbing for functional tests */
     public interface ComponentProvider {
@@ -28,6 +31,10 @@ public class App extends Application {
         super.onCreate();
 
         initComponent();
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
     }
 
     private void initComponent() {
@@ -46,25 +53,46 @@ public class App extends Application {
         return app.appComponent;
     }
 
+    @SuppressWarnings("ResourceType")
+    public static ActivityComponent activityComponent(Context context) {
+        final Object activityComponent = context.getSystemService(ACTIVITY_COMPONENT);
+        if (activityComponent instanceof ActivityComponent) {
+            return (ActivityComponent) activityComponent;
+        }
+
+        throw new RuntimeException("Provided context does not support ActivityModule");
+    }
+
     /** Convenience */
-    public static AppComponent component(View view) {
+    public static ActivityComponent activityComponent(View view) {
         if (view.isInEditMode()) {
             // this should never happen in production
-            return (AppComponent) Proxy.newProxyInstance(view.getClass().getClassLoader(),
-                new Class<?>[]{AppComponent.class},
-                (proxy, method, args) -> subComponentOrNil(method));
+            return (ActivityComponent) Proxy.newProxyInstance(view.getClass().getClassLoader(),
+                new Class<?>[]{ActivityComponent.class},
+                (proxy, method, args) -> null);
         }
-        return component(view.getContext());
+        return activityComponent(view.getContext());
     }
 
-    private static Object subComponentOrNil(Method method) {
-        Class<?> returns = method.getReturnType();
-        if (returns.isInterface() && returns.isAnnotationPresent(Subcomponent.class)) {
-            return Proxy.newProxyInstance(method.getDeclaringClass().getClassLoader(),
-                new Class<?>[]{returns},
-                (proxy, subCompMethod, args) -> subComponentOrNil(subCompMethod));
-        }
-
-        return null;
-    }
+//    /** Convenience */
+//    public static AppComponent component(View view) {
+//        if (view.isInEditMode()) {
+//            // this should never happen in production
+//            return (AppComponent) Proxy.newProxyInstance(view.getClass().getClassLoader(),
+//                new Class<?>[]{AppComponent.class},
+//                (proxy, method, args) -> subComponentOrNil(method));
+//        }
+//        return component(view.getContext());
+//    }
+//
+//    private static Object subComponentOrNil(Method method) {
+//        Class<?> returns = method.getReturnType();
+//        if (returns.isInterface() && returns.isAnnotationPresent(Subcomponent.class)) {
+//            return Proxy.newProxyInstance(method.getDeclaringClass().getClassLoader(),
+//                new Class<?>[]{returns},
+//                (proxy, subCompMethod, args) -> subComponentOrNil(subCompMethod));
+//        }
+//
+//        return null;
+//    }
 }

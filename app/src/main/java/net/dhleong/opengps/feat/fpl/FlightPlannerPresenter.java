@@ -13,7 +13,6 @@ import net.dhleong.opengps.util.BasePresenter;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -32,7 +31,6 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
     public void onViewAttached(FlightPlannerView view) {
         subscribe(
             view.addWaypointEvents()
-                .observeOn(Schedulers.io())
                 .flatMap(request ->
                     DialogPrompter.prompt(context, WaypointSearchView.class, R.layout.feat_waypoint, null))
                 .doOnNext(route::add)
@@ -45,7 +43,6 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
 
         subscribe(
             view.loadAirwayEvents()
-                .observeOn(Schedulers.io())
                 .flatMap(airwayStart ->
                     DialogPrompter.prompt(context, AirwaySearchView.class, R.layout.feat_airway, airwayStart))
                 .observeOn(AndroidSchedulers.mainThread())

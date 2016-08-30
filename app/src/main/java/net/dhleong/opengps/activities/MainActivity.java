@@ -1,12 +1,12 @@
 package net.dhleong.opengps.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import net.dhleong.opengps.R;
+import net.dhleong.opengps.core.ActivityModuleActivity;
 
 public class MainActivity
-    extends AppCompatActivity {
+    extends ActivityModuleActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

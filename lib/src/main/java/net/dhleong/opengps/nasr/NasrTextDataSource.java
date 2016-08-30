@@ -105,6 +105,7 @@ public class NasrTextDataSource implements DataSource {
     public Observable<Boolean> loadInto(Storage storage) {
         final long start = System.currentTimeMillis();
         return ensureZipAvailable()
+        .subscribeOn(Schedulers.io())
         .flatMap(file -> Observable.fromCallable(() -> { // indirection to handle IOEs
             storage.beginTransaction();
 
@@ -197,14 +198,20 @@ public class NasrTextDataSource implements DataSource {
 
     protected Observable<File> ensureZipAvailable() {
         return Observable.fromCallable(() -> {
-            if (zipFile.exists()) return zipFile;
+            if (zipFile.exists()) {
+                System.out.println("NASR zip already downloaded!");
+                return zipFile;
+            }
 
             // download
+            final long start = System.currentTimeMillis();
             BufferedSource in = Okio.buffer(Okio.source(new URL(zipUrl).openStream()));
             BufferedSink out = Okio.buffer(Okio.sink(zipFile));
             in.readAll(out);
             out.close();
             in.close();
+            final long end = System.currentTimeMillis();
+            System.out.println("Downloaded NASR data in " + (end - start) + "ms");
 
             return zipFile;
         });

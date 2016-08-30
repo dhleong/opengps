@@ -59,7 +59,7 @@ public class AirwaySearchView
         super.onFinishInflate();
         ButterKnife.bind(this);
 
-        App.component(getContext())
+        App.activityComponent(this)
            .newAirwaySearchComponent()
            .inject(this);
     }

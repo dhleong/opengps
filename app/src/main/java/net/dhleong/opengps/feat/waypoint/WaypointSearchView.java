@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Single;
+import timber.log.Timber;
 
 /**
  * @author dhleong
@@ -50,7 +51,7 @@ public class WaypointSearchView
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.bind(this);
-        App.component(this)
+        App.activityComponent(this)
            .newWaypointSearchComponent()
            .inject(this);
     }
@@ -61,8 +62,12 @@ public class WaypointSearchView
         // TODO for real
 //        return gps.find("BDR").first().toSingle();
         return RxView.clicks(confirm)
-                     .flatMap(any ->
-                         gps.find(input.getText().toString().trim().toUpperCase(Locale.US)).first()
-                     ).toSingle();
+                     .flatMap(any -> {
+                         String id = input.getText().toString().trim().toUpperCase(Locale.US);
+                         Timber.v("Search for `%s`", id);
+                         return gps.find(id)
+                                   .take(1)
+                                   .doOnNext(wpt -> Timber.v("Found %s", wpt));
+                     }).take(1).toSingle();
     }
 }
