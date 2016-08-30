@@ -39,7 +39,7 @@ public class WaypointSearchView
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.bind(this);
-        App.component(getContext())
+        App.component(this)
            .newWaypointSearchComponent()
            .inject(this);
     }

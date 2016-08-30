@@ -53,7 +53,7 @@ public class FlightPlannerView extends CoordinatorLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.bind(this);
-        App.component(getContext())
+        App.component(this)
            .newFlightPlannerComponent()
            .inject(this);
 

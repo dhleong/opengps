@@ -2,4 +2,5 @@
     <string name="app_name">opengps</string>
     <string name="airway_select">Select Airway</string>
     <string name="airway_select_exit">Select Exit</string>
+    <string name="waypoint_input_hint">Waypoint Identifier</string>
 </resources>
