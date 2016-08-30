@@ -8,6 +8,7 @@ import net.dhleong.opengps.LabeledFrequency;
 import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.Storage;
+import net.dhleong.opengps.impl.BaseAeroObject;
 import net.dhleong.opengps.nasr.util.Parser;
 
 import java.io.File;
@@ -621,7 +622,31 @@ public class NasrTextDataSource implements DataSource {
 
             if (objs.isEmpty()) return;
 
-            storage.put(new Airway(id, objs));
+            storage.put(new Airway(id, fillMagVar(objs)));
+        }
+
+        static List<AeroObject> fillMagVar(List<AeroObject> objs) {
+            float magVar = 0;
+            final int len = objs.size();
+            for (int i=0; i < len; i++) {
+                float thisMagVar = ((BaseAeroObject) objs.get(i)).magVar;
+                if (thisMagVar != 0) {
+                    magVar = thisMagVar;
+                    break;
+                }
+            }
+
+            for (int i=0; i < len; i++) {
+                final BaseAeroObject obj = (BaseAeroObject) objs.get(i);
+                if (obj.magVar != 0) {
+                    // carry the "closest" magvar around
+                    magVar = obj.magVar;
+                } else {
+                    obj.magVar = magVar;
+                }
+            }
+
+            return objs;
         }
     }
 }

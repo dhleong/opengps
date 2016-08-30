@@ -23,7 +23,7 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
     @Inject Context context;
     @Inject OpenGps gps;
 
-    GpsRoute route = new GpsRoute(0); // don't include fixes for now
+    GpsRoute route = new GpsRoute();
 
     @Inject FlightPlannerPresenter() {}
 

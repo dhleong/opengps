@@ -75,8 +75,9 @@ public abstract class BaseAeroObject implements AeroObject {
             theMagVar = ((BaseAeroObject) other).magVar;
         }
 
-        final float raw = (float) Math.toDegrees(Math.atan2(y, x)) - theMagVar;
-        return (raw + 360) % 360;
+        final float raw = (float) Math.toDegrees(Math.atan2(y, x));
+        final float normalized = (raw + 360) % 360;
+        return (360 + normalized - theMagVar) % 360;
     }
 
     @Override

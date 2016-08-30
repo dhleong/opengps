@@ -21,6 +21,7 @@ public class Airway extends BaseAeroObject {
 
     public Airway(String id, List<AeroObject> points) {
         super(id, id, points.get(0).lat(), points.get(0).lng()); // I guess?
+
         this.points = points;
     }
 

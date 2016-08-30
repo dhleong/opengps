@@ -235,8 +235,7 @@ public class FlightPlannerView extends CoordinatorLayout {
 
         @Override
         public void bind(GpsRoute.Step step) {
-            // FIXME degree symbol; remove @
-            bearing.setText(String.format(Locale.US, "%.1f", step.bearing));
+            bearing.setText(String.format(Locale.US, "%d\u00b0", Math.round(step.bearing)));
             distance.setText(String.format(Locale.US, " @ %.1f nm", step.distance));
         }
     }
