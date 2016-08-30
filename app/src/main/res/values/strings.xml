@@ -5,4 +5,7 @@
     <string name="waypoint_input_hint">Waypoint Identifier</string>
     <string name="fpl_add_waypoint">Add Waypoint</string>
     <string name="waypoint_multiple_title">Multiple Matches</string>
+    <string name="fpl_waypoint_remove">Remove</string>
+    <string name="fpl_waypoint_info">Info</string>
+    <string name="fpl_waypoint_load_airway">Load Airway</string>
 </resources>

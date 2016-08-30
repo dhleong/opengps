@@ -4,21 +4,26 @@ import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.jakewharton.rxrelay.PublishRelay;
 
 import net.dhleong.opengps.AeroObject;
+import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.App;
 import net.dhleong.opengps.GpsRoute;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.R;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -84,6 +89,10 @@ public class FlightPlannerView extends CoordinatorLayout {
         return adapter.addWaypointEvents;
     }
 
+    public Observable<AeroObject> removeWaypointEvents() {
+        return adapter.removeWaypointEvents;
+    }
+
     public Observable<AeroObject> loadAirwayEvents() {
         return adapter.loadAirwayEvents;
     }
@@ -92,6 +101,7 @@ public class FlightPlannerView extends CoordinatorLayout {
 
         private GpsRoute route;
         public PublishRelay<Void> addWaypointEvents = PublishRelay.create();
+        public PublishRelay<AeroObject> removeWaypointEvents = PublishRelay.create();
         public PublishRelay<AeroObject> loadAirwayEvents = PublishRelay.create();
 
         @Inject Adapter() {}
@@ -111,12 +121,15 @@ public class FlightPlannerView extends CoordinatorLayout {
                 return new FPLItemHolder(view);
 
             case R.layout.feat_fpl_item_fix:
-                // TODO menu of options, actually
                 FixHolder holder = new FixHolder(view);
-                view.setOnClickListener(v ->
-                    loadAirwayEvents.call(
-                        route.step(holder.getAdapterPosition()).ref
-                    ));
+                // show a menu of options:
+                view.setOnClickListener(v -> {
+                    ListPopupWindow win = popupFor(this,
+                        parent.getContext(),
+                        route.step(holder.getAdapterPosition()).ref);
+                    win.setAnchorView(v);
+                    win.show();
+                });
                 return holder;
 
             case R.layout.feat_fpl_item_bearing_to:
@@ -251,4 +264,29 @@ public class FlightPlannerView extends CoordinatorLayout {
             }
         }
     }
+
+    static ListPopupWindow popupFor(Adapter adapter, Context context, AeroObject ref) {
+        final List<CharSequence> items = new ArrayList<>(3);
+        items.add(context.getString(R.string.fpl_waypoint_remove));
+        items.add(context.getString(R.string.fpl_waypoint_info));
+        if (!(ref instanceof Airport)) {
+            items.add(context.getString(R.string.fpl_waypoint_load_airway));
+        }
+
+        ListPopupWindow win = new ListPopupWindow(context);
+        win.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_list_item_1,
+            items));
+        win.setOnItemClickListener((parent, view, position, id) -> {
+            switch (position) {
+            case 0: adapter.removeWaypointEvents.call(ref); break;
+            case 1: /* TODO waypoint info */ break;
+            case 2: adapter.loadAirwayEvents.call(ref); break;
+            }
+
+            win.dismiss();
+        });
+
+        return win;
+    }
+
 }
