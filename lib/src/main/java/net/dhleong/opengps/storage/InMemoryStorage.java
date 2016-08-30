@@ -88,6 +88,7 @@ public class InMemoryStorage implements Storage {
 
     @Override
     public void put(Airway airway) {
+        // FIXME there can be multiple airways with the same name! (see below)
         airwaysById.put(airway.id(), airway);
         allObjects.add(airway);
     }
@@ -137,6 +138,8 @@ public class InMemoryStorage implements Storage {
         final Airway awy = airwaysById.get(objectId);
         final NavFix navFix = fixesById.get(objectId);
         final Navaid navaid = navaidsById.get(objectId);
+
+        // FIXME there can be multiple airways with the same name! There's at least 2 V1s, for example
 
         // TODO would be nice to avoid allocating an array here:
         final List<AeroObject> list = new ArrayList<>(4);
