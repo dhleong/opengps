@@ -133,7 +133,6 @@ public class FlightPlannerView extends CoordinatorLayout {
                 return holder;
 
             case R.layout.feat_fpl_item_bearing_to:
-            case R.layout.feat_fpl_item_bearing_from:
                 return new BearingHolder(view);
             }
         }
@@ -167,7 +166,6 @@ public class FlightPlannerView extends CoordinatorLayout {
             default:
             case FIX: return R.layout.feat_fpl_item_fix;
             case BEARING_TO: return R.layout.feat_fpl_item_bearing_to;
-            case BEARING_FROM: return R.layout.feat_fpl_item_bearing_from;
             }
         }
 

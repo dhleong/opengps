@@ -13,7 +13,6 @@ public final class GpsRoute {
 
         public enum Type {
             BEARING_TO,
-            BEARING_FROM,
             FIX
         }
 
@@ -66,10 +65,6 @@ public final class GpsRoute {
             return new Step(Type.FIX, obj, 0, 0);
         }
 
-        public static Step from(AeroObject obj, float bearing, float distance) {
-            return new Step(Type.BEARING_FROM, obj, bearing, distance);
-        }
-
         public static Step to(AeroObject obj, float bearing, float distance) {
             return new Step(Type.BEARING_TO, obj, bearing, distance);
         }
@@ -79,8 +74,6 @@ public final class GpsRoute {
     public static final int FLAG_INCLUDE_FIXES = 1;
 
     public static final int FLAGS_DEFAULT = FLAG_INCLUDE_FIXES;
-
-    static final float MIN_BEARING_FROM_DISTANCE = 1f;
 
     final List<Step> steps = new ArrayList<>();
     final int flags;
@@ -102,14 +95,8 @@ public final class GpsRoute {
             Step prev = steps.get(index - 1);
             float bearing = prev.ref.bearingTo(obj);
             float distance = prev.ref.distanceTo(obj);
-            if (distance > MIN_BEARING_FROM_DISTANCE) {
-                float halfDistance = distance * 0.5f;
-                steps.add(index++, new Step(Step.Type.BEARING_FROM, prev.ref, bearing, halfDistance));
-                steps.add(index++, new Step(Step.Type.BEARING_TO, obj, bearing, halfDistance));
-            } else {
 
-                steps.add(index++, new Step(Step.Type.BEARING_TO, obj, bearing, distance));
-            }
+            steps.add(index++, new Step(Step.Type.BEARING_TO, obj, bearing, distance));
         }
 
         steps.add(index, Step.fix(obj));

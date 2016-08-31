@@ -41,7 +41,7 @@ public class GpsRouteTest {
         GpsRoute route = new GpsRoute();
         route.add(BDR);
         route.add(MAD);
-        assertThat(route).hasSize(4);
+        assertThat(route).hasSize(3);
 
         route.removeStep(0);
         assertThat(route)
@@ -54,9 +54,9 @@ public class GpsRouteTest {
         GpsRoute route = new GpsRoute();
         route.add(BDR);
         route.add(MAD);
-        assertThat(route).hasSize(4);
+        assertThat(route).hasSize(3);
 
-        route.removeStep(3);
+        route.removeStep(2);
         assertThat(route)
             .hasSize(1)
             .containsFixesExactly(BDR);
@@ -97,35 +97,16 @@ public class GpsRouteTest {
         route.add(BDR);
         route.add(MAD);
         route.add(ORW);
-        assertThat(route).hasSize(7);
-
-        route.removeStep(3);
-        assertThat(route)
-            .hasSize(4)
-            .containsFixesExactly(BDR, ORW)
-            .containsExactly(
-                GpsRoute.Step.fix(BDR),
-                GpsRoute.Step.from(BDR, 76.522995f, 27.997545f),
-                GpsRoute.Step.to(ORW, 76.522995f, 27.997545f),
-                GpsRoute.Step.fix(ORW)
-            );
-    }
-
-    @Test
-    public void remove_middle_oneNearby() {
-        GpsRoute route = new GpsRoute();
-        route.add(Airports.LGA);
-        route.add(Navaids.LGA);
-        route.add(MAD);
-        assertThat(route).hasSize(6);
+        assertThat(route).hasSize(5);
 
         route.removeStep(2);
         assertThat(route)
+            .hasSize(3)
+            .containsFixesExactly(BDR, ORW)
             .containsExactly(
-                GpsRoute.Step.fix(Airports.LGA),
-                GpsRoute.Step.from(Airports.LGA, 58.534706f, 31.204514f),
-                GpsRoute.Step.to(MAD, 58.534706f, 31.204514f),
-                GpsRoute.Step.fix(MAD)
+                GpsRoute.Step.fix(BDR),
+                GpsRoute.Step.to(ORW, 77f, 56f),
+                GpsRoute.Step.fix(ORW)
             );
     }
 

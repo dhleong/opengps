@@ -67,7 +67,7 @@ public class AirwayTest {
         airway.appendPointsBetween(BDR, ORW, route);
 
         assertThat(route)
-            .hasSize(7)
+            .hasSize(5)
             .containsFixesExactly(BDR, MAD, ORW)
         ;
     }
@@ -82,7 +82,7 @@ public class AirwayTest {
         airway.appendPointsBetween(BDR, ORW, route, bdrIndex + 1);
 
         assertThat(route)
-            .hasSize(10)
+            .hasSize(7)
             .containsFixesExactly(Airports.LGA, BDR, MAD, ORW);
     }
 
