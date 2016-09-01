@@ -67,8 +67,17 @@ public class AirwayTest {
         airway.appendPointsBetween(BDR, ORW, route);
 
         assertThat(route)
-            .hasSize(5)
+            .hasSize(7)
             .containsFixesExactly(BDR, MAD, ORW)
+            .containsExactly(
+                GpsRoute.Step.fix(BDR),
+                GpsRoute.Step.to(MAD, 77, 22),
+                GpsRoute.Step.airway(airway),
+                GpsRoute.Step.fix(MAD),
+                GpsRoute.Step.to(ORW, 78, 34),
+                GpsRoute.Step.fix(ORW),
+                GpsRoute.Step.airwayExit(airway)
+            )
         ;
     }
 
@@ -82,8 +91,20 @@ public class AirwayTest {
         airway.appendPointsBetween(BDR, ORW, route, bdrIndex + 1);
 
         assertThat(route)
-            .hasSize(7)
-            .containsFixesExactly(Airports.LGA, BDR, MAD, ORW);
+            .hasSize(9)
+            .containsFixesExactly(Airports.LGA, BDR, MAD, ORW)
+            .containsExactly(
+                GpsRoute.Step.fix(Airports.LGA),
+                GpsRoute.Step.to(BDR, 68, 41),
+                GpsRoute.Step.fix(BDR),
+                GpsRoute.Step.to(MAD, 77, 22),
+                GpsRoute.Step.airway(airway),
+                GpsRoute.Step.fix(MAD),
+                GpsRoute.Step.to(ORW, 78, 34),
+                GpsRoute.Step.fix(ORW),
+                GpsRoute.Step.airwayExit(airway)
+            )
+        ;
     }
 
     @Test

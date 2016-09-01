@@ -65,6 +65,7 @@ public class Airway extends BaseAeroObject {
             return;
         }
 
+        int airwayEntry = index + 1;
         for (int i=startIndex; i != endIndex + direction; i += direction) {
             final AeroObject o = points.get(i);
             if (!(o instanceof NavFix) || (route.flags & GpsRoute.FLAG_INCLUDE_FIXES) != 0) {
@@ -73,6 +74,10 @@ public class Airway extends BaseAeroObject {
                 index += route.size() - oldSize;
             }
         }
+
+        // add airway an exit
+        route.add(airwayEntry, this);
+        route.add(index + 1, GpsRoute.Step.airwayExit(this));
     }
 
     public boolean contains(AeroObject obj) {

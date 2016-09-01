@@ -8,4 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="OpenGps" />
+    <style name="OpenGps.FPL" />
+    <style name="OpenGps.FPL.Airway">
+        <item name="android:textSize">18sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>

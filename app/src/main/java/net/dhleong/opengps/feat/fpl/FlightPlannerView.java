@@ -134,6 +134,10 @@ public class FlightPlannerView extends CoordinatorLayout {
 
             case R.layout.feat_fpl_item_bearing_to:
                 return new BearingHolder(view);
+
+            case R.layout.feat_fpl_item_airway:
+            case R.layout.feat_fpl_item_airway_exit:
+                return new AirwayHolder(view);
             }
         }
 
@@ -166,6 +170,8 @@ public class FlightPlannerView extends CoordinatorLayout {
             default:
             case FIX: return R.layout.feat_fpl_item_fix;
             case BEARING_TO: return R.layout.feat_fpl_item_bearing_to;
+            case AIRWAY: return R.layout.feat_fpl_item_airway;
+            case AIRWAY_EXIT: return R.layout.feat_fpl_item_airway_exit;
             }
         }
 
@@ -209,6 +215,7 @@ public class FlightPlannerView extends CoordinatorLayout {
                                .equals(newRoute.step(newItemPosition));
             }
         }
+
     }
 
     static class FPLItemHolder extends RecyclerView.ViewHolder {
@@ -259,6 +266,20 @@ public class FlightPlannerView extends CoordinatorLayout {
             } else {
                 freq.setVisibility(GONE);
             }
+        }
+    }
+
+    static class AirwayHolder extends FPLItemHolder {
+        TextView label;
+
+        public AirwayHolder(View view) {
+            super(view);
+            label = (TextView) view;
+        }
+
+        @Override
+        public void bind(GpsRoute.Step step) {
+            label.setText(step.ref.name());
         }
     }
 

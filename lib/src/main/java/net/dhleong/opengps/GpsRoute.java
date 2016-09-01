@@ -12,6 +12,8 @@ public final class GpsRoute {
     public static class Step {
 
         public enum Type {
+            AIRWAY,
+            AIRWAY_EXIT,
             BEARING_TO,
             FIX
         }
@@ -61,6 +63,14 @@ public final class GpsRoute {
             return result;
         }
 
+        public static Step airway(AeroObject obj) {
+            return new Step(Type.AIRWAY, obj, 0, 0);
+        }
+
+        public static Step airwayExit(Airway airway) {
+            return new Step(Type.AIRWAY_EXIT, airway, 0, 0);
+        }
+
         public static Step fix(AeroObject obj) {
             return new Step(Type.FIX, obj, 0, 0);
         }
@@ -91,6 +101,11 @@ public final class GpsRoute {
     }
 
     public void add(int index, AeroObject obj) {
+        if (obj instanceof Airway) {
+            steps.add(index, Step.airway(obj));
+            return;
+        }
+
         if (!steps.isEmpty() && index > 0) {
             Step prev = steps.get(index - 1);
             float bearing = prev.ref.bearingTo(obj);
@@ -100,6 +115,10 @@ public final class GpsRoute {
         }
 
         steps.add(index, Step.fix(obj));
+    }
+
+    void add(int index, Step step) {
+        steps.add(index, step);
     }
 
     public GpsRoute copy() {
