@@ -107,7 +107,13 @@ public final class GpsRoute {
         }
 
         if (!steps.isEmpty() && index > 0) {
-            Step prev = steps.get(index - 1);
+            // find the previous FIX (usually right behind, but not always)
+            int prevIndex = index - 1;
+            Step prev;
+            do {
+                prev = steps.get(prevIndex--);
+            } while (prev.type != Step.Type.FIX && prevIndex >= 0);
+
             float bearing = prev.ref.bearingTo(obj);
             float distance = prev.ref.distanceTo(obj);
 

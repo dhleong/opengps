@@ -54,6 +54,8 @@ public class Airway extends BaseAeroObject {
         if ((index > 0 && route.step(index - 1).ref.equals(entry))
                 || (index == 0 && route.size() > 0 && route.step(0).ref.equals(entry))) {
             startIndex += direction;
+
+            if (index == 0) index++;
         }
 
         if (index < route.size() - 1 && route.step(index + 1).ref.equals(exit)) {
@@ -63,6 +65,11 @@ public class Airway extends BaseAeroObject {
         if (endIndex == startIndex) {
             // nothing to do
             return;
+        }
+
+        if (index < route.size() && route.step(index).type == GpsRoute.Step.Type.AIRWAY_EXIT) {
+            // airway to fix to airway
+            index++;
         }
 
         int airwayEntry = index + 1;

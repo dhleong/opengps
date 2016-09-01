@@ -124,6 +124,37 @@ public class AirwayTest {
     }
 
     @Test
+    public void appendAfterAppend() {
+
+        Airway airway2 = new Airway("V1", Arrays.asList(
+            // NB: should also be fixes, but... shouldn't matter
+            MAD, ORW, PVD
+        ));
+
+        GpsRoute route = new GpsRoute(0);
+        route.add(LGA);
+        airway.appendPointsBetween(LGA, MAD, route, 0);
+        airway2.appendPointsBetween(MAD, PVD, route, route.indexOfWaypoint(MAD) + 1);
+
+        assertThat(route)
+            .containsExactly(
+                GpsRoute.Step.fix(LGA),
+                GpsRoute.Step.to(BDR, 68, 41),
+                GpsRoute.Step.airway(airway),
+                GpsRoute.Step.fix(BDR),
+                GpsRoute.Step.to(MAD, 77, 22),
+                GpsRoute.Step.fix(MAD),
+                GpsRoute.Step.airwayExit(airway),
+                GpsRoute.Step.to(ORW, 78, 34),
+                GpsRoute.Step.airway(airway2),
+                GpsRoute.Step.fix(ORW),
+                GpsRoute.Step.to(PVD, 82, 27),
+                GpsRoute.Step.fix(PVD),
+                GpsRoute.Step.airwayExit(airway2)
+            );
+    }
+
+    @Test
     public void nearest_start() {
         Airport klga = new Airport("", Airport.Type.AIRPORT, "KLGA", "LAGUARDIA",
             dmsToDegrees(40, 46, 38.1), dmsToDegrees(-73, -52, -21.4));
