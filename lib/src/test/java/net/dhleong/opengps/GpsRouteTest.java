@@ -126,4 +126,29 @@ public class GpsRouteTest {
                 GpsRoute.Step.fix(Airports.LGA)
             );
     }
+
+
+    @Test
+    public void removeAfter_only() {
+        GpsRoute route = new GpsRoute();
+        route.add(BDR);
+        assertThat(route).hasSize(1);
+
+        route.removeStepsAfter(0);
+        assertThat(route).hasSize(1);
+    }
+
+    @Test
+    public void removeAfter_first() {
+        GpsRoute route = new GpsRoute();
+        route.add(BDR);
+        route.add(MAD);
+        assertThat(route).hasSize(3);
+
+        route.removeStepsAfter(0);
+        assertThat(route)
+            .hasSize(1)
+            .containsFixesExactly(BDR);
+    }
+
 }

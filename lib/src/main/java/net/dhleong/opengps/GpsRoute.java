@@ -178,6 +178,19 @@ public final class GpsRoute {
         }
     }
 
+    public void removeStepsAfter(int step) {
+        final Step victim = steps.get(step);
+        if (victim.type != Step.Type.FIX) {
+            throw new IllegalArgumentException("Cannot directly remove " + victim);
+        }
+
+        // this is a simpler, special case of the above
+        for (int i=0, count=steps.size() - step -1; i < count; i++) {
+            steps.remove(step + 1);
+        }
+    }
+
+
     /** @deprecated Don't access the list directly; use {@link #step(int)} */
     @Deprecated
     public List<Step> steps() {

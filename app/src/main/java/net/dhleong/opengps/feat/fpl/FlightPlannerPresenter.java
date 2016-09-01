@@ -2,7 +2,10 @@ package net.dhleong.opengps.feat.fpl;
 
 import android.content.Context;
 
+import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.GpsRoute;
+import net.dhleong.opengps.NavFix;
+import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.OpenGps;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.feat.airway.AirwaySearchView;
@@ -49,6 +52,31 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
                     route.removeStep(idx);
                     Timber.v("Route = %s", route);
                     view.setRoute(route);
+                })
+        );
+
+        subscribe(
+            view.removeAfterWaypointEvents()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(waypoint -> {
+                    int idx = route.indexOfWaypoint(waypoint);
+                    route.removeStepsAfter(idx);
+                    Timber.v("Route = %s", route);
+                    view.setRoute(route);
+                })
+        );
+
+        subscribe(
+            view.viewWaypointEvents()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(waypoint -> {
+                    if (waypoint instanceof Airport) {
+                        Timber.v("TODO view airport");
+                    } else if (waypoint instanceof Navaid) {
+                        Timber.v("TODO view navaid");
+                    } else if (waypoint instanceof NavFix) {
+                        Timber.v("TODO view navfix");
+                    }
                 })
         );
 

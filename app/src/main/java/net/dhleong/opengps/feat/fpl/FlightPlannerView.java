@@ -93,8 +93,16 @@ public class FlightPlannerView extends CoordinatorLayout {
         return adapter.removeWaypointEvents;
     }
 
+    public Observable<AeroObject> removeAfterWaypointEvents() {
+        return adapter.removeAfterWaypointEvents;
+    }
+
     public Observable<AeroObject> loadAirwayEvents() {
         return adapter.loadAirwayEvents;
+    }
+
+    public Observable<AeroObject> viewWaypointEvents() {
+        return adapter.viewWaypointEvents;
     }
 
     static class Adapter extends RecyclerView.Adapter<FPLItemHolder> {
@@ -102,6 +110,8 @@ public class FlightPlannerView extends CoordinatorLayout {
         private GpsRoute route;
         public PublishRelay<Void> addWaypointEvents = PublishRelay.create();
         public PublishRelay<AeroObject> removeWaypointEvents = PublishRelay.create();
+        public PublishRelay<AeroObject> removeAfterWaypointEvents = PublishRelay.create();
+        public PublishRelay<AeroObject> viewWaypointEvents = PublishRelay.create();
         public PublishRelay<AeroObject> loadAirwayEvents = PublishRelay.create();
 
         @Inject Adapter() {}
@@ -286,6 +296,7 @@ public class FlightPlannerView extends CoordinatorLayout {
     static ListPopupWindow popupFor(Adapter adapter, Context context, AeroObject ref) {
         final List<CharSequence> items = new ArrayList<>(3);
         items.add(context.getString(R.string.fpl_waypoint_remove));
+        items.add(context.getString(R.string.fpl_waypoint_remove_after));
         items.add(context.getString(R.string.fpl_waypoint_info));
         if (!(ref instanceof Airport)) {
             items.add(context.getString(R.string.fpl_waypoint_load_airway));
@@ -297,8 +308,9 @@ public class FlightPlannerView extends CoordinatorLayout {
         win.setOnItemClickListener((parent, view, position, id) -> {
             switch (position) {
             case 0: adapter.removeWaypointEvents.call(ref); break;
-            case 1: /* TODO waypoint info */ break;
-            case 2: adapter.loadAirwayEvents.call(ref); break;
+            case 1: adapter.removeAfterWaypointEvents.call(ref); break;
+            case 2: adapter.viewWaypointEvents.call(ref); break;
+            case 3: adapter.loadAirwayEvents.call(ref); break;
             }
 
             win.dismiss();
