@@ -248,7 +248,7 @@ public class NasrTextDataSource implements DataSource {
         return Okio.source(zip.getInputStream(entry));
     }
 
-    static Airport readAirport(Parser apts) throws IOException {
+        static Airport readAirport(Parser apts) throws IOException {
         final int headerType = apts.select(APT_HEADERS);
         final Airport result;
         if (headerType == APT_TYPE_MAIN) {
@@ -277,7 +277,14 @@ public class NasrTextDataSource implements DataSource {
             apts.skip(1); // elevation determination method
             float magVar = apts.readMagVar();
 
-            result = new Airport(number, facilityType, id, name, lat, lng);
+            // NB: next field starts at 590; icao is at 1211
+            apts.skip(1211 - 590);
+            final String icao = apts.string(7);
+            final String actualId = icao.isEmpty()
+                ? id
+                : icao;
+
+            result = new Airport(number, facilityType, actualId, name, lat, lng);
             result.elevation = elevation;
             result.magVar = magVar;
         } else {

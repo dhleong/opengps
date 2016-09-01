@@ -94,7 +94,7 @@ public class NasrTextParsingTest {
         assertThat(NasrTextDataSource.readAirport(ParserTest.parser(LAGUARDIA)))
             .isType(Airport.Type.AIRPORT)
             .hasNumber("15794.*A")
-            .hasId("LGA")
+            .hasId("KLGA")
             .hasName("LAGUARDIA")
             .hasLat(40, 46, 38.1)
             .hasLng(-73, -52, -21.4)

@@ -29,22 +29,22 @@ public class OpenGpsTest {
 
     @Test
     public void test() {
-        Airport laguardia = gps.airport("LGA").toBlocking().single();
+        Airport laguardia = gps.airport("KLGA").toBlocking().single();
         assertThat(laguardia)
             .isNotNull()
-            .hasId("LGA")
+            .hasId("KLGA")
             .hasNavFrequencies(5);
     }
 
     @Test
     public void near() {
         List<AeroObject> objects =
-            gps.anyNear(40.77, -73.86, 41)
+            gps.anyNear(40.77, -73.86, 21)
                .toList()
                .toBlocking()
                .single();
 
-        assertThat(filterBy(objects, obj -> "LGA".equals(obj.id())))
+        assertThat(filterBy(objects, obj -> obj.id().endsWith("LGA")))
             .hasSize(2); // VOR and airport
     }
 
