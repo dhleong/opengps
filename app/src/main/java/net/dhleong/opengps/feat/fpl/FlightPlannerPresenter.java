@@ -12,11 +12,13 @@ import net.dhleong.opengps.feat.airport.AirportInfoView;
 import net.dhleong.opengps.feat.airway.AirwaySearchView;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchView;
 import net.dhleong.opengps.ui.DialogPrompter;
+import net.dhleong.opengps.ui.NavigateUtil;
 import net.dhleong.opengps.util.BasePresenter;
 
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import timber.log.Timber;
 
 /**
@@ -27,7 +29,8 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
     @Inject Context context;
     @Inject OpenGps gps;
 
-    GpsRoute route = new GpsRoute();
+    @Inject GpsRoute route;
+    @Inject Action1<GpsRoute> routeUpdater;
 
     @Inject FlightPlannerPresenter() {}
 
@@ -40,8 +43,7 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
                 .doOnNext(route::add)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(any -> {
-                    Timber.v("Route = %s", route);
-                    view.setRoute(route);
+                    updateRoute(view, route);
                 })
         );
 
@@ -51,8 +53,7 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
                 .subscribe(waypoint -> {
                     int idx = route.indexOfWaypoint(waypoint);
                     route.removeStep(idx);
-                    Timber.v("Route = %s", route);
-                    view.setRoute(route);
+                    updateRoute(view, route);
                 })
         );
 
@@ -62,8 +63,7 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
                 .subscribe(waypoint -> {
                     int idx = route.indexOfWaypoint(waypoint);
                     route.removeStepsAfter(idx);
-                    Timber.v("Route = %s", route);
-                    view.setRoute(route);
+                    updateRoute(view, route);
                 })
         );
 
@@ -73,7 +73,9 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
                 .subscribe(waypoint -> {
                     if (waypoint instanceof Airport) {
                         Timber.v("view airport");
-                        DialogPrompter.prompt(context, AirportInfoView.class,
+//                        DialogPrompter.prompt(context, AirportInfoView.class,
+//                            R.layout.feat_airport, (Airport) waypoint);
+                        NavigateUtil.into(context, AirportInfoView.class,
                             R.layout.feat_airport, (Airport) waypoint);
                     } else if (waypoint instanceof Navaid) {
                         Timber.v("TODO view navaid");
@@ -92,8 +94,14 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
                     // NB: index + 1 because we're inserting *after* the waypoint
                     final int index = route.indexOfWaypoint(result.entry);
                     result.airway.appendPointsBetween(result.entry, result.exit, route, index + 1);
-                    view.setRoute(route);
+                    updateRoute(view, route);
                 })
         );
+    }
+
+    void updateRoute(FlightPlannerView view, GpsRoute route) {
+        Timber.v("Route <- %s", route);
+        view.setRoute(route);
+        routeUpdater.call(route);
     }
 }

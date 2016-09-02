@@ -6,7 +6,10 @@ import android.widget.EditText;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
 import rx.Observable;
+import rx.Observer;
+import rx.functions.Action1;
 import rx.functions.Func1;
+import timber.log.Timber;
 
 /**
  * @author dhleong
@@ -32,4 +35,22 @@ public class RxUtil {
                          .map(toVoid());
     }
 
+    /**
+     * Convience to create an Observer when all you care
+     *  about is the onNext
+     */
+    public static <T> Observer<T> observer(Action1<T> action) {
+        return new Observer<T>() {
+            @Override public void onCompleted() { }
+
+            @Override public void onError(Throwable e) {
+                Timber.e(e, "Unexpected error in observer for %s", action);
+            }
+
+            @Override
+            public void onNext(T t) {
+                action.call(t);
+            }
+        };
+    }
 }
