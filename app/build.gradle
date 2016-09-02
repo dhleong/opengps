@@ -57,6 +57,7 @@ dependencies {
 
     compile deps.gson
     compile deps.okhttp
+    compile deps.pdfViewer
     compile deps.retrofit
     compile deps.retrofitGson
     compile deps.retrofitRxJava

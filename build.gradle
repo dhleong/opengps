@@ -56,6 +56,7 @@ ext.deps = [
     gson: 'com.google.code.gson:gson:2.7',
     okhttp: "com.squareup.okhttp3:okhttp:${vs.okhttp}",
     okio: 'com.squareup.okio:okio:1.9.0',
+    pdfViewer: 'com.github.barteksc:android-pdf-viewer:2.0.3',
     prex: 'net.dhleong.prex:lib:0.2.1',
     retrofit: "com.squareup.retrofit2:retrofit:${vs.retrofit}",
     retrofitGson: "com.squareup.retrofit2:converter-gson:${vs.retrofit}",

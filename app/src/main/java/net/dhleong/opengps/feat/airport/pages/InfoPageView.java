@@ -6,11 +6,15 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding.view.RxView;
+
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.feat.airport.AirportPageView;
+import net.dhleong.opengps.feat.chartDisplay.ChartDisplayView;
 import net.dhleong.opengps.feat.charts.ChartPickerView;
 import net.dhleong.opengps.ui.DialogPrompter;
+import net.dhleong.opengps.ui.NavigateUtil;
 
 import java.util.Locale;
 
@@ -53,8 +57,14 @@ public class InfoPageView
         id.setText(airport.id());
         elevation.setText(String.format(Locale.US, "%.0f ft", airport.elevation));
 
-        chartsButton.setOnClickListener(v ->
-            DialogPrompter.prompt(getContext(), ChartPickerView.class,
-                R.layout.feat_charts, airport));
+        RxView.clicks(chartsButton)
+              .flatMap(any ->
+                  DialogPrompter.prompt(getContext(), ChartPickerView.class,
+                      R.layout.feat_charts, airport))
+              .subscribe(chartInfo -> {
+                  NavigateUtil.into(getContext(),
+                      ChartDisplayView.class, R.layout.feat_chart_display,
+                      chartInfo);
+              });
     }
 }

@@ -28,8 +28,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class NetworkModule {
 
-    /** 5 mb */
-    private static final long CACHE_SIZE = 5 * 1024 * 1024;
+    /** 50 mb (for pdfs) */
+    private static final long CACHE_SIZE = 50 * 1024 * 1024;
 
     @Provides @Singleton OkHttpClient okhttp(@Root Context context) {
         return new OkHttpClient.Builder()
@@ -38,6 +38,11 @@ public class NetworkModule {
                 final Request originalRequest = chain.request();
                 if (!"GET".equals(originalRequest.method())) {
                     // don't cache if not @GET
+                    return chain.proceed(originalRequest);
+                }
+
+                if (originalRequest.cacheControl().maxAgeSeconds() > TimeUnit.DAYS.toSeconds(7)) {
+                    // NB: already has a cache time longer than 7 days
                     return chain.proceed(originalRequest);
                 }
 
