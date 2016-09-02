@@ -1,14 +1,16 @@
 package net.dhleong.opengps.feat.airport;
 
 import android.content.Context;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.R;
@@ -58,8 +60,20 @@ public class AirportInfoView
     }
 
     static class AirportInfoTabsAdapter extends PagerAdapter {
+        static class Page {
+            public final @LayoutRes int layout;
+            public final @StringRes int title;
 
-        static final int PAGE_FREQUENCIES = 0;
+            Page(final @LayoutRes int layout, final @StringRes int title) {
+                this.layout = layout;
+                this.title = title;
+            }
+        }
+
+        static final Page[] PAGES = {
+            new Page(R.layout.feat_airport_page_info, R.string.airport_page_info),
+            new Page(R.layout.feat_airport_page_freqs, R.string.airport_page_frequencies),
+        };
 
         private final Context context;
         private final Airport airport;
@@ -76,29 +90,24 @@ public class AirportInfoView
 
         @Override
         public int getCount() {
-            return 1;
+            return PAGES.length;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-            default:
-            case PAGE_FREQUENCIES:
-                return context.getString(R.string.airport_page_frequencies);
-            }
+            return context.getString(
+                PAGES[position].title
+            );
         }
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            switch (position) {
-            default:
-            case PAGE_FREQUENCIES:
-                // TODO
-                TextView v = new TextView(context);
-                v.setText(airport.frequencies(Airport.FrequencyType.GROUND).toString());
-                container.addView(v);
-                return v;
-            }
+            int layout = PAGES[position].layout;
+            AirportPageView view = (AirportPageView) LayoutInflater.from(container.getContext())
+                                                                   .inflate(layout, container, false);
+            view.bind(airport);
+            container.addView((View) view);
+            return view;
         }
 
         @Override

@@ -1,13 +1,19 @@
 <resources>
     <string name="app_name">opengps</string>
+
     <string name="airway_select">Select Airway</string>
     <string name="airway_select_exit">Select Exit</string>
-    <string name="waypoint_input_hint">Waypoint Identifier</string>
+
     <string name="fpl_add_waypoint">Add Waypoint</string>
-    <string name="waypoint_multiple_title">Multiple Matches</string>
     <string name="fpl_waypoint_remove">Remove</string>
     <string name="fpl_waypoint_info">Info</string>
     <string name="fpl_waypoint_load_airway">Load Airway</string>
     <string name="fpl_waypoint_remove_after">Remove all after</string>
-    <string name="airport_page_frequencies">Frequencies</string>
+
+    <string name="waypoint_input_hint">Waypoint Identifier</string>
+    <string name="waypoint_multiple_title">Multiple Matches</string>
+
+    <string name="airport_page_info">INFO</string>
+    <string name="airport_page_frequencies">FREQUENCIES</string>
+    <string name="airport_page_info_elevation">ELEVATION</string>
 </resources>
