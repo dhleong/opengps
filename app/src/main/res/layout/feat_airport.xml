@@ -5,21 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <android.support.design.widget.TabLayout
+            android:id="@+id/pager_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" />
+    </android.support.design.widget.AppBarLayout>
+
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.v4.view.PagerTabStrip
-            android:id="@+id/pager_tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:background="?attr/colorPrimary"
-            android:textColor="#fff"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp" />
-
-    </android.support.v4.view.ViewPager>
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        />
 
 </net.dhleong.opengps.feat.airport.AirportInfoView>

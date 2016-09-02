@@ -4,8 +4,8 @@ import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -29,7 +29,7 @@ public class AirportInfoView
         implements DialogPrompter.PrompterView<Airport, Void> {
 
     @BindView(R.id.pager) ViewPager pager;
-    @BindView(R.id.pager_tabs) PagerTabStrip strip;
+    @BindView(R.id.pager_tabs) TabLayout tabs;
 
     public AirportInfoView(Context context) {
         super(context);
@@ -54,6 +54,7 @@ public class AirportInfoView
     public Single<Void> result(Airport input) {
         // bind UI
         pager.setAdapter(new AirportInfoTabsAdapter(getContext(), input));
+        tabs.setupWithViewPager(pager);
 
         // just something that never auto-completes
         return PublishSubject.<Void>create().toSingle();

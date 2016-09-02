@@ -47,6 +47,6 @@ public class InfoPageView
     public void bind(Airport airport) {
         name.setText(airport.name()); // TODO title case?
         id.setText(airport.id());
-        elevation.setText(String.format(Locale.US, "%.3f ft", airport.elevation));
+        elevation.setText(String.format(Locale.US, "%.0f ft", airport.elevation));
     }
 }
