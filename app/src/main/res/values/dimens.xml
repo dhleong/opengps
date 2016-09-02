@@ -9,4 +9,7 @@
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_huge">24dp</dimen>
     <dimen name="padding_massive">32dp</dimen>
+
+    <dimen name="morse_dot_radius">1.5dp</dimen>
+    <dimen name="morse_dash_length">6dp</dimen>
 </resources>

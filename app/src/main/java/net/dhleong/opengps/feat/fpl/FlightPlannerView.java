@@ -22,6 +22,7 @@ import net.dhleong.opengps.GpsRoute;
 import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.R;
+import net.dhleong.opengps.views.MorseView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -261,6 +262,7 @@ public class FlightPlannerView extends CoordinatorLayout {
         @BindView(R.id.id) TextView id;
         @BindView(R.id.name) TextView name;
         @BindView(R.id.freq) TextView freq;
+        @BindView(R.id.ident) MorseView ident;
 
         public FixHolder(View view) {
             super(view);
@@ -273,17 +275,20 @@ public class FlightPlannerView extends CoordinatorLayout {
             id.setText(step.ref.id());
 
             if (step.ref instanceof NavFix) {
-                name.setVisibility(INVISIBLE);
+                name.setText(null);
             } else {
                 name.setText(step.ref.name());
-                name.setVisibility(VISIBLE);
             }
 
             if (step.ref instanceof Navaid) {
                 freq.setText(String.format(Locale.US, "%.2f", ((Navaid) step.ref).freq()));
+                ident.setText(step.ref.id());
+
                 freq.setVisibility(VISIBLE);
+                ident.setVisibility(VISIBLE);
             } else {
                 freq.setVisibility(GONE);
+                ident.setVisibility(GONE);
             }
         }
     }

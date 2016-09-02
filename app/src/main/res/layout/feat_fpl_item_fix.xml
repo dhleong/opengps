@@ -33,4 +33,13 @@
         android:textSize="16sp"
         tools:text="118.7"/>
 
+    <net.dhleong.opengps.views.MorseView
+        android:id="@+id/ident"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingStart="@dimen/padding_normal"
+        android:paddingEnd="0dp"
+        />
+
 </LinearLayout>
