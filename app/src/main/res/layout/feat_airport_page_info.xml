@@ -46,6 +46,13 @@
         tools:text="57ft"
         />
 
-    <!-- TODO charts link? -->
+    <Button
+        android:id="@+id/charts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_huge"
+        android:layout_gravity="center_horizontal"
+        android:padding="@dimen/padding_huge"
+        android:text="@string/airport_page_info_charts"/>
 
 </net.dhleong.opengps.feat.airport.pages.InfoPageView>

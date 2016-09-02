@@ -29,15 +29,17 @@ task clean(type: Delete) {
 }
 
 ext.vs = [
-        supportLib: '24.2.0',
-        playServices: '9.2.1',
+    supportLib: '24.2.0',
+    playServices: '9.2.1',
 
-        assertjAndroid: '1.1.1',
-        butterknife: '8.2.1',
-        dagger: '2.6',
-        icepick: '3.2.0',
-        leakCanary: '1.4-beta2',
-        rxbinding: '0.4.0',
+    assertjAndroid: '1.1.1',
+    butterknife: '8.2.1',
+    dagger: '2.6',
+    icepick: '3.2.0',
+    leakCanary: '1.4-beta2',
+    okhttp: '3.4.1',
+    retrofit: '2.0.2',
+    rxbinding: '0.4.0',
 ]
 
 ext.deps = [
@@ -51,9 +53,12 @@ ext.deps = [
         processor: "com.google.dagger:dagger-compiler:${vs.dagger}",
     ],
 
+    gson: 'com.google.code.gson:gson:2.7',
+    okhttp: "com.squareup.okhttp3:okhttp:${vs.okhttp}",
     okio: 'com.squareup.okio:okio:1.9.0',
     prex: 'net.dhleong.prex:lib:0.2.1',
     retrofit: "com.squareup.retrofit2:retrofit:${vs.retrofit}",
+    retrofitGson: "com.squareup.retrofit2:converter-gson:${vs.retrofit}",
     retrofitRxJava: "com.squareup.retrofit2:adapter-rxjava:${vs.retrofit}",
     stetho: "com.facebook.stetho:stetho:1.2.0",
     timber: 'com.jakewharton.timber:timber:4.3.0',

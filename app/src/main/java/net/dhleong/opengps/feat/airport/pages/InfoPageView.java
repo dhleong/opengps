@@ -2,12 +2,15 @@ package net.dhleong.opengps.feat.airport.pages;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.feat.airport.AirportPageView;
+import net.dhleong.opengps.feat.charts.ChartPickerView;
+import net.dhleong.opengps.ui.DialogPrompter;
 
 import java.util.Locale;
 
@@ -24,6 +27,7 @@ public class InfoPageView
     @BindView(R.id.name) TextView name;
     @BindView(R.id.id) TextView id;
     @BindView(R.id.elevation) TextView elevation;
+    @BindView(R.id.charts) View chartsButton;
 
     public InfoPageView(Context context) {
         super(context);
@@ -48,5 +52,9 @@ public class InfoPageView
         name.setText(airport.name()); // TODO title case?
         id.setText(airport.id());
         elevation.setText(String.format(Locale.US, "%.0f ft", airport.elevation));
+
+        chartsButton.setOnClickListener(v ->
+            DialogPrompter.prompt(getContext(), ChartPickerView.class,
+                R.layout.feat_charts, airport));
     }
 }

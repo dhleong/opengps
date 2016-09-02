@@ -55,7 +55,13 @@ dependencies {
     compile deps.rx.relay
     compile deps.rx.binding.core
 
+    compile deps.gson
+    compile deps.okhttp
+    compile deps.retrofit
+    compile deps.retrofitGson
+    compile deps.retrofitRxJava
     compile deps.timber
+
 
     /*
      * Dagger Stuff
