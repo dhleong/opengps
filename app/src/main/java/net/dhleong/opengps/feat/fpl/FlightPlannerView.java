@@ -19,6 +19,7 @@ import net.dhleong.opengps.AeroObject;
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.App;
 import net.dhleong.opengps.GpsRoute;
+import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.R;
 
@@ -258,6 +259,7 @@ public class FlightPlannerView extends CoordinatorLayout {
     static class FixHolder extends FPLItemHolder {
 
         @BindView(R.id.id) TextView id;
+        @BindView(R.id.name) TextView name;
         @BindView(R.id.freq) TextView freq;
 
         public FixHolder(View view) {
@@ -267,8 +269,15 @@ public class FlightPlannerView extends CoordinatorLayout {
 
         @Override
         public void bind(GpsRoute.Step step) {
-            // TODO name, ident morse, ...
+            // TODO type icon, ident morse, ...
             id.setText(step.ref.id());
+
+            if (step.ref instanceof NavFix) {
+                name.setVisibility(INVISIBLE);
+            } else {
+                name.setText(step.ref.name());
+                name.setVisibility(VISIBLE);
+            }
 
             if (step.ref instanceof Navaid) {
                 freq.setText(String.format(Locale.US, "%.2f", ((Navaid) step.ref).freq()));
