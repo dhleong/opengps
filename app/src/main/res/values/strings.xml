@@ -9,4 +9,5 @@
     <string name="fpl_waypoint_info">Info</string>
     <string name="fpl_waypoint_load_airway">Load Airway</string>
     <string name="fpl_waypoint_remove_after">Remove all after</string>
+    <string name="airport_page_frequencies">Frequencies</string>
 </resources>

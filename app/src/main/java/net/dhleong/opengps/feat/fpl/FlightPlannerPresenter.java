@@ -8,6 +8,7 @@ import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.OpenGps;
 import net.dhleong.opengps.R;
+import net.dhleong.opengps.feat.airport.AirportInfoView;
 import net.dhleong.opengps.feat.airway.AirwaySearchView;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchView;
 import net.dhleong.opengps.ui.DialogPrompter;
@@ -71,7 +72,9 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(waypoint -> {
                     if (waypoint instanceof Airport) {
-                        Timber.v("TODO view airport");
+                        Timber.v("view airport");
+                        DialogPrompter.prompt(context, AirportInfoView.class,
+                            R.layout.feat_airport, (Airport) waypoint);
                     } else if (waypoint instanceof Navaid) {
                         Timber.v("TODO view navaid");
                     } else if (waypoint instanceof NavFix) {
