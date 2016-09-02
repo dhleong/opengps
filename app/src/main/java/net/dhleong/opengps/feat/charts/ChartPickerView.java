@@ -2,6 +2,7 @@ package net.dhleong.opengps.feat.charts;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -39,6 +40,7 @@ public class ChartPickerView
     @Inject ChartsService service;
 
     @BindView(R.id.recycler) RecyclerView recycler;
+    @BindView(R.id.loading) ContentLoadingProgressBar loading;
 
     CompositeSubscription subs = new CompositeSubscription();
 
@@ -66,6 +68,7 @@ public class ChartPickerView
            .inject(this);
 
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        loading.show();
     }
 
     @Override
@@ -85,8 +88,8 @@ public class ChartPickerView
                    .observeOn(AndroidSchedulers.mainThread())
                    .subscribe(result -> {
                        Timber.v("Got charts: %s", result.get(input.id()));
+                       loading.hide();
                        adapter.setCharts(result);
-                       // TODO loading spinner
                    }, Timber::w)
         );
 
