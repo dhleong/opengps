@@ -45,7 +45,10 @@ public class Airport extends BaseAeroObject {
         TOWER,
 
         /** Frequencies for navigating, especially ILS */
-        NAV
+        NAV,
+
+        /** Misc. frequencies */
+        OTHER
     }
 
     private final Type type;

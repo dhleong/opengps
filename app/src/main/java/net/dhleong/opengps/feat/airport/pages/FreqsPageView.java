@@ -16,6 +16,7 @@ import net.dhleong.opengps.R;
 import net.dhleong.opengps.feat.airport.AirportPageView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -53,6 +54,17 @@ public class FreqsPageView
         freqs.addAll(airport.frequencies(Airport.FrequencyType.DELIVERY));
         freqs.addAll(airport.frequencies(Airport.FrequencyType.GROUND));
         freqs.addAll(airport.frequencies(Airport.FrequencyType.TOWER));
+        // TODO DEP/APP
+        freqs.addAll(airport.frequencies(Airport.FrequencyType.OTHER));
+        freqs.addAll(airport.frequencies(Airport.FrequencyType.NAV));
+
+        // remove unusable frequencies (the garmin does this)
+        for (Iterator<LabeledFrequency> iter=freqs.iterator(); iter.hasNext(); ) {
+            LabeledFrequency freq = iter.next();
+            if (freq.frequency >= 200) {
+                iter.remove();
+            }
+        }
 
         setAdapter(new FrequenciesAdapter(freqs));
     }

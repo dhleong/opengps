@@ -378,7 +378,13 @@ public class NasrTextDataSource implements DataSource {
                 switch (record.freq.label.charAt(0)) {
                 case 'L': record.type = Airport.FrequencyType.TOWER; break;
                 case 'G': record.type = Airport.FrequencyType.GROUND; break;
-                case 'C': record.type = Airport.FrequencyType.DELIVERY; break;
+                case 'C':
+                    if (record.freq.label.charAt(1) == 'D') {
+                        record.type = Airport.FrequencyType.DELIVERY;
+                    } else {
+                        record.type = Airport.FrequencyType.OTHER;
+                    }
+                    break;
                 case 'A':
                 case 'D':
                     record.type = Airport.FrequencyType.ATIS;
