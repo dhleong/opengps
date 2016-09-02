@@ -2,6 +2,9 @@ package net.dhleong.opengps.feat.airway;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -10,6 +13,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import net.dhleong.opengps.AeroObject;
 import net.dhleong.opengps.Airway;
 import net.dhleong.opengps.App;
+import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.OpenGps;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.ui.DialogPrompter;
@@ -111,7 +115,7 @@ public class AirwaySearchView
             DialogPrompter.prompt(getContext(),
                 getContext().getString(R.string.airway_select_exit),
                 airway.getPoints(),
-                AeroObject::name)
+                AirwaySearchView::describeExit)
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(chosenExit -> {
                   exit = chosenExit;
@@ -120,4 +124,15 @@ public class AirwaySearchView
         );
     }
 
+    static CharSequence describeExit(AeroObject exit) {
+        if (exit instanceof NavFix) return exit.name();
+
+        SpannableStringBuilder builder = new SpannableStringBuilder(exit.id());
+        builder.append(' ');
+        int start = builder.length();
+        builder.append(exit.name());
+        builder.setSpan(new RelativeSizeSpan(0.7f), start, builder.length(),
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return builder;
+    }
 }
