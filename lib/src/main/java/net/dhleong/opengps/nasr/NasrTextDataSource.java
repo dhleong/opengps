@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import okio.Buffer;
@@ -88,6 +89,7 @@ public class NasrTextDataSource implements DataSource {
 
     private final File zipFile;
     private final String zipUrl;
+    private ZipFile openedZipFile;
 
     public NasrTextDataSource(File zipFile) {
         this(zipFile, DEFAULT_ZIP_URL);
@@ -190,6 +192,13 @@ public class NasrTextDataSource implements DataSource {
             storage.markTransactionSuccessful();
             storage.finishSource(this);
 
+            try {
+                openedZipFile.close();
+            } catch (IOException e) {
+                // don't care?
+                e.printStackTrace();
+            }
+
             // TODO better logging
             final long end = System.currentTimeMillis();
             System.out.println("Loaded NASR data in " + (end - start) + "ms");
@@ -201,7 +210,17 @@ public class NasrTextDataSource implements DataSource {
         return Observable.fromCallable(() -> {
             if (zipFile.exists()) {
                 System.out.println("NASR zip already downloaded!");
-                return zipFile;
+
+                try {
+                    openedZipFile = new ZipFile(zipFile);
+                    return zipFile;
+                } catch (ZipException e) {
+                    // corrupt
+                    System.err.println("Downloaded zip corrupt; redownload...");
+                    e.printStackTrace();
+                    //noinspection ResultOfMethodCallIgnored
+                    zipFile.delete();
+                }
             }
 
             // download
@@ -214,6 +233,7 @@ public class NasrTextDataSource implements DataSource {
             final long end = System.currentTimeMillis();
             System.out.println("Downloaded NASR data in " + (end - start) + "ms");
 
+            openedZipFile = new ZipFile(zipFile);
             return zipFile;
         });
     }
@@ -243,7 +263,7 @@ public class NasrTextDataSource implements DataSource {
     }
 
     private Source openZipFile(String fileName) throws IOException {
-        final ZipFile zip = new ZipFile(zipFile);
+        final ZipFile zip = openedZipFile;
         final ZipEntry entry = zip.getEntry(fileName);
         return Okio.source(zip.getInputStream(entry));
     }

@@ -51,7 +51,7 @@ public class AppModule {
             .storage(new InMemoryStorage())
             .addDataSource(new NasrTextDataSource(nasrZipFile))
             .onError(e -> {
-                Timber.e("Error loading data", e);
+                Timber.e(e, "Error loading data");
                 // TODO snackbar?
             })
             .build();
