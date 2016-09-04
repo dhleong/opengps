@@ -7,5 +7,5 @@
     android:layout_height="match_parent"
     tools:context="net.dhleong.opengps.activities.MainActivity">
 
-    <include layout="@layout/feat_fpl" />
+    <include layout="@layout/feat_main" />
 </android.support.design.widget.CoordinatorLayout>

@@ -17,4 +17,7 @@
     <string name="airport_page_frequencies">FREQUENCIES</string>
     <string name="airport_page_info_elevation">ELEVATION</string>
     <string name="airport_page_info_charts">Charts</string>
+
+    <string name="home_title_flight_plan">Flight Plan</string>
+    <string name="home_title_settings">Settings</string>
 </resources>

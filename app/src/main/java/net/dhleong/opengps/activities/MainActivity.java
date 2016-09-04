@@ -1,13 +1,13 @@
 package net.dhleong.opengps.activities;
 
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.core.ActivityModuleActivity;
-import net.dhleong.opengps.ui.DialogPrompter;
 import net.dhleong.opengps.ui.NavigateUtil;
 
 import timber.log.Timber;
@@ -48,7 +48,7 @@ public class MainActivity
     }
 
     @Override
-    public <T, V extends DialogPrompter.PrompterView<T, ?>> V inflate(Class<V> viewClass, int layoutResId) {
-        return viewClass.cast(LayoutInflater.from(this).inflate(layoutResId, container, false));
+    public View inflate(@LayoutRes int layoutResId) {
+        return LayoutInflater.from(this).inflate(layoutResId, container, false);
     }
 }
