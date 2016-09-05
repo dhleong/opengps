@@ -47,6 +47,7 @@ android {
 
 dependencies {
     compile project(':lib')
+    compile project(':rxconnectr')
 
     apt deps.butterknife.processor
     compile deps.butterknife.api
