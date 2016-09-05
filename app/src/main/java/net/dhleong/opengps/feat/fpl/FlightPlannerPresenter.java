@@ -36,6 +36,12 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
 
     @Override
     public void onViewAttached(FlightPlannerView view) {
+
+        if (!route.isEmpty()) {
+            // init with persisted route
+            view.setRoute(route);
+        }
+
         subscribe(
             view.addWaypointEvents()
                 .flatMap(request ->

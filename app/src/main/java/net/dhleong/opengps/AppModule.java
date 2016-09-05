@@ -29,11 +29,12 @@ public class AppModule {
 
     private final Context appContext;
 
-    private AtomicReference<GpsRoute> route = new AtomicReference<>(new GpsRoute());
-    private PublishRelay<GpsRoute> routeUpdates = PublishRelay.create();
+    private final AtomicReference<GpsRoute> route = new AtomicReference<>(new GpsRoute());
+    private final PublishRelay<GpsRoute> routeUpdates = PublishRelay.create();
 
     AppModule(App context) {
         this.appContext = context;
+        Timber.v("NEW APPMODULE");
 
         routeUpdates.subscribe(newRoute -> {
             route.set(newRoute.copy());

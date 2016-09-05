@@ -144,6 +144,10 @@ public final class GpsRoute {
         return -1;
     }
 
+    public boolean isEmpty() {
+        return steps.isEmpty();
+    }
+
     /**
      * NB: You can ONLY remove {@link Step.Type#FIX}-type steps
      */
