@@ -31,6 +31,10 @@ class ReflectiveObjectFactory<T> implements ObjectFactory<T> {
                 + "; expected " + dataId);
         }
 
+        if (spec == null) {
+            throw new IllegalStateException("Not initialized; call bindToDefinition first");
+        }
+
         T result = newInstance();
 
         for (int i=0, fields=spec.size(); i < fields; i++) {
@@ -46,7 +50,7 @@ class ReflectiveObjectFactory<T> implements ObjectFactory<T> {
         final List<FieldSpec> existing = spec;
         final List<FieldSpec> theSpec;
         if (existing == null) {
-            theSpec = new ArrayList<>();
+            theSpec = spec = new ArrayList<>();
             initSpec(type, theSpec);
         } else {
             theSpec = existing;
@@ -71,7 +75,7 @@ class ReflectiveObjectFactory<T> implements ObjectFactory<T> {
         }
     }
 
-    private void initSpec(Class<?> klass, List<FieldSpec> spec) {
+    static void initSpec(Class<?> klass, List<FieldSpec> spec) {
         final Field[] fields = klass.getDeclaredFields();
         for (Field field : fields) {
             FieldSpec fieldSpec = FieldSpec.from(field);
