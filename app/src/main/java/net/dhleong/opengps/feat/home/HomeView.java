@@ -1,6 +1,7 @@
 package net.dhleong.opengps.feat.home;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
@@ -45,10 +46,11 @@ public class HomeView extends CoordinatorLayout {
         super.onFinishInflate();
         ButterKnife.bind(this);
 
-        recycler.setLayoutManager(new GridLayoutManager(
-            getContext(), 2
-        ));
+        GridLayoutManager gridLayoutMan =
+            new GridLayoutManager(getContext(), 2);
+        recycler.setLayoutManager(gridLayoutMan);
         recycler.setAdapter(adapter = new Adapter());
+        recycler.addItemDecoration(new CenteringDecorator());
     }
 
     static class HomeMenuItem {
@@ -68,8 +70,8 @@ public class HomeView extends CoordinatorLayout {
         static final HomeMenuItem[] ITEMS = {
             new HomeMenuItem(R.drawable.ic_flight_plan, R.string.home_title_flight_plan,
                 R.layout.feat_fpl),
-//            new HomeMenuItem(R.drawable.ic_settings, R.string.home_title_settings,
-//                R.layout.feat_settings),
+            new HomeMenuItem(R.drawable.ic_settings, R.string.home_title_settings,
+                R.layout.feat_settings),
         };
 
         @Override
@@ -110,6 +112,20 @@ public class HomeView extends CoordinatorLayout {
         public void bind(HomeMenuItem item) {
             view.setText(item.title);
             view.setCompoundDrawablesWithIntrinsicBounds(0, item.icon, 0, 0);
+        }
+    }
+
+    static class CenteringDecorator extends RecyclerView.ItemDecoration {
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int columns = ((GridLayoutManager) parent.getLayoutManager()).getSpanCount();
+//            int adapterPosition = parent.getChildAdapterPosition(view);
+            int width = parent.getWidth();
+            int space = width / columns;
+
+            outRect.left = (space - view.getWidth() - view.getPaddingLeft() - view.getPaddingRight()) / 4;
+            outRect.top = (space / 2) - (view.getHeight() / 2);
         }
     }
 }

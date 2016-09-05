@@ -5,6 +5,7 @@ import android.content.Context;
 import com.jakewharton.rxrelay.PublishRelay;
 
 import net.dhleong.opengps.modules.NetworkModule;
+import net.dhleong.opengps.modules.PrefsModule;
 import net.dhleong.opengps.nasr.NasrTextDataSource;
 import net.dhleong.opengps.storage.InMemoryStorage;
 import net.dhleong.opengps.util.scopes.Root;
@@ -23,7 +24,7 @@ import timber.log.Timber;
 /**
  * @author dhleong
  */
-@Module(includes = NetworkModule.class)
+@Module(includes = {NetworkModule.class, PrefsModule.class})
 public class AppModule {
 
     private final Context appContext;

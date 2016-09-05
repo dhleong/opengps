@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- TODO SimConnect/etc. settings -->
+
+    <PreferenceCategory
+        android:title="@string/prefs_main_interface">
+
+        <CheckBoxPreference
+            android:key="pref_main_screen"
+            android:title="@string/prefs_main_screen" />
+    </PreferenceCategory>
+</PreferenceScreen>

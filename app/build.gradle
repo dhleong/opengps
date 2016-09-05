@@ -52,6 +52,7 @@ dependencies {
     compile deps.butterknife.api
 
     compile deps.rx.android
+    compile deps.rx.prefs
     compile deps.rx.relay
     compile deps.rx.binding.core
 
