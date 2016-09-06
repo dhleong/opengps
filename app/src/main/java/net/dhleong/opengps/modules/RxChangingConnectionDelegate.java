@@ -24,14 +24,18 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
             final ConnectionDelegate old = currentDelegate;
             if (old != null) {
                 Timber.v("Close %s", old);
-                old.close();
+                try {
+                    old.close();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
 
             return initConnectionFromConfig(config);
         }).doOnNext(conn -> {
-            // save and open
-            currentDelegate = conn;
-            conn.open();
+             // save and open
+             currentDelegate = conn;
+             conn.open();
         });
     }
 

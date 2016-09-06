@@ -48,6 +48,7 @@ android {
 dependencies {
     compile project(':lib')
     compile project(':rxconnectr')
+    compile fileTree(dir: '../rxconnectr/libs', include: ['*.jar'])
 
     apt deps.butterknife.processor
     compile deps.butterknife.api

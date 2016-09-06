@@ -16,7 +16,7 @@
         <EditTextPreference
             android:key="pref_connection_host"
             android:title="@string/prefs_main_connection_host"
-            android:inputType="numberDecimal"
+            android:inputType="textUri"
             />
 
         <EditTextPreference
