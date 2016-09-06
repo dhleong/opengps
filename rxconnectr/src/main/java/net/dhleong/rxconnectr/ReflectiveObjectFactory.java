@@ -97,6 +97,8 @@ class ReflectiveObjectFactory<T> implements ObjectFactory<T> {
         static final int TYPE_FLOAT = 2;
         static final int TYPE_DOUBLE = 3;
         static final int TYPE_BOOL = 4;
+        static final int TYPE_XPDR = 5;
+        static final int TYPE_FREQ_BCD16 = 6;
 
         final String datumName;
         final String unit;
@@ -131,6 +133,17 @@ class ReflectiveObjectFactory<T> implements ObjectFactory<T> {
                 case TYPE_BOOL:
                     field.setBoolean(obj, data.getDataInt32() != 0);
                     break;
+                case TYPE_XPDR:
+                    field.setInt(obj, RadioUtil.paramAsTransponder(data.getDataInt32()));
+                    break;
+                case TYPE_FREQ_BCD16:
+                    final int freq = RadioUtil.paramAsFrequency(data.getDataInt32());
+                    if (field.getType() == int.class) {
+                        field.setInt(obj, freq);
+                    } else {
+                        field.setFloat(obj, freq / 1000f);
+                    }
+                    break;
                 }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -144,10 +157,19 @@ class ReflectiveObjectFactory<T> implements ObjectFactory<T> {
             // make sure we can r/w
             field.setAccessible(true);
 
+            final String unit = spec.unit();
+            final String unitUpper = unit.toUpperCase();
+
             final int actualType;
             final SimConnectDataType dataType;
             final Class<?> fieldType = field.getType();
-            if (fieldType == int.class) {
+            if ("BCO16".equals(unitUpper)) {
+                actualType = TYPE_XPDR;
+                dataType = SimConnectDataType.INT32;
+            } else if (unitUpper.endsWith("BCD16")) {
+                actualType = TYPE_FREQ_BCD16;
+                dataType = SimConnectDataType.INT32;
+            } else if (fieldType == int.class) {
                 actualType = TYPE_INT;
                 dataType = SimConnectDataType.INT32;
             } else if (fieldType == long.class) {
@@ -166,7 +188,7 @@ class ReflectiveObjectFactory<T> implements ObjectFactory<T> {
                 throw new IllegalArgumentException("Unexpected field type " + fieldType + " on " + field);
             }
 
-            return new FieldSpec(spec.datumName(), spec.unit(), dataType, field, actualType);
+            return new FieldSpec(spec.datumName(), unit, dataType, field, actualType);
         }
     }
 }

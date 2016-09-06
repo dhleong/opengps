@@ -30,6 +30,17 @@ public class ReflectiveObjectFactoryTest {
         boolean headingLock;
     }
 
+    static class RadioObject {
+        @ConnectrField(datumName = "Transponder Code:1", unit = "BCO16")
+        int transponder;
+
+        @ConnectrField(datumName = "Com Active Frequency:1", unit = "Frequency BCD16")
+        int com1active;
+
+        @ConnectrField(datumName = "Com Standby Frequency:1", unit = "Frequency BCD16")
+        float com1standby;
+    }
+
     SimConnect sc;
     ReflectiveObjectFactory<BaseObject> baseObjectFactory;
     ReflectiveObjectFactory<SubObject> subObjectFactory;
@@ -60,6 +71,7 @@ public class ReflectiveObjectFactoryTest {
 
         assertThat(obj.headingBug).isEqualTo(42f);
     }
+
     @Test
     public void create_subclass() throws IOException {
         subObjectFactory.bindToDataDefinition(sc, 0);
@@ -71,6 +83,24 @@ public class ReflectiveObjectFactoryTest {
 
         assertThat(obj.headingLock).isTrue();
         assertThat(obj.headingBug).isEqualTo(42f);
+    }
+
+    @Test
+    public void create_radios() throws IOException {
+        final ReflectiveObjectFactory<RadioObject> radioFactory =
+            new ReflectiveObjectFactory<>(RadioObject.class);
+        radioFactory.bindToDataDefinition(sc, 0);
+
+        // NB: these values from RadioUtilTest
+        ByteBuffer buffer = ByteBuffer.allocate(12)
+                                      .putInt(0x2797)
+                                      .putInt(0x2897)
+                                      .putInt(0x2797);
+        RadioObject obj = radioFactory.create(dataFrom(buffer, 0));
+
+        assertThat(obj.transponder).isEqualTo(2797);
+        assertThat(obj.com1active).isEqualTo(128_975);
+        assertThat(obj.com1standby).isEqualTo(127.975f);
     }
 
     static RecvSimObjectData dataFrom(ByteBuffer buffer, int dataId) {
