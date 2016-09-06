@@ -32,6 +32,9 @@ public class RxConnectr {
     private static final int DEFAULT_INTERVAL = 1;
     private static final TimeUnit DEFAULT_INTERVAL_UNIT = TimeUnit.SECONDS;
 
+    private static final int RECONNECT_TIMEOUT = 5;
+    private static final TimeUnit RECONNECT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
     static final int CLIENT_ID = 0;
 
     final String appName;
@@ -48,6 +51,8 @@ public class RxConnectr {
     final SimConnectHandler handler = new SimConnectHandler();
 
     DispatchThread thread;
+    private boolean isOpen;
+    SimConnect currentConn;
 
     public RxConnectr(String appName, String host, int port) {
         this.appName = appName;
@@ -72,6 +77,13 @@ public class RxConnectr {
     }
 
     public void open() {
+        if (isOpen) throw new IllegalStateException("Already open");
+        isOpen = true;
+
+        openInternal();
+    }
+
+    private void openInternal() {
         if (thread != null) {
             throw new IllegalStateException("Already open");
         }
@@ -89,6 +101,13 @@ public class RxConnectr {
         })).last())
         .doOnNext(connection)
         .subscribe(conn -> {
+            currentConn = conn;
+
+            if (!isOpen) {
+                closeInternal();
+                return;
+            }
+
             DispatcherTask task = new DispatcherTask(conn);
             task.addSimObjectDataHandler(handler);
 
@@ -96,8 +115,8 @@ public class RxConnectr {
             thread.start();
 
         }, e -> {
-            System.err.println("Error...");
-            e.printStackTrace();
+            System.err.println("Error..." + e.getMessage());
+//            e.printStackTrace();
 
             reconnect();
         });
@@ -143,6 +162,27 @@ public class RxConnectr {
     }
 
     public void close() {
+        if (!isOpen) throw new IllegalStateException("Not open");
+        isOpen = false;
+
+        closeInternal();
+    }
+
+    private void closeInternal() {
+
+        final SimConnect conn = currentConn;
+        currentConn = null;
+        if (conn != null) {
+            Observable.just(conn)
+                      .subscribeOn(Schedulers.io())
+                      .subscribe(c -> {
+                          try {
+                              c.close();
+                          } catch (IOException e) {
+                              // don't care
+                          }
+                      });
+        }
 
         // reset the dataObjects stream
         dataObjects.onCompleted();
@@ -150,7 +190,8 @@ public class RxConnectr {
 
         DispatchThread thread = this.thread;
         if (thread == null) {
-            throw new IllegalStateException("Not open");
+            // didn't finish opening yet
+            return;
         }
         this.thread = null;
 
@@ -160,17 +201,20 @@ public class RxConnectr {
     void reconnect() {
         // hahaha lazy
         try {
-            close();
+            closeInternal();
         } catch (IllegalStateException e) {
             // don't care
         }
 
         // TODO notify ?
 
-        // re-open after a delay
-        Observable.just(null)
-                  .delay(1, TimeUnit.SECONDS)
-                  .subscribe(any -> open());
+        // NB: don't reconnect if we requested to close
+        if (isOpen) {
+            // re-open after a delay
+            Observable.just(null)
+                      .delay(RECONNECT_TIMEOUT, RECONNECT_TIMEOUT_UNIT)
+                      .subscribe(any -> openInternal());
+        }
     }
 
     class SimConnectHandler implements SimObjectDataHandler {

@@ -34,6 +34,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
             return initConnectionFromConfig(config);
         }).doOnNext(conn -> {
              // save and open
+             Timber.v("OPEN %s", conn);
              currentDelegate = conn;
              conn.open();
         });
@@ -46,6 +47,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
         if (delegate != null) {
             delegate.close();
         }
+        Timber.v("CLOSE %s", delegate);
 
         final Subscription subs = this.subs;
         this.subs = null;

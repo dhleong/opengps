@@ -12,6 +12,8 @@ import net.dhleong.opengps.connection.ConnectionConfiguration;
 import net.dhleong.opengps.connection.ConnectionType;
 import net.dhleong.opengps.util.scopes.Root;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Named;
 
 import dagger.Module;
@@ -82,7 +84,8 @@ public class PrefsModule {
             typePref.asObservable().map(toVoid()),
             hostPref.asObservable().map(toVoid()),
             portPref.asObservable().map(toVoid())
-        ).map(any -> new ConnectionConfiguration(
+        ).debounce(1, TimeUnit.SECONDS)
+         .map(any -> new ConnectionConfiguration(
             typePref.get(),
             hostPref.get(),
             portPref.get()
