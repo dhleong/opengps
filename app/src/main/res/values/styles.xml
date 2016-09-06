@@ -35,10 +35,11 @@
     </style>
 
     <style name="OpenGps.ActiveRadiosView">
-        <item name="android:textSize">22sp</item>
-        <item name="android:background">?attr/colorPrimaryDark</item>
-        <item name="android:padding">@dimen/padding_small</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:fontFamily">serif-monospace</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:padding">@dimen/padding_small</item>
+        <item name="labelBgColor">?attr/colorPrimaryDark</item>
     </style>
 
 </resources>

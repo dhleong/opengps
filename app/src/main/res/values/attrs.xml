@@ -7,5 +7,6 @@
     <declare-styleable name="ActiveRadiosView">
         <attr name="label" />
         <attr name="labelColor" format="color|reference" />
+        <attr name="labelBgColor" format="color|reference" />
     </declare-styleable>
 </resources>

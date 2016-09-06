@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.TextView;
@@ -18,8 +17,8 @@ import net.dhleong.opengps.ui.UiUtil;
  */
 public class ActiveRadiosView extends TextView {
 
-    final int bgColor;
     final float labelMargin;
+    int bgColor;
 
     String label = "MIC";
     Paint labelPaint;
@@ -46,14 +45,11 @@ public class ActiveRadiosView extends TextView {
             labelPaint.setColor(
                 a.getColor(R.styleable.ActiveRadiosView_labelColor, 0xffFFFFFF)
             );
+            bgColor = a.getColor(R.styleable.ActiveRadiosView_labelBgColor, 0);
             a.recycle();
         }
 
         labelMargin = labelPaint.getTextSize() * .3f;
-
-        final ColorDrawable bgDraw = (ColorDrawable) getBackground();
-        bgColor = bgDraw.getColor();
-        setBackground(null);
 
         setWillNotDraw(false);
     }
