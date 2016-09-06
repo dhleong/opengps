@@ -11,13 +11,26 @@ import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import net.dhleong.opengps.App;
 import net.dhleong.opengps.R;
-import net.dhleong.opengps.modules.PrefsModule;
+import net.dhleong.opengps.connection.ConnectionType;
+
+import javax.inject.Inject;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
+
+import static net.dhleong.opengps.modules.PrefsModule.PREF_CONNECTION_HOST;
+import static net.dhleong.opengps.modules.PrefsModule.PREF_CONNECTION_PORT;
+import static net.dhleong.opengps.modules.PrefsModule.PREF_CONNECTION_TYPE;
 
 /**
  * @author dhleong
  */
 public class SettingsView extends FrameLayout {
+
     public SettingsView(Context context) {
         super(context);
     }
@@ -44,29 +57,37 @@ public class SettingsView extends FrameLayout {
 
     public static class PrefsFragment extends PreferenceFragment {
 
+        @Inject Observable<ConnectionType> connectionTypePref;
+
+        CompositeSubscription subs = new CompositeSubscription();
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.prefs_main);
+            App.component(getActivity())
+               .inject(this);
+
             PreferenceManager man = getPreferenceManager();
-
             final Preference typePref =
-                man.findPreference(PrefsModule.PREF_CONNECTION_TYPE);
+                man.findPreference(PREF_CONNECTION_TYPE);
             final Preference hostPref =
-                man.findPreference(PrefsModule.PREF_CONNECTION_HOST);
+                man.findPreference(PREF_CONNECTION_HOST);
             final Preference portPref =
-                man.findPreference(PrefsModule.PREF_CONNECTION_PORT);
+                man.findPreference(PREF_CONNECTION_PORT);
 
-            if (((ListPreference) typePref).getValue().equals("NONE")) {
-                hostPref.setEnabled(false);
-                portPref.setEnabled(false);
-            }
-            typePref.setOnPreferenceChangeListener((preference, newValue) -> {
-                   boolean enabled = !newValue.equals("NONE");
-                   hostPref.setEnabled(enabled);
-                   portPref.setEnabled(enabled);
-                   return true; // allow change
-               });
+            subs.add(
+                connectionTypePref.asObservable()
+                                  .observeOn(AndroidSchedulers.mainThread())
+                                  .subscribe(type -> {
+                                      boolean enabled = type != ConnectionType.NONE;
+                                      Timber.v("Enabled = %s (%s)", enabled, type);
+                                      hostPref.setEnabled(enabled);
+                                      portPref.setEnabled(enabled);
+                                  })
+            );
+
+            // TODO validate port/host
 
             // show current value as summary where appropriate
             summarify(typePref);
@@ -74,9 +95,16 @@ public class SettingsView extends FrameLayout {
             summarify(portPref);
         }
 
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            subs.clear();
+        }
+
         static void summarify(Preference pref) {
-            pref.setSummary(summaryFor(pref));
-            Preference.OnPreferenceChangeListener existingListener =
+            pref.setSummary(summaryFor(pref, null));
+
+            final Preference.OnPreferenceChangeListener existingListener =
                 pref.getOnPreferenceChangeListener();
 
             pref.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -85,17 +113,22 @@ public class SettingsView extends FrameLayout {
                     return false;
                 }
 
-                pref.setSummary(summaryFor(pref));
-                return true;
+                pref.setSummary(summaryFor(pref, newValue));
+                return !(preference instanceof ListPreference);
             });
         }
 
-        static CharSequence summaryFor(Preference pref) {
+        static CharSequence summaryFor(Preference pref, Object newValue) {
             if (pref instanceof EditTextPreference) {
+                if (newValue != null) return (CharSequence) newValue;
                 return ((EditTextPreference) pref).getText();
             }
             if (pref instanceof ListPreference) {
-                return ((ListPreference) pref).getEntry();
+                ListPreference list = (ListPreference) pref;
+                if (newValue != null) {
+                    list.setValue((String) newValue);
+                }
+                return list.getEntry();
             }
 
             return pref.getSummary();

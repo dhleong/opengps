@@ -50,6 +50,11 @@ public class PrefsModule {
         return prefs.getEnum(PREF_CONNECTION_TYPE, ConnectionType.NONE, ConnectionType.class);
     }
 
+    @Provides Observable<ConnectionType> connectionTypeObs(
+            @Named(PREF_CONNECTION_TYPE) Preference<ConnectionType> pref) {
+        return pref.asObservable();
+    }
+
     @Provides @Named(PREF_CONNECTION_HOST) Preference<String> connectionHost(
             RxSharedPreferences prefs) {
         return prefs.getString(PREF_CONNECTION_HOST);

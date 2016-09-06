@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- TODO SimConnect/etc. settings -->
     <PreferenceCategory
@@ -7,10 +8,10 @@
         <ListPreference
             android:key="pref_connection_type"
             android:title="@string/prefs_main_connection_type"
-            android:summary="None"
             android:defaultValue="NONE"
             android:entries="@array/pref_connection_types"
             android:entryValues="@array/pref_connection_type_values"
+            tools:summary="None"
             />
 
         <EditTextPreference
