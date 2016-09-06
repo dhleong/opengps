@@ -1,7 +1,6 @@
 package net.dhleong.rxconnectr;
 
 import com.jakewharton.rxrelay.BehaviorRelay;
-import com.jakewharton.rxrelay.ReplayRelay;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,7 +12,9 @@ import flightsim.simconnect.SimConnect;
 import flightsim.simconnect.SimConnectConstants;
 import flightsim.simconnect.SimConnectPeriod;
 import flightsim.simconnect.recv.DispatcherTask;
+import flightsim.simconnect.recv.ExceptionHandler;
 import flightsim.simconnect.recv.OpenHandler;
+import flightsim.simconnect.recv.RecvException;
 import flightsim.simconnect.recv.RecvOpen;
 import flightsim.simconnect.recv.RecvSimObjectData;
 import flightsim.simconnect.recv.SimObjectDataHandler;
@@ -60,7 +61,6 @@ public class RxConnectr {
     final AtomicInteger nextEventId = new AtomicInteger();
 
     final BehaviorRelay<State> stateChanges = BehaviorRelay.create(State.DISCONNECTED);
-    final ReplayRelay<ObjectFactory<?>> factoriesToInit = ReplayRelay.create();
     final HashMap<Class<?>, ObjectFactory<?>> factories = new HashMap<>();
     final HashMap<String, Integer> eventIds = new HashMap<>();
     final BehaviorRelay<SimConnect> connection = BehaviorRelay.create();
@@ -92,7 +92,6 @@ public class RxConnectr {
 
     public <T> void registerObjectType(Class<T> type, ObjectFactory<T> factory) {
         factories.put(type, factory);
-        factoriesToInit.call(factory);
     }
 
     public void open() {
@@ -115,12 +114,11 @@ public class RxConnectr {
 
         Observable.fromCallable(() -> new SimConnect(appName, host, port))
         .subscribeOn(Schedulers.io())
-        .flatMap(sc -> factoriesToInit.flatMap(factory -> Observable.fromCallable(() -> {
+        .flatMap(sc -> Observable.from(factories.values()).flatMap(factory -> Observable.fromCallable(() -> {
             final int id = nextDataTypeId.getAndIncrement();
             factory.bindToDataDefinition(sc, id);
             return sc;
         })).last())
-        .doOnNext(connection)
         .subscribe(conn -> {
             currentConn = conn;
 
@@ -131,6 +129,7 @@ public class RxConnectr {
 
             DispatcherTask task = new DispatcherTask(conn);
             task.addOpenHandler(handler);
+            task.addExceptionHandler(handler);
             task.addSimObjectDataHandler(handler);
 
             thread = new DispatchThread(conn, task);
@@ -272,6 +271,11 @@ public class RxConnectr {
     }
 
     void reconnect() {
+        DispatchThread thread = this.thread;
+        if (thread != null) {
+            thread.willReconnect = true;
+        }
+
         // hahaha lazy
         try {
             closeInternal();
@@ -290,7 +294,10 @@ public class RxConnectr {
         }
     }
 
-    class SimConnectHandler implements SimObjectDataHandler, OpenHandler {
+    class SimConnectHandler
+            implements SimObjectDataHandler,
+                       OpenHandler,
+                       ExceptionHandler {
 
         @Override
         public void handleSimObject(SimConnect simConnect, RecvSimObjectData recvSimObjectData) {
@@ -300,15 +307,21 @@ public class RxConnectr {
         @Override
         public void handleOpen(SimConnect simConnect, RecvOpen recvOpen) {
             stateChanges.call(State.CONNECTED);
+            connection.call(simConnect);
         }
 
+        @Override
+        public void handleException(SimConnect simConnect, RecvException e) {
+            System.err.println(e + e.getException().getMessage());
+        }
     }
 
     class DispatchThread extends Thread {
         private final SimConnect sc;
         private final DispatcherTask task;
 
-        volatile boolean running;
+        volatile boolean running = true;
+        volatile boolean willReconnect;
 
         public DispatchThread(SimConnect sc, DispatcherTask task) {
             this.sc = sc;
@@ -342,7 +355,9 @@ public class RxConnectr {
                 notifyIoe.printStackTrace();
             }
 
-            reconnect();
+            if (isOpen && !willReconnect) {
+                reconnect();
+            }
         }
 
         public void cancel() {
