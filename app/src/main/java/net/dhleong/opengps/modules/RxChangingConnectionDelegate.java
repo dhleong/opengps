@@ -83,6 +83,16 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
         currentDelegate.swapNav1();
     }
 
+    @Override
+    public void setTransmitCom2(boolean transmitCom2) {
+        currentDelegate.setTransmitCom2(transmitCom2);
+    }
+
+    @Override
+    public void setReceiveAll(boolean receiveAll) {
+        currentDelegate.setReceiveAll(receiveAll);
+    }
+
     ConnectionDelegate initConnectionFromConfig(ConnectionConfiguration config) {
         Timber.v("init(type=%s, host=%s, port=%d)", config.type, config.host, config.port);
         switch (config.type) {

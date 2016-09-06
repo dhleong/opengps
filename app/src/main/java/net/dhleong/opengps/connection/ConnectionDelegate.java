@@ -27,4 +27,10 @@ public interface ConnectionDelegate {
 
     void swapCom1();
     void swapNav1();
+
+    /**
+     * @param transmitCom2 If true, we'll transmit on com2, else com1
+     */
+    void setTransmitCom2(boolean transmitCom2);
+    void setReceiveAll(boolean receiveAll);
 }

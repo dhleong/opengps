@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding.view.RxView;
+
 import net.dhleong.opengps.App;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.connection.ConnectionDelegate;
@@ -116,6 +118,12 @@ public class RadiosView extends LinearLayout {
 
         subs.add(radioCom.swaps().subscribe(any -> connection.swapCom1()));
         subs.add(radioNav.swaps().subscribe(any -> connection.swapNav1()));
+
+        // yuck: FIXME refactor this to not assume anything about these views
+        subs.add(RxView.clicks(radioMic).subscribe(any ->
+            connection.setTransmitCom2(radioMic.getText().charAt(0) == '1')));
+        subs.add(RxView.clicks(radioMon).subscribe(any ->
+            connection.setReceiveAll(!"12".equals(radioMon.getText()))));
     }
 
     @Override

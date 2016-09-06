@@ -64,4 +64,18 @@ public class DummyConnection implements ConnectionDelegate {
         radioData.nav1standby = oldActive;
         radioDataRelay.call(radioData);
     }
+
+    @Override
+    public void setTransmitCom2(boolean transmitCom2) {
+        radioData.comTransmit1 = !transmitCom2;
+        radioData.comTransmit2 = transmitCom2;
+        radioDataRelay.call(radioData);
+    }
+
+    @Override
+    public void setReceiveAll(boolean receiveAll) {
+        radioData.comReceiveAll = receiveAll;
+        radioDataRelay.call(radioData);
+    }
+
 }

@@ -56,4 +56,18 @@ public class SimConnectConnection implements ConnectionDelegate {
     public void swapNav1() {
         instance.sendEvent("NAV1_RADIO_SWAP", 0);
     }
+
+    @Override
+    public void setTransmitCom2(boolean transmitCom2) {
+        if (transmitCom2) {
+            instance.sendEvent("COM2_TRANSMIT_SELECT", 0);
+        } else {
+            instance.sendEvent("COM1_TRANSMIT_SELECT", 0);
+        }
+    }
+
+    @Override
+    public void setReceiveAll(boolean receiveAll) {
+        instance.sendEvent("COM_RECEIVE_ALL_SET", receiveAll ? 1 : 0);
+    }
 }
