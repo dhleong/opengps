@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import flightsim.simconnect.SimConnect;
 import flightsim.simconnect.SimConnectPeriod;
 import flightsim.simconnect.recv.DispatcherTask;
+import flightsim.simconnect.recv.OpenHandler;
+import flightsim.simconnect.recv.RecvOpen;
 import flightsim.simconnect.recv.RecvSimObjectData;
 import flightsim.simconnect.recv.SimObjectDataHandler;
 import rx.Observable;
@@ -27,7 +29,16 @@ import rx.subjects.PublishSubject;
  */
 public class RxConnectr {
 
-    private static final int MAX_OBJECT_FACTORIES = 64;
+    public enum State {
+        /** Not connected and not trying to */
+        DISCONNECTED,
+
+        /** Trying to connect */
+        CONNECTING,
+
+        /** Connected! */
+        CONNECTED
+    }
 
     private static final int DEFAULT_INTERVAL = 1;
     private static final TimeUnit DEFAULT_INTERVAL_UNIT = TimeUnit.SECONDS;
@@ -41,17 +52,17 @@ public class RxConnectr {
     final String host;
     final int port;
 
+    final SimConnectHandler handler = new SimConnectHandler();
     final AtomicInteger nextDataTypeId = new AtomicInteger();
 
+    final BehaviorRelay<State> stateChanges = BehaviorRelay.create(State.DISCONNECTED);
     final ReplayRelay<ObjectFactory<?>> factoriesToInit = ReplayRelay.create();
     final HashMap<Class<?>, ObjectFactory<?>> factories = new HashMap<>();
     final BehaviorRelay<SimConnect> connection = BehaviorRelay.create();
     PublishSubject<RecvSimObjectData> dataObjects = PublishSubject.create();
 
-    final SimConnectHandler handler = new SimConnectHandler();
-
     DispatchThread thread;
-    private boolean isOpen;
+    boolean isOpen;
     SimConnect currentConn;
 
     public RxConnectr(String appName, String host, int port) {
@@ -90,7 +101,8 @@ public class RxConnectr {
 
         nextDataTypeId.set(0);
 
-        // TODO notify disconnects, etc.
+        // update state
+        stateChanges.call(State.CONNECTING);
 
         Observable.fromCallable(() -> new SimConnect(appName, host, port))
         .subscribeOn(Schedulers.io())
@@ -109,22 +121,29 @@ public class RxConnectr {
             }
 
             DispatcherTask task = new DispatcherTask(conn);
+            task.addOpenHandler(handler);
             task.addSimObjectDataHandler(handler);
 
             thread = new DispatchThread(conn, task);
             thread.start();
 
         }, e -> {
-            System.err.println("Error..." + e.getMessage());
-//            e.printStackTrace();
+            if (isOpen) {
+                System.err.println("Error..." + e.getClass() + ": " + e.getMessage());
+            }
 
             reconnect();
         });
     }
 
+    public Observable<State> state() {
+        return stateChanges;
+    }
+
     public <T> Observable<T> subscribe(Class<T> type) {
         return subscribe(type, DEFAULT_INTERVAL, DEFAULT_INTERVAL_UNIT);
     }
+
     public <T> Observable<T> subscribe(Class<T> type, int minInterval, TimeUnit minIntervalUnit) {
         //noinspection unchecked always safe
         final ObjectFactory<T> factory = (ObjectFactory<T>) factories.get(type);
@@ -168,7 +187,9 @@ public class RxConnectr {
         closeInternal();
     }
 
-    private void closeInternal() {
+    void closeInternal() {
+
+        stateChanges.call(State.DISCONNECTED);
 
         final SimConnect conn = currentConn;
         currentConn = null;
@@ -206,10 +227,10 @@ public class RxConnectr {
             // don't care
         }
 
-        // TODO notify ?
-
         // NB: don't reconnect if we requested to close
         if (isOpen) {
+            stateChanges.call(State.CONNECTING);
+
             // re-open after a delay
             Observable.just(null)
                       .delay(RECONNECT_TIMEOUT, RECONNECT_TIMEOUT_UNIT)
@@ -217,11 +238,16 @@ public class RxConnectr {
         }
     }
 
-    class SimConnectHandler implements SimObjectDataHandler {
+    class SimConnectHandler implements SimObjectDataHandler, OpenHandler {
 
         @Override
         public void handleSimObject(SimConnect simConnect, RecvSimObjectData recvSimObjectData) {
             dataObjects.onNext(recvSimObjectData);
+        }
+
+        @Override
+        public void handleOpen(SimConnect simConnect, RecvOpen recvOpen) {
+            stateChanges.call(State.CONNECTED);
         }
 
     }
@@ -271,4 +297,5 @@ public class RxConnectr {
             running = false;
         }
     }
+
 }

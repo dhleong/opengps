@@ -5,6 +5,7 @@ package net.dhleong.opengps.connection;
  */
 public enum ConnectionType {
     NONE,
+    DUMMY,
 
     SIM_CONNECT
 }

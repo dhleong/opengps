@@ -31,6 +31,18 @@ public class SimConnectConnection implements ConnectionDelegate {
     }
 
     @Override
+    public Observable<State> state() {
+        return instance.state().map(simConnectState -> {
+            switch (simConnectState) {
+            default:
+            case DISCONNECTED: return State.DISCONNECTED;
+            case CONNECTED: return State.CONNECTED;
+            case CONNECTING: return State.CONNECTING;
+            }
+        });
+    }
+
+    @Override
     public <T> Observable<T> subscribe(Class<T> type) {
         return instance.subscribe(type);
     }

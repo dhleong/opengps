@@ -2,11 +2,13 @@
 <resources>
     <string-array name="pref_connection_types">
         <item>None</item>
+        <item>Dummy</item>
         <item>SimConnect</item>
     </string-array>
 
     <string-array name="pref_connection_type_values">
         <item>NONE</item>
+        <item>DUMMY</item>
         <item>SIM_CONNECT</item>
     </string-array>
 </resources>

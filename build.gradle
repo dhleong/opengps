@@ -76,7 +76,7 @@ ext.deps = [
 
     rx: [
         android: 'io.reactivex:rxandroid:1.2.1',
-        java: 'io.reactivex:rxjava:1.1.9',
+        java: 'io.reactivex:rxjava:1.1.10',
         prefs: 'com.f2prateek.rx.preferences:rx-preferences:1.0.2',
         relay: 'com.jakewharton.rxrelay:rxrelay:1.1.0',
         binding: [

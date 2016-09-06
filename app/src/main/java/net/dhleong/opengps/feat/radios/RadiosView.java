@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import net.dhleong.opengps.App;
 import net.dhleong.opengps.R;
+import net.dhleong.opengps.connection.ConnectionDelegate;
 import net.dhleong.opengps.connection.data.RadioData;
 
 import java.util.List;
@@ -23,6 +24,7 @@ import butterknife.ButterKnife;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * @author dhleong
@@ -30,6 +32,7 @@ import rx.subscriptions.CompositeSubscription;
 public class RadiosView extends LinearLayout {
 
     @Inject Observable<RadioData> radioData;
+    @Inject Observable<ConnectionDelegate.State> stateChanges;
 
     @BindView(R.id.status) TextView status;
     @BindView(R.id.radio_com) TextView radioCom;
@@ -66,6 +69,26 @@ public class RadiosView extends LinearLayout {
         // TODO track connection status
 
         setStatus(R.string.conn_status_connecting);
+
+        subs.add(
+            stateChanges.observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(state -> {
+                            Timber.v("Got state %s", state);
+                            switch (state) {
+                            case CONNECTED:
+                                if (status.getVisibility() != GONE) {
+                                    setStatus(R.string.conn_status_connected);
+                                }
+                                break;
+                            case CONNECTING:
+                                setStatus(R.string.conn_status_connecting);
+                                break;
+                            case DISCONNECTED:
+                                setStatus(R.string.conn_status_disconnected);
+                                break;
+                            }
+                        })
+        );
 
         subs.add(
             radioData.observeOn(AndroidSchedulers.mainThread())

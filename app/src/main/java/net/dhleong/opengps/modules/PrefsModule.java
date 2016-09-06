@@ -89,12 +89,12 @@ public class PrefsModule {
             typePref.asObservable().map(toVoid()),
             hostPref.asObservable().map(toVoid()),
             portPref.asObservable().map(toVoid())
-        ).debounce(1, TimeUnit.SECONDS)
+        ).debounce(500, TimeUnit.MILLISECONDS)
          .map(any -> new ConnectionConfiguration(
             typePref.get(),
             hostPref.get(),
             portPref.get()
-        ));
+         )).share();
     }
 
 }

@@ -22,6 +22,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
     @Inject RxChangingConnectionDelegate(Observable<ConnectionConfiguration> configs) {
          connection = configs.map(config -> {
             final ConnectionDelegate old = currentDelegate;
+             currentDelegate = null;
             if (old != null) {
                 Timber.v("Close %s", old);
                 try {
@@ -37,7 +38,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
              Timber.v("OPEN %s", conn);
              currentDelegate = conn;
              conn.open();
-        });
+        }).share();
     }
 
     @Override
@@ -61,6 +62,13 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
     }
 
     @Override
+    public Observable<State> state() {
+        return connection.flatMap(conn ->
+            conn.state()
+                .takeWhile(any -> currentDelegate == conn));
+    }
+
+    @Override
     public <T> Observable<T> subscribe(Class<T> type) {
         return connection.flatMap(conn -> conn.subscribe(type));
     }
@@ -71,6 +79,9 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
         default:
             Timber.e("Unexpected config type %s", config.type);
         case NONE:
+            return new NullConnection();
+
+        case DUMMY:
             return new DummyConnection();
 
         case SIM_CONNECT:

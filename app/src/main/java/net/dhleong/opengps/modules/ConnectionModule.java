@@ -19,6 +19,10 @@ public abstract class ConnectionModule {
 
     @Binds @Singleton abstract ConnectionDelegate delegate(RxChangingConnectionDelegate impl);
 
+    @Provides static Observable<ConnectionDelegate.State> state(ConnectionDelegate delegate) {
+        return delegate.state();
+    }
+
     @Provides static Observable<LatLngHdg> latLngHdg(ConnectionDelegate delegate) {
         return delegate.subscribe(LatLngHdg.class);
     }

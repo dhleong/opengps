@@ -12,8 +12,12 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 import net.dhleong.opengps.App;
+import net.dhleong.opengps.BuildConfig;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.connection.ConnectionType;
+
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -68,13 +72,25 @@ public class SettingsView extends FrameLayout {
             App.component(getActivity())
                .inject(this);
 
-            PreferenceManager man = getPreferenceManager();
+            final PreferenceManager man = getPreferenceManager();
             final Preference typePref =
                 man.findPreference(PREF_CONNECTION_TYPE);
             final Preference hostPref =
                 man.findPreference(PREF_CONNECTION_HOST);
             final Preference portPref =
                 man.findPreference(PREF_CONNECTION_PORT);
+
+            final ListPreference typeListPref = (ListPreference) typePref;
+            if (!BuildConfig.DEBUG) {
+                final List<CharSequence> entryValues = Arrays.asList(typeListPref.getEntryValues());
+                final List<CharSequence> entries = Arrays.asList(typeListPref.getEntries());
+                final int size = entryValues.size();
+                int dummyIndex = entryValues.indexOf(ConnectionType.DUMMY.name());
+                entryValues.remove(dummyIndex);
+                entries.remove(dummyIndex);
+                typeListPref.setEntryValues(entryValues.toArray(new CharSequence[size]));
+                typeListPref.setEntries(entries.toArray(new CharSequence[size]));
+            }
 
             subs.add(
                 connectionTypePref.asObservable()
