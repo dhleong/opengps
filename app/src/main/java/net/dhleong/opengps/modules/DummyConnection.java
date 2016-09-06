@@ -1,7 +1,5 @@
 package net.dhleong.opengps.modules;
 
-import com.jakewharton.rxrelay.BehaviorRelay;
-
 import net.dhleong.opengps.connection.ConnectionDelegate;
 import net.dhleong.opengps.connection.data.RadioData;
 
@@ -13,7 +11,6 @@ import rx.Observable;
 public class DummyConnection implements ConnectionDelegate {
 
     final RadioData radioData = new RadioData();
-    final BehaviorRelay<RadioData> radioDataRelay = BehaviorRelay.create(radioData);
 
     public DummyConnection() {
         radioData.com1active = 118.7f;
@@ -44,38 +41,29 @@ public class DummyConnection implements ConnectionDelegate {
         if (type == RadioData.class) {
 
             //noinspection unchecked
-            return (Observable<T>) radioDataRelay;
+            return (Observable<T>) Observable.just(radioData);
         }
         return Observable.empty();
     }
 
     @Override
     public void swapCom1() {
-        float oldActive = radioData.com1active;
-        radioData.com1active = radioData.com1standby;
-        radioData.com1standby = oldActive;
-        radioDataRelay.call(radioData);
+        // nop
     }
 
     @Override
     public void swapNav1() {
-        float oldActive = radioData.nav1active;
-        radioData.nav1active = radioData.nav1standby;
-        radioData.nav1standby = oldActive;
-        radioDataRelay.call(radioData);
+        // nop
     }
 
     @Override
     public void setTransmitCom2(boolean transmitCom2) {
-        radioData.comTransmit1 = !transmitCom2;
-        radioData.comTransmit2 = transmitCom2;
-        radioDataRelay.call(radioData);
+        // nop
     }
 
     @Override
     public void setReceiveAll(boolean receiveAll) {
-        radioData.comReceiveAll = receiveAll;
-        radioDataRelay.call(radioData);
+        // nop
     }
 
 }
