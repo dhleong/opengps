@@ -1,5 +1,6 @@
 package net.dhleong.opengps.connection;
 
+import net.dhleong.opengps.connection.data.RadioData;
 import net.dhleong.opengps.util.LatLngHdg;
 import net.dhleong.rxconnectr.RxConnectr;
 
@@ -16,6 +17,7 @@ public class SimConnectConnection implements ConnectionDelegate {
     public SimConnectConnection(String host, int port) {
         instance = new RxConnectr(APP_NAME, host, port);
         instance.registerObjectType(LatLngHdg.class);
+        instance.registerObjectType(RadioData.class);
     }
 
     @Override

@@ -4,12 +4,14 @@ import android.content.Context;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import net.dhleong.opengps.App;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.connection.ConnectionType;
+import net.dhleong.opengps.feat.radios.RadiosView;
 
 import javax.inject.Inject;
 
@@ -27,6 +29,7 @@ public class ConnectionAppBarLayout extends AppBarLayout {
     @Inject Observable<ConnectionType> connectionType;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
+    RadiosView radios;
 
     private Subscription subs;
 
@@ -47,6 +50,9 @@ public class ConnectionAppBarLayout extends AppBarLayout {
            .inject(this);
 
         toolbar.setTitle(R.string.app_name);
+
+        radios = (RadiosView) LayoutInflater.from(getContext())
+                                            .inflate(R.layout.feat_radios, this, false);
     }
 
     @Override
@@ -64,14 +70,21 @@ public class ConnectionAppBarLayout extends AppBarLayout {
     }
 
     void switchToToolbar() {
+        if (radios.getParent() == this) {
+            removeView(radios);
+        }
         if (toolbar.getParent() == null) {
-            // TODO remove the connection view
             addView(toolbar, 0);
         }
     }
 
     void switchToConnection() {
-        // TODO
+        if (toolbar.getParent() == this) {
+            removeView(toolbar);
+        }
+        if (radios.getParent() == null) {
+            addView(radios, 0);
+        }
     }
 
     @Override

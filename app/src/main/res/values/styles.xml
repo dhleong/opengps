@@ -22,4 +22,10 @@
         <item name="android:minHeight">?attr/actionBarSize</item>
     </style>
 
+    <style name="OpenGps.Radio">
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+    </style>
+
 </resources>

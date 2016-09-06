@@ -1,6 +1,7 @@
 package net.dhleong.opengps.modules;
 
 import net.dhleong.opengps.connection.ConnectionDelegate;
+import net.dhleong.opengps.connection.data.RadioData;
 import net.dhleong.opengps.util.LatLngHdg;
 
 import javax.inject.Singleton;
@@ -20,5 +21,9 @@ public abstract class ConnectionModule {
 
     @Provides static Observable<LatLngHdg> latLngHdg(ConnectionDelegate delegate) {
         return delegate.subscribe(LatLngHdg.class);
+    }
+
+    @Provides static Observable<RadioData> radios(ConnectionDelegate delegate) {
+        return delegate.subscribe(RadioData.class);
     }
 }
