@@ -8,22 +8,27 @@ import android.view.ViewGroup;
 
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.core.ActivityModuleActivity;
+import net.dhleong.opengps.feat.connbar.ConnectionAppBarLayout;
 import net.dhleong.opengps.ui.NavigateUtil;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class MainActivity
         extends ActivityModuleActivity
         implements NavigateUtil.IntoNavigator {
 
+    @BindView(R.id.appbar) ConnectionAppBarLayout appBarLayout;
+    @BindView(R.id.activity_main) ViewGroup container;
+
     private View intoView;
-    private ViewGroup container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        container = (ViewGroup) findViewById(R.id.activity_main);
+        ButterKnife.bind(this);
     }
 
     @Override
@@ -41,6 +46,7 @@ public class MainActivity
     public View navigateInto(View view) {
         Timber.v("navigateInto(%s)", view);
         final View prev = container.getChildAt(0);
+        appBarLayout.intercept(prev, view);
         container.removeView(prev);
         container.addView(view);
         intoView = view;
