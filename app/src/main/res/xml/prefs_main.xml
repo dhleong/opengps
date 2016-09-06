@@ -2,6 +2,32 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- TODO SimConnect/etc. settings -->
+    <PreferenceCategory
+        android:title="@string/prefs_main_connection">
+        <ListPreference
+            android:key="pref_connection_type"
+            android:title="@string/prefs_main_connection_type"
+            android:summary="None"
+            android:defaultValue="NONE"
+            android:entries="@array/pref_connection_types"
+            android:entryValues="@array/pref_connection_type_values"
+            />
+
+        <EditTextPreference
+            android:key="pref_connection_host"
+            android:title="@string/prefs_main_connection_host"
+            android:inputType="numberDecimal"
+            />
+
+        <EditTextPreference
+            android:key="pref_connection_port"
+            android:title="@string/prefs_main_connection_port"
+            android:inputType="number"
+            android:defaultValue="4567"
+            />
+
+    </PreferenceCategory>
+
 
     <PreferenceCategory
         android:title="@string/prefs_main_interface">

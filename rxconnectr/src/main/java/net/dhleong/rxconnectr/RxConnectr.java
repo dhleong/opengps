@@ -78,7 +78,7 @@ public class RxConnectr {
 
         nextDataTypeId.set(0);
 
-        // TODO handle disconnects, etc.
+        // TODO notify disconnects, etc.
 
         Observable.fromCallable(() -> new SimConnect(appName, host, port))
         .subscribeOn(Schedulers.io())
