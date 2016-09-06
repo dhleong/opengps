@@ -1,13 +1,11 @@
 package net.dhleong.opengps.modules;
 
-import net.dhleong.opengps.connection.ConnectionDelegate;
-
 import rx.Observable;
 
 /**
  * @author dhleong
  */
-public class NullConnection implements ConnectionDelegate {
+public class NullConnection extends DummyConnection {
 
     @Override
     public void close() {

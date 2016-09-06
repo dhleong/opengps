@@ -24,4 +24,7 @@ public interface ConnectionDelegate {
     Observable<State> state();
 
     <T> Observable<T> subscribe(Class<T> type);
+
+    void swapCom1();
+    void swapNav1();
 }

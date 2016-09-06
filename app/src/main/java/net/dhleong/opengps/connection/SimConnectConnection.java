@@ -46,4 +46,14 @@ public class SimConnectConnection implements ConnectionDelegate {
     public <T> Observable<T> subscribe(Class<T> type) {
         return instance.subscribe(type);
     }
+
+    @Override
+    public void swapCom1() {
+        // TODO
+    }
+
+    @Override
+    public void swapNav1() {
+        // TODO
+    }
 }

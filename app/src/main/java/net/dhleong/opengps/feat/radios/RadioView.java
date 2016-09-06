@@ -10,6 +10,8 @@ import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding.view.RxView;
+
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.ui.UiUtil;
 
@@ -17,6 +19,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
 
 /**
  * @author dhleong
@@ -81,5 +84,13 @@ public class RadioView extends LinearLayout {
     public void setFrequencies(float active, float standby) {
         activeView.setText(String.format(Locale.US, "%.3f", active));
         standbyView.setText(String.format(Locale.US, "%.3f", standby));
+    }
+
+    public Observable<Void> swaps() {
+        return RxView.clicks(activeView);
+    }
+
+    public Observable<Void> changeRequests() {
+        return RxView.clicks(standbyView);
     }
 }

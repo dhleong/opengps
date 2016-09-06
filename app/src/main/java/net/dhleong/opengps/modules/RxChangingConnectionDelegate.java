@@ -73,6 +73,16 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
         return connection.flatMap(conn -> conn.subscribe(type));
     }
 
+    @Override
+    public void swapCom1() {
+        currentDelegate.swapCom1();
+    }
+
+    @Override
+    public void swapNav1() {
+        currentDelegate.swapNav1();
+    }
+
     ConnectionDelegate initConnectionFromConfig(ConnectionConfiguration config) {
         Timber.v("init(type=%s, host=%s, port=%d)", config.type, config.host, config.port);
         switch (config.type) {

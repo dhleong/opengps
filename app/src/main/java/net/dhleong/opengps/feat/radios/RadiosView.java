@@ -33,6 +33,7 @@ public class RadiosView extends LinearLayout {
 
     @Inject Observable<RadioData> radioData;
     @Inject Observable<ConnectionDelegate.State> stateChanges;
+    @Inject ConnectionDelegate connection;
 
     @BindView(R.id.status) TextView status;
     @BindView(R.id.radio_com) RadioView radioCom;
@@ -112,6 +113,9 @@ public class RadiosView extends LinearLayout {
                          updateRadios(data);
                      })
         );
+
+        subs.add(radioCom.swaps().subscribe(any -> connection.swapCom1()));
+        subs.add(radioNav.swaps().subscribe(any -> connection.swapNav1()));
     }
 
     @Override
