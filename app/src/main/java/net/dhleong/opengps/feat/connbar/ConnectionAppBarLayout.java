@@ -84,7 +84,7 @@ public class ConnectionAppBarLayout extends AppBarLayout {
     public void intercept(View oldView, View newView) {
         // remove any views that were added
         int myKids = getChildCount();
-        if (myKids > 1 ) {
+        if (myKids > 1) {
             AppBarLayout oldViewLayout = new AppBarLayout(getContext());
             oldViewLayout.setId(R.id.appbar);
             while (myKids-- > 1) {
@@ -106,5 +106,6 @@ public class ConnectionAppBarLayout extends AppBarLayout {
                 addView(v);
             }
         }
+
     }
 }
