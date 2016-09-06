@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <net.dhleong.opengps.feat.radios.RadiosView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:minHeight="?attr/actionBarSize"
     android:gravity="center"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     >
 
@@ -21,6 +21,32 @@
         <include layout="@layout/feat_radios_item" />
 
     </net.dhleong.opengps.feat.radios.RadioView>
+
+    <LinearLayout
+        android:id="@+id/selected_radios"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <net.dhleong.opengps.feat.radios.ActiveRadiosView
+            android:id="@+id/radios_mic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/padding_normal"
+            app:label="MIC"
+            app:labelColor="?android:textColorSecondary"
+            style="@style/OpenGps.ActiveRadiosView"
+            />
+
+        <net.dhleong.opengps.feat.radios.ActiveRadiosView
+            android:id="@+id/radios_mon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:label="MON"
+            app:labelColor="?android:textColorSecondary"
+            style="@style/OpenGps.ActiveRadiosView"
+            />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/status"

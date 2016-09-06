@@ -1,6 +1,7 @@
 package net.dhleong.opengps.ui;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -26,5 +27,12 @@ public class UiUtil {
             final InputMethodManager im  = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
             im.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
         }, 50);
+    }
+
+    /**
+     * Convenience
+     */
+    public static float applyDimen(View view, int unit, float value) {
+        return TypedValue.applyDimension(unit, value, view.getResources().getDisplayMetrics());
     }
 }

@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import net.dhleong.opengps.R;
+import net.dhleong.opengps.ui.UiUtil;
 
 import java.util.Locale;
 
@@ -58,25 +59,22 @@ public class RadioView extends LinearLayout {
         labelPaint = new Paint();
         labelPaint.setColor(activeView.getCurrentTextColor());
         labelPaint.setAntiAlias(true);
-        labelPaint.setTextAlign(Paint.Align.LEFT);
-        labelPaint.setTextSize(TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, 12f, getResources().getDisplayMetrics()));
+        labelPaint.setTextAlign(Paint.Align.CENTER);
+        labelPaint.setTextSize(UiUtil.applyDimen(this, TypedValue.COMPLEX_UNIT_SP, 14));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (label != null) {
-            canvas.drawText(label,
-                getPaddingLeft(),
+        canvas.drawText(label,
+                getWidth() / 2,
                 getPaddingTop() + labelPaint.getTextSize(),
                 labelPaint);
-        }
 
         canvas.drawText("STBY",
-            getPaddingLeft(),
-            getPaddingTop() + labelPaint.getTextSize() + standbyView.getTop(),
+            getWidth() / 2,
+            standbyView.getTop() + labelPaint.getTextSize(),
             labelPaint);
     }
 

@@ -32,6 +32,8 @@ public class DummyConnection implements ConnectionDelegate {
             data.com1standby = 121.35f;
             data.nav1active = 108.1f;
             data.nav1standby = 111.3f;
+            data.comTransmit1 = true;
+            data.comReceiveAll = true;
 
             //noinspection unchecked
             return Observable.just((T) data);

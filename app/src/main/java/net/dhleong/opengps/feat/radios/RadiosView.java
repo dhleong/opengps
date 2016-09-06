@@ -12,6 +12,7 @@ import net.dhleong.opengps.App;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.connection.ConnectionDelegate;
 import net.dhleong.opengps.connection.data.RadioData;
+import net.dhleong.opengps.modules.DummyConnection;
 
 import java.util.List;
 
@@ -36,8 +37,13 @@ public class RadiosView extends LinearLayout {
     @BindView(R.id.status) TextView status;
     @BindView(R.id.radio_com) RadioView radioCom;
     @BindView(R.id.radio_nav) RadioView radioNav;
+    @BindView(R.id.radios_mic) ActiveRadiosView radioMic;
+    @BindView(R.id.radios_mon) ActiveRadiosView radioMon;
 
-    @BindViews({R.id.radio_com, R.id.radio_nav}) List<View> radios;
+    @BindViews({
+        R.id.radio_com, R.id.radio_nav,
+        R.id.selected_radios
+    }) List<View> radios;
 
     private CompositeSubscription subs = new CompositeSubscription();
 
@@ -57,7 +63,7 @@ public class RadiosView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.bind(this);
-        App.component(getContext())
+        App.activityComponent(this)
            .inject(this);
     }
 
@@ -65,7 +71,14 @@ public class RadiosView extends LinearLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        // TODO track connection status
+        if (isInEditMode()) {
+            RadioData data = new DummyConnection()
+                .subscribe(RadioData.class)
+                .toBlocking()
+                .first();
+            updateRadios(data);
+            return;
+        }
 
         setStatus(R.string.conn_status_connecting);
 
@@ -96,8 +109,7 @@ public class RadiosView extends LinearLayout {
                              onConnected();
                          }
 
-                         radioCom.setFrequencies(data.com1active, data.com1standby);
-                         radioNav.setFrequencies(data.nav1active, data.nav1standby);
+                         updateRadios(data);
                      })
         );
     }
@@ -117,6 +129,16 @@ public class RadiosView extends LinearLayout {
             }
         });
         status.setVisibility(GONE);
+    }
+
+    void updateRadios(RadioData data) {
+        radioCom.setFrequencies(data.com1active, data.com1standby);
+        radioNav.setFrequencies(data.nav1active, data.nav1standby);
+        radioMic.setState(data.comTransmit1, data.comTransmit2);
+        radioMon.setState(
+            data.comTransmit1 || data.comReceiveAll,
+            data.comTransmit2 || data.comReceiveAll
+        );
     }
 
     void setStatus(@StringRes int statusRes) {

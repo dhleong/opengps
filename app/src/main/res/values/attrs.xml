@@ -3,4 +3,9 @@
     <declare-styleable name="RadioView">
         <attr name="label" format="string|reference" />
     </declare-styleable>
+
+    <declare-styleable name="ActiveRadiosView">
+        <attr name="label" />
+        <attr name="labelColor" format="color|reference" />
+    </declare-styleable>
 </resources>
