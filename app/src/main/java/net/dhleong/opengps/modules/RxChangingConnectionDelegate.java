@@ -151,12 +151,22 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
     }
 
     static class LocalDataMerger<T> {
+        /** wait plenty of time for the change to make it */
+        static final long CHANGE_WAIT_TIME_MS = 2500;
+
         final Observable<T> baseStream;
         T lastData;
         PublishRelay<T> localChanges = PublishRelay.create();
+        long changePending;
 
         LocalDataMerger(Observable<T> baseStream) {
-            this.baseStream = baseStream;
+            this.baseStream = baseStream
+                .filter(any -> System.currentTimeMillis() >= changePending)
+                .share();
+
+            this.baseStream.subscribe(updated -> {
+                lastData = updated;
+            });
         }
 
         Observable<T> merged() {
@@ -168,15 +178,14 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
 
         public void update(Action1<T> updater) {
             if (lastData != null) {
+                changePending = System.currentTimeMillis() + CHANGE_WAIT_TIME_MS;
                 updater.call(lastData);
                 localChanges.call(lastData);
             }
         }
 
         public static <T> LocalDataMerger<T> wrap(Observable<T> baseStream) {
-            LocalDataMerger<T> inst = new LocalDataMerger<>(baseStream);
-            baseStream.subscribe(updated -> inst.lastData = updated);
-            return inst;
+            return new LocalDataMerger<>(baseStream);
         }
     }
 }
