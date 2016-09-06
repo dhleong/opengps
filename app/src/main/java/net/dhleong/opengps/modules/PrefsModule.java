@@ -3,6 +3,7 @@ package net.dhleong.opengps.modules;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
@@ -54,7 +55,21 @@ public class PrefsModule {
 
     @Provides @Named(PREF_CONNECTION_PORT) Preference<Integer> connectionPort(
             RxSharedPreferences prefs) {
-        return prefs.getInteger(PREF_CONNECTION_PORT, 4567);
+        return prefs.getObject(PREF_CONNECTION_PORT, 4567, new Preference.Adapter<Integer>() {
+            @Override
+            public Integer get(@NonNull String key, @NonNull SharedPreferences preferences) {
+                try {
+                    return Integer.parseInt(preferences.getString(key, null));
+                } catch (Throwable e) {
+                    return 4567;
+                }
+            }
+
+            @Override
+            public void set(@NonNull String key, @NonNull Integer value, @NonNull SharedPreferences.Editor editor) {
+                editor.putString(key, value.toString());
+            }
+        });
     }
 
     @Provides Observable<ConnectionConfiguration> connectionConfig(

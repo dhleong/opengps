@@ -23,6 +23,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
          connection = configs.map(config -> {
             final ConnectionDelegate old = currentDelegate;
             if (old != null) {
+                Timber.v("Close %s", old);
                 old.close();
             }
 
@@ -59,6 +60,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
     }
 
     ConnectionDelegate initConnectionFromConfig(ConnectionConfiguration config) {
+        Timber.v("init(type=%s, host=%s, port=%d)", config.type, config.host, config.port);
         switch (config.type) {
         default:
             Timber.e("Unexpected config type %s", config.type);

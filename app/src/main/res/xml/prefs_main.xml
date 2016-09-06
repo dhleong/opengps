@@ -23,8 +23,8 @@
             android:key="pref_connection_port"
             android:title="@string/prefs_main_connection_port"
             android:inputType="number"
-            android:defaultValue="4567"
             />
+        <!--android:defaultValue="4567"-->
 
     </PreferenceCategory>
 
