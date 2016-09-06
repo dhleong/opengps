@@ -87,6 +87,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile deps.test.junit
+    testCompile deps.test.assertj
+    testCompile deps.test.mockito
 }
 
 retrolambda {

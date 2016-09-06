@@ -1,7 +1,6 @@
 package net.dhleong.rxconnectr;
 
 import com.jakewharton.rxrelay.BehaviorRelay;
-import com.jakewharton.rxrelay.PublishRelay;
 import com.jakewharton.rxrelay.ReplayRelay;
 
 import java.io.IOException;
@@ -16,6 +15,7 @@ import flightsim.simconnect.recv.RecvSimObjectData;
 import flightsim.simconnect.recv.SimObjectDataHandler;
 import rx.Observable;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 /**
  * Main entry point to RxConnectr, a reactive wrapper library
@@ -43,7 +43,7 @@ public class RxConnectr {
     final ReplayRelay<ObjectFactory<?>> factoriesToInit = ReplayRelay.create();
     final HashMap<Class<?>, ObjectFactory<?>> factories = new HashMap<>();
     final BehaviorRelay<SimConnect> connection = BehaviorRelay.create();
-    final PublishRelay<RecvSimObjectData> dataObjects = PublishRelay.create();
+    PublishSubject<RecvSimObjectData> dataObjects = PublishSubject.create();
 
     final SimConnectHandler handler = new SimConnectHandler();
 
@@ -143,6 +143,11 @@ public class RxConnectr {
     }
 
     public void close() {
+
+        // reset the dataObjects stream
+        dataObjects.onCompleted();
+        dataObjects = PublishSubject.create();
+
         DispatchThread thread = this.thread;
         if (thread == null) {
             throw new IllegalStateException("Not open");
@@ -162,14 +167,17 @@ public class RxConnectr {
 
         // TODO notify ?
 
-        open();
+        // re-open after a delay
+        Observable.just(null)
+                  .delay(1, TimeUnit.SECONDS)
+                  .subscribe(any -> open());
     }
 
     class SimConnectHandler implements SimObjectDataHandler {
 
         @Override
         public void handleSimObject(SimConnect simConnect, RecvSimObjectData recvSimObjectData) {
-            dataObjects.call(recvSimObjectData);
+            dataObjects.onNext(recvSimObjectData);
         }
 
     }

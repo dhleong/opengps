@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -29,13 +28,12 @@ public class ActivityModuleActivity extends AppCompatActivity {
     static AtomicInteger visibleActivities = new AtomicInteger();
 
     @Inject @Named(PREF_KEEP_SCREEN) Preference<Boolean> keepScreenOn;
-    @Inject Observable<ConnectionDelegate> connection;
+    @Inject ConnectionDelegate connection;
 
     private ActivityComponent myActivityComponent;
     private ActivityModule module;
 
     CompositeSubscription subs = new CompositeSubscription();
-    ConnectionDelegate currentConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +47,9 @@ public class ActivityModuleActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        visibleActivities.incrementAndGet();
-        subs.add(
-            connection.subscribe(conn -> currentConnection = conn)
-        );
+        if (0 == visibleActivities.getAndIncrement()) {
+            connection.open();
+        }
 
         subs.add(
             keepScreenOn.asObservable()
@@ -71,10 +68,7 @@ public class ActivityModuleActivity extends AppCompatActivity {
         subs.clear();
 
         if (visibleActivities.decrementAndGet() == 0) {
-            final ConnectionDelegate conn = currentConnection;
-            if (conn != null) {
-                conn.close();
-            }
+            connection.close();
         }
     }
 

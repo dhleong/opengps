@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.jakewharton.rxrelay.PublishRelay;
 
+import net.dhleong.opengps.modules.ConnectionModule;
 import net.dhleong.opengps.modules.NetworkModule;
 import net.dhleong.opengps.modules.PrefsModule;
 import net.dhleong.opengps.nasr.NasrTextDataSource;
@@ -24,7 +25,11 @@ import timber.log.Timber;
 /**
  * @author dhleong
  */
-@Module(includes = {NetworkModule.class, PrefsModule.class})
+@Module(includes = {
+    ConnectionModule.class,
+    NetworkModule.class,
+    PrefsModule.class
+})
 public class AppModule {
 
     private final Context appContext;
@@ -34,7 +39,6 @@ public class AppModule {
 
     AppModule(App context) {
         this.appContext = context;
-        Timber.v("NEW APPMODULE");
 
         routeUpdates.subscribe(newRoute -> {
             route.set(newRoute.copy());
