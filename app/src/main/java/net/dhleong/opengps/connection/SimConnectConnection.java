@@ -49,11 +49,11 @@ public class SimConnectConnection implements ConnectionDelegate {
 
     @Override
     public void swapCom1() {
-        // TODO
+        instance.sendEvent("COM_STBY_RADIO_SWAP", 0);
     }
 
     @Override
     public void swapNav1() {
-        // TODO
+        instance.sendEvent("NAV1_RADIO_SWAP", 0);
     }
 }

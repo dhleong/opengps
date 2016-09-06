@@ -8,7 +8,9 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import flightsim.simconnect.NotificationPriority;
 import flightsim.simconnect.SimConnect;
+import flightsim.simconnect.SimConnectConstants;
 import flightsim.simconnect.SimConnectPeriod;
 import flightsim.simconnect.recv.DispatcherTask;
 import flightsim.simconnect.recv.OpenHandler;
@@ -16,6 +18,7 @@ import flightsim.simconnect.recv.RecvOpen;
 import flightsim.simconnect.recv.RecvSimObjectData;
 import flightsim.simconnect.recv.SimObjectDataHandler;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -54,16 +57,21 @@ public class RxConnectr {
 
     final SimConnectHandler handler = new SimConnectHandler();
     final AtomicInteger nextDataTypeId = new AtomicInteger();
+    final AtomicInteger nextEventId = new AtomicInteger();
 
     final BehaviorRelay<State> stateChanges = BehaviorRelay.create(State.DISCONNECTED);
     final ReplayRelay<ObjectFactory<?>> factoriesToInit = ReplayRelay.create();
     final HashMap<Class<?>, ObjectFactory<?>> factories = new HashMap<>();
+    final HashMap<String, Integer> eventIds = new HashMap<>();
     final BehaviorRelay<SimConnect> connection = BehaviorRelay.create();
     PublishSubject<RecvSimObjectData> dataObjects = PublishSubject.create();
+    PublishSubject<PendingEvent> eventQueue = PublishSubject.create();
 
     DispatchThread thread;
     boolean isOpen;
     SimConnect currentConn;
+    Subscription eventQueueSub;
+
 
     public RxConnectr(String appName, String host, int port) {
         this.appName = appName;
@@ -100,6 +108,7 @@ public class RxConnectr {
         }
 
         nextDataTypeId.set(0);
+        nextEventId.set(0);
 
         // update state
         stateChanges.call(State.CONNECTING);
@@ -127,6 +136,39 @@ public class RxConnectr {
             thread = new DispatchThread(conn, task);
             thread.start();
 
+            eventQueueSub = eventQueue.observeOn(Schedulers.io())
+                .serialize()
+                .map(pending -> {
+                    Integer existingId = eventIds.get(pending.eventName);
+                    if (existingId != null) {
+                        pending.eventId = existingId;
+                    } else {
+                        int id = nextEventId.getAndIncrement();
+                        pending.eventId = id;
+                        eventIds.put(pending.eventName, id);
+
+                        try {
+                            conn.mapClientEventToSimEvent(id, pending.eventName);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    return pending;
+                })
+                .observeOn(Schedulers.io())
+                .subscribe(pendingEvent -> {
+                    try {
+                        conn.transmitClientEvent(
+                            CLIENT_ID, pendingEvent.eventId, pendingEvent.param,
+                            NotificationPriority.DEFAULT.ordinal(),
+                            SimConnectConstants.EVENT_FLAG_GROUPID_IS_PRIORITY
+                            );
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
         }, e -> {
             if (isOpen) {
                 System.err.println("Error..." + e.getClass() + ": " + e.getMessage());
@@ -134,6 +176,10 @@ public class RxConnectr {
 
             reconnect();
         });
+    }
+
+    public void sendEvent(String eventName, int param) {
+        eventQueue.onNext(new PendingEvent(eventName, param));
     }
 
     public Observable<State> state() {
@@ -190,6 +236,12 @@ public class RxConnectr {
     void closeInternal() {
 
         stateChanges.call(State.DISCONNECTED);
+
+        Subscription eventQueueSub = this.eventQueueSub;
+        if (eventQueueSub != null) {
+            eventQueueSub.unsubscribe();
+        }
+        eventIds.clear();
 
         final SimConnect conn = currentConn;
         currentConn = null;
@@ -298,4 +350,14 @@ public class RxConnectr {
         }
     }
 
+    static class PendingEvent {
+        final String eventName;
+        final int param;
+        int eventId;
+
+        PendingEvent(String eventId, int param) {
+            this.eventName = eventId;
+            this.param = param;
+        }
+    }
 }
