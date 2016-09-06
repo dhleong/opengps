@@ -3,20 +3,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:minHeight="?attr/actionBarSize"
     android:gravity="center"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     >
 
-    <TextView
+    <net.dhleong.opengps.feat.radios.RadioView
         android:id="@+id/radio_com"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        tools:text="118.700"
-        style="@style/OpenGps.Radio"
-        />
+        android:padding="@dimen/padding_normal"
+        app:label="COM">
+
+        <include layout="@layout/feat_radios_item" />
+
+    </net.dhleong.opengps.feat.radios.RadioView>
 
     <TextView
         android:id="@+id/status"
@@ -28,13 +32,16 @@
         style="@style/OpenGps.Radio"
         />
 
-    <TextView
+    <net.dhleong.opengps.feat.radios.RadioView
         android:id="@+id/radio_nav"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        tools:text="108.250"
-        style="@style/OpenGps.Radio"
-        />
+        android:padding="@dimen/padding_normal"
+        app:label="NAV">
+
+        <include layout="@layout/feat_radios_item" />
+
+    </net.dhleong.opengps.feat.radios.RadioView>
 
 </net.dhleong.opengps.feat.radios.RadiosView>

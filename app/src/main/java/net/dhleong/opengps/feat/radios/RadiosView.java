@@ -14,7 +14,6 @@ import net.dhleong.opengps.connection.ConnectionDelegate;
 import net.dhleong.opengps.connection.data.RadioData;
 
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -35,8 +34,8 @@ public class RadiosView extends LinearLayout {
     @Inject Observable<ConnectionDelegate.State> stateChanges;
 
     @BindView(R.id.status) TextView status;
-    @BindView(R.id.radio_com) TextView radioCom;
-    @BindView(R.id.radio_nav) TextView radioNav;
+    @BindView(R.id.radio_com) RadioView radioCom;
+    @BindView(R.id.radio_nav) RadioView radioNav;
 
     @BindViews({R.id.radio_com, R.id.radio_nav}) List<View> radios;
 
@@ -97,8 +96,8 @@ public class RadiosView extends LinearLayout {
                              onConnected();
                          }
 
-                         radioCom.setText(String.format(Locale.US, "%.3f", data.com1active));
-                         radioNav.setText(String.format(Locale.US, "%.2f", data.nav1active));
+                         radioCom.setFrequencies(data.com1active, data.com1standby);
+                         radioNav.setFrequencies(data.nav1active, data.nav1standby);
                      })
         );
     }

@@ -30,6 +30,6 @@
         android:layout_height="match_parent"
         app:layout_behavior="net.dhleong.opengps.feat.connbar.BelowAppBarBehavior"
         >
-        <include layout="@layout/feat_main" />
+        <include layout="@layout/feat_home" />
     </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

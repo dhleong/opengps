@@ -29,7 +29,9 @@ public class DummyConnection implements ConnectionDelegate {
         if (type == RadioData.class) {
             RadioData data = new RadioData();
             data.com1active = 118.7f;
+            data.com1standby = 121.35f;
             data.nav1active = 108.1f;
+            data.nav1standby = 111.3f;
 
             //noinspection unchecked
             return Observable.just((T) data);
