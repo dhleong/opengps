@@ -29,4 +29,5 @@
     <string name="conn_status_connecting">Connecting</string>
     <string name="conn_status_disconnected">Disconnected</string>
     <string name="conn_status_connected">Connected</string>
+    <string name="fpl_waypoint_tune">Tune Nav1 Standby</string>
 </resources>

@@ -128,9 +128,26 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
     public void setReceiveAll(boolean receiveAll) {
         currentDelegate.setReceiveAll(receiveAll);
         if (radioUpdater != null) {
-            radioUpdater.update(radioData -> {
-                radioData.comReceiveAll = receiveAll;
-            });
+            radioUpdater.update(radioData ->
+                radioData.comReceiveAll = receiveAll);
+        }
+    }
+
+    @Override
+    public void setCom1Standby(float frequency) {
+        currentDelegate.setCom1Standby(frequency);
+        if (radioUpdater != null) {
+            radioUpdater.update(radioData ->
+                radioData.com1standby = frequency);
+        }
+    }
+
+    @Override
+    public void setNav1Standby(float frequency) {
+        currentDelegate.setNav1Standby(frequency);
+        if (radioUpdater != null) {
+            radioUpdater.update(radioData ->
+                radioData.nav1standby = frequency);
         }
     }
 

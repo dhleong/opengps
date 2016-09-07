@@ -47,7 +47,6 @@ public class AirportInfoView
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.bind(this);
-//        strip.get
     }
 
     @Override

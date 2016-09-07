@@ -8,6 +8,7 @@ import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.OpenGps;
 import net.dhleong.opengps.R;
+import net.dhleong.opengps.connection.ConnectionDelegate;
 import net.dhleong.opengps.feat.airport.AirportInfoView;
 import net.dhleong.opengps.feat.airway.AirwaySearchView;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchView;
@@ -31,6 +32,7 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
 
     @Inject GpsRoute route;
     @Inject Action1<GpsRoute> routeUpdater;
+    @Inject ConnectionDelegate connection;
 
     @Inject FlightPlannerPresenter() {}
 
@@ -88,6 +90,13 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
                     } else if (waypoint instanceof NavFix) {
                         Timber.v("TODO view navfix");
                     }
+                })
+        );
+
+        subscribe(
+            view.tuneNavaidEvents()
+                .subscribe(waypoint -> {
+                    connection.setNav1Standby((float) waypoint.freq());
                 })
         );
 

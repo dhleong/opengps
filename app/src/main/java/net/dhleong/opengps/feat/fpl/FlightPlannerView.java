@@ -103,6 +103,10 @@ public class FlightPlannerView extends CoordinatorLayout {
         return adapter.loadAirwayEvents;
     }
 
+    public Observable<Navaid> tuneNavaidEvents() {
+        return adapter.tuneNavaidEvents;
+    }
+
     public Observable<AeroObject> viewWaypointEvents() {
         return adapter.viewWaypointEvents;
     }
@@ -115,6 +119,7 @@ public class FlightPlannerView extends CoordinatorLayout {
         public PublishRelay<AeroObject> removeAfterWaypointEvents = PublishRelay.create();
         public PublishRelay<AeroObject> viewWaypointEvents = PublishRelay.create();
         public PublishRelay<AeroObject> loadAirwayEvents = PublishRelay.create();
+        public PublishRelay<Navaid> tuneNavaidEvents = PublishRelay.create();
 
         @Inject Adapter() {}
 
@@ -315,6 +320,9 @@ public class FlightPlannerView extends CoordinatorLayout {
         if (!(ref instanceof Airport)) {
             items.add(context.getString(R.string.fpl_waypoint_load_airway));
         }
+        if (ref instanceof Navaid) {
+            items.add(context.getString(R.string.fpl_waypoint_tune));
+        }
 
         ListPopupWindow win = new ListPopupWindow(context);
         win.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_list_item_1,
@@ -325,6 +333,7 @@ public class FlightPlannerView extends CoordinatorLayout {
             case 1: adapter.removeAfterWaypointEvents.call(ref); break;
             case 2: adapter.viewWaypointEvents.call(ref); break;
             case 3: adapter.loadAirwayEvents.call(ref); break;
+            case 4: adapter.tuneNavaidEvents.call((Navaid) ref); break;
             }
 
             win.dismiss();

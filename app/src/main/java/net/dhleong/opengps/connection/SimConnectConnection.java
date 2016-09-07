@@ -2,6 +2,7 @@ package net.dhleong.opengps.connection;
 
 import net.dhleong.opengps.connection.data.RadioData;
 import net.dhleong.opengps.util.LatLngHdg;
+import net.dhleong.rxconnectr.RadioUtil;
 import net.dhleong.rxconnectr.RxConnectr;
 
 import rx.Observable;
@@ -69,5 +70,17 @@ public class SimConnectConnection implements ConnectionDelegate {
     @Override
     public void setReceiveAll(boolean receiveAll) {
         instance.sendEvent("COM_RECEIVE_ALL_SET", receiveAll ? 1 : 0);
+    }
+
+    @Override
+    public void setCom1Standby(float frequency) {
+        instance.sendEvent("COM_STBY_RADIO_SET",
+            RadioUtil.frequencyAsParam((int) (frequency * 1000)));
+    }
+
+    @Override
+    public void setNav1Standby(float frequency) {
+        instance.sendEvent("NAV1_STBY_SET",
+            RadioUtil.frequencyAsParam((int) (frequency * 1000)));
     }
 }

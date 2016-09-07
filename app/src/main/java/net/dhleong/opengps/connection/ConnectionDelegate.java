@@ -33,4 +33,7 @@ public interface ConnectionDelegate {
      */
     void setTransmitCom2(boolean transmitCom2);
     void setReceiveAll(boolean receiveAll);
+
+    void setCom1Standby(float frequency);
+    void setNav1Standby(float frequency);
 }
