@@ -52,7 +52,9 @@ public class HomeView extends CoordinatorLayout {
             new GridLayoutManager(getContext(), 2);
         recycler.setLayoutManager(gridLayoutMan);
         recycler.setAdapter(adapter = new Adapter());
-        recycler.addItemDecoration(new CenteringDecorator());
+        recycler.addItemDecoration(new SpacingDecorator(
+            getResources().getDimensionPixelOffset(R.dimen.padding_huge)
+        ));
     }
 
     static class HomeMenuItem {
@@ -116,12 +118,11 @@ public class HomeView extends CoordinatorLayout {
 
     static class HomeItemHolder extends RecyclerView.ViewHolder {
 
-        TextView view;
+        @BindView(R.id.label) TextView view;
 
         public HomeItemHolder(View itemView) {
             super(itemView);
-
-            view = (TextView) itemView;
+            ButterKnife.bind(this, itemView);
         }
 
         public void bind(HomeMenuItem item) {
@@ -130,17 +131,28 @@ public class HomeView extends CoordinatorLayout {
         }
     }
 
-    static class CenteringDecorator extends RecyclerView.ItemDecoration {
+    static class SpacingDecorator extends RecyclerView.ItemDecoration {
+
+        private final int spacing;
+
+        SpacingDecorator(int spacing) {
+            this.spacing = spacing;
+        }
 
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
             int columns = ((GridLayoutManager) parent.getLayoutManager()).getSpanCount();
-//            int adapterPosition = parent.getChildAdapterPosition(view);
-            int width = parent.getWidth();
-            int space = width / columns;
+            int adapterPosition = parent.getChildAdapterPosition(view);
 
-            outRect.left = (space - view.getWidth() - view.getPaddingLeft() - view.getPaddingRight()) / 4;
-            outRect.top = (space / 2) - (view.getHeight() / 2);
+            if (adapterPosition < columns) {
+                outRect.top = spacing;
+            }
+
+            if (adapterPosition % columns == 0) {
+                outRect.left = spacing;
+            } else if (adapterPosition % columns == columns - 1) {
+                outRect.right = spacing;
+            }
         }
     }
 }

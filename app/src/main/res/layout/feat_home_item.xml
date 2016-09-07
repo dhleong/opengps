@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="center"
-    android:textSize="16sp"
-    android:textAllCaps="true"
-    android:drawablePadding="@dimen/padding_small"
-    android:padding="@dimen/padding_large"
-    android:background="?attr/selectableItemBackgroundBorderless"
-    tools:text="Settings"
-    tools:drawableTop="@drawable/ic_settings"
-    />
+    >
+  <TextView
+      android:id="@+id/label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:gravity="center"
+      android:textSize="16sp"
+      android:textAllCaps="true"
+      android:drawablePadding="@dimen/padding_small"
+      android:padding="@dimen/padding_large"
+      android:background="?attr/selectableItemBackgroundBorderless"
+      tools:text="Settings"
+      tools:drawableTop="@drawable/ic_settings"
+      />
+</FrameLayout>
