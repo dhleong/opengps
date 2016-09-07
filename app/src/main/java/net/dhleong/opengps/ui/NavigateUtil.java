@@ -4,7 +4,14 @@ import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.view.View;
 
+import net.dhleong.opengps.AeroObject;
+import net.dhleong.opengps.Airport;
+import net.dhleong.opengps.NavFix;
+import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.R;
+import net.dhleong.opengps.feat.airport.AirportInfoView;
+
+import timber.log.Timber;
 
 /**
  * Wacky navigation that avoids gross fragments
@@ -58,6 +65,18 @@ public class NavigateUtil {
         // at least pretend to not be leaky
         view.setTag(R.id.previous, null);
         return true;
+    }
+
+    public static void intoWaypoint(Context context, AeroObject waypoint) {
+        if (waypoint instanceof Airport) {
+            Timber.v("view airport");
+            NavigateUtil.into(context, AirportInfoView.class,
+                R.layout.feat_airport, (Airport) waypoint);
+        } else if (waypoint instanceof Navaid) {
+            Timber.v("TODO view navaid");
+        } else if (waypoint instanceof NavFix) {
+            Timber.v("TODO view navfix");
+        }
     }
 
     public interface IntoNavigator {

@@ -40,5 +40,6 @@
     <string name="conn_status_disconnected">Disconnected</string>
     <string name="conn_status_connected">Connected</string>
     <string name="airport_page_wx_sky_clear">Sky Clear</string>
+    <string name="home_title_waypoint_info">Waypoint Info</string>
 
 </resources>

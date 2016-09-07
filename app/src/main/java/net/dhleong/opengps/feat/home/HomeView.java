@@ -15,10 +15,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import net.dhleong.opengps.R;
+import net.dhleong.opengps.feat.waypoint.WaypointSearchView;
 import net.dhleong.opengps.ui.NavigateUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * @author dhleong
@@ -70,6 +72,8 @@ public class HomeView extends CoordinatorLayout {
         static final HomeMenuItem[] ITEMS = {
             new HomeMenuItem(R.drawable.ic_flight_plan, R.string.home_title_flight_plan,
                 R.layout.feat_fpl),
+            new HomeMenuItem(R.drawable.ic_waypont_info, R.string.home_title_waypoint_info,
+                R.layout.feat_waypoint),
             new HomeMenuItem(R.drawable.ic_settings, R.string.home_title_settings,
                 R.layout.feat_settings),
         };
@@ -81,9 +85,20 @@ public class HomeView extends CoordinatorLayout {
                 .inflate(R.layout.feat_home_item, parent, false)
             );
 
-            holder.itemView.setOnClickListener(v ->
-                NavigateUtil.into(parent.getContext(),
-                    ITEMS[holder.getAdapterPosition()].featureLayout));
+            holder.itemView.setOnClickListener(v -> {
+                final View newView =
+                    NavigateUtil.into(parent.getContext(),
+                        ITEMS[holder.getAdapterPosition()].featureLayout);
+
+                if (newView instanceof WaypointSearchView) {
+                    //noinspection unchecked
+                    ((WaypointSearchView) newView)
+                        .result(null)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(waypoint ->
+                            NavigateUtil.intoWaypoint(parent.getContext(), waypoint));
+                }
+            });
 
             return holder;
         }
