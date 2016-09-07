@@ -2,8 +2,13 @@ package net.dhleong.opengps.core;
 
 import android.content.Context;
 
+import net.dhleong.opengps.util.wx.WxService;
+
+import javax.inject.Named;
+
 import dagger.Module;
 import dagger.Provides;
+import retrofit2.Retrofit;
 
 /**
  * @author dhleong
@@ -19,5 +24,9 @@ public class ActivityModule {
 
     @Provides Context context() {
         return activity;
+    }
+
+    @Provides WxService wxService(@Named("wx") Retrofit retrofit) {
+        return retrofit.create(WxService.class);
     }
 }

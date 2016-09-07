@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<net.dhleong.opengps.feat.airport.pages.WxPageView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_large"
+        android:orientation="vertical"
+        >
+
+        <android.support.v4.widget.ContentLoadingProgressBar
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/padding_huge"
+            style="?android:attr/progressBarStyleLarge"
+            />
+
+        <TextView
+            android:id="@+id/observed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="7 Sep, 08:51 UTC"
+            style="@style/OpenGps.WxLine"
+            />
+
+        <TextView
+            android:id="@+id/wind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Wind 070 at 9kt"
+            style="@style/OpenGps.WxLine"
+            />
+
+        <TextView
+            android:id="@+id/visibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Visibility 10SM"
+            style="@style/OpenGps.WxLine"
+            />
+
+        <TextView
+            android:id="@+id/sky"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Sky Clear"
+            style="@style/OpenGps.WxLine"
+            />
+
+        <TextView
+            android:id="@+id/temp_dewpoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Temp 22c / Dewpoint 14c"
+            style="@style/OpenGps.WxLine"
+            />
+
+        <TextView
+            android:id="@+id/altimeter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Altimeter 29.96"
+            style="@style/OpenGps.WxLine"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/airport_page_wx_metar_header"
+            android:paddingLeft="@dimen/padding_small"
+            android:paddingRight="@dimen/padding_small"
+            android:paddingTop="@dimen/padding_large"
+            android:paddingBottom="@dimen/padding_small"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/metar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:padding="@dimen/padding_small"
+            tools:text="KLGA 070851Z 07009KT 10SM"/>
+
+    </LinearLayout>
+
+</net.dhleong.opengps.feat.airport.pages.WxPageView>

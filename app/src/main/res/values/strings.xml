@@ -9,25 +9,36 @@
     <string name="fpl_waypoint_info">Info</string>
     <string name="fpl_waypoint_load_airway">Load Airway</string>
     <string name="fpl_waypoint_remove_after">Remove all after</string>
+    <string name="fpl_waypoint_tune">Tune Nav1 Standby</string>
 
     <string name="waypoint_input_hint">Waypoint Identifier</string>
     <string name="waypoint_multiple_title">Multiple Matches</string>
 
     <string name="airport_page_info">INFO</string>
-    <string name="airport_page_frequencies">FREQUENCIES</string>
     <string name="airport_page_info_elevation">ELEVATION</string>
     <string name="airport_page_info_charts">Charts</string>
+    <string name="airport_page_frequencies">FREQUENCIES</string>
+    <string name="airport_page_wx">WEATHER</string>
+    <string name="airport_page_wx_wind_calm">Wind Calm</string>
+    <string name="airport_page_wx_wind">Wind %1$03d&#176; at %2$d KT</string>
+    <string name="airport_page_wx_visibility">Visibility %1$.0f SM</string>
+    <string name="airport_page_wx_temp_and_dew">Temp %1$.0f&#176;C / Dewpoint %2$.0f&#176;C</string>
+    <string name="airport_page_wx_altimeter">Altimeter %1$.2f\"</string>
+    <string name="airport_page_wx_metar_header">Raw METAR</string>
 
     <string name="home_title_flight_plan">Flight Plan</string>
     <string name="home_title_settings">Settings</string>
+
     <string name="prefs_main_interface">Interface</string>
     <string name="prefs_main_screen">Keep Screen On</string>
     <string name="prefs_main_connection">Connection</string>
     <string name="prefs_main_connection_type">Type</string>
     <string name="prefs_main_connection_host">Host</string>
     <string name="prefs_main_connection_port">Port</string>
+
     <string name="conn_status_connecting">Connecting</string>
     <string name="conn_status_disconnected">Disconnected</string>
     <string name="conn_status_connected">Connected</string>
-    <string name="fpl_waypoint_tune">Tune Nav1 Standby</string>
+    <string name="airport_page_wx_sky_clear">Sky Clear</string>
+
 </resources>

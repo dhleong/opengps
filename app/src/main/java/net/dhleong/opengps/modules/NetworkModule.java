@@ -22,6 +22,7 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 import timber.log.Timber;
 
 /**
@@ -38,8 +39,9 @@ public class NetworkModule {
             .cache(new Cache(context.getCacheDir(), CACHE_SIZE))
             .addInterceptor(chain -> {
                 final Request originalRequest = chain.request();
-                if (!"GET".equals(originalRequest.method())) {
-                    // don't cache if not @GET
+                if (!"GET".equals(originalRequest.method())
+                        || originalRequest.url().host().contains("weather")) {
+                    // don't cache if not @GET, or if it's a wx request
                     return chain.proceed(originalRequest);
                 }
 
@@ -91,12 +93,17 @@ public class NetworkModule {
     @Provides Retrofit.Builder retrofitBuilder(OkHttpClient okhttp, Gson gson) {
         return new Retrofit.Builder()
             .client(okhttp)
+            .addConverterFactory(SimpleXmlConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
     }
 
     @Provides @Singleton @Named("charts") Retrofit chartsRetrofit(Retrofit.Builder builder) {
         return builder.baseUrl("http://api.aircharts.org").build();
+    }
+
+    @Provides @Singleton @Named("wx") Retrofit weatherRetrofit(Retrofit.Builder builder) {
+        return builder.baseUrl("http://www.aviationweather.gov/adds/dataserver_current/").build();
     }
 
 }

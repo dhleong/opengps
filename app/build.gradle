@@ -64,6 +64,11 @@ dependencies {
     compile deps.retrofit
     compile deps.retrofitGson
     compile deps.retrofitRxJava
+    compile (deps.retrofitSimpleXml) {
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'stax', module: 'stax'
+        exclude group: 'xpp3', module: 'stax'
+    }
     compile deps.timber
 
 

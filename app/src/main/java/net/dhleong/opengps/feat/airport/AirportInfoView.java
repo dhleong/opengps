@@ -52,6 +52,7 @@ public class AirportInfoView
     @Override
     public Single<Void> result(Airport input) {
         // bind UI
+        pager.setOffscreenPageLimit(1); // don't eager-load weather
         pager.setAdapter(new AirportInfoTabsAdapter(getContext(), input));
         tabs.setupWithViewPager(pager);
 
@@ -73,6 +74,7 @@ public class AirportInfoView
         static final Page[] PAGES = {
             new Page(R.layout.feat_airport_page_info, R.string.airport_page_info),
             new Page(R.layout.feat_airport_page_freqs, R.string.airport_page_frequencies),
+            new Page(R.layout.feat_airport_page_wx, R.string.airport_page_wx),
         };
 
         private final Context context;

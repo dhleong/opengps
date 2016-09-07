@@ -38,7 +38,7 @@ ext.vs = [
     icepick: '3.2.0',
     leakCanary: '1.4-beta2',
     okhttp: '3.4.1',
-    retrofit: '2.0.2',
+    retrofit: '2.1.0',
     rxbinding: '0.4.0',
 ]
 
@@ -61,6 +61,7 @@ ext.deps = [
     retrofit: "com.squareup.retrofit2:retrofit:${vs.retrofit}",
     retrofitGson: "com.squareup.retrofit2:converter-gson:${vs.retrofit}",
     retrofitRxJava: "com.squareup.retrofit2:adapter-rxjava:${vs.retrofit}",
+    retrofitSimpleXml: "com.squareup.retrofit2:converter-simplexml:${vs.retrofit}",
     stetho: "com.facebook.stetho:stetho:1.2.0",
     timber: 'com.jakewharton.timber:timber:4.3.0',
 

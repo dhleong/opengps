@@ -1,6 +1,7 @@
 package net.dhleong.opengps.core;
 
 import net.dhleong.opengps.feat.airport.pages.FreqsPageView;
+import net.dhleong.opengps.feat.airport.pages.WxPageView;
 import net.dhleong.opengps.feat.airway.AirwaySearchComponent;
 import net.dhleong.opengps.feat.charts.ChartPickerComponent;
 import net.dhleong.opengps.feat.charts.ChartPickerModule;
@@ -27,5 +28,5 @@ public interface ActivityComponent {
 
     void inject(FreqsPageView freqsPageView);
     void inject(RadiosView radiosView);
-
+    void inject(WxPageView wxPageView);
 }
