@@ -14,9 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import net.dhleong.opengps.App;
+import net.dhleong.opengps.OpenGps;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchView;
 import net.dhleong.opengps.ui.NavigateUtil;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,6 +30,9 @@ import rx.android.schedulers.AndroidSchedulers;
  * @author dhleong
  */
 public class HomeView extends CoordinatorLayout {
+
+    // NB just inject to ensure we eagerly start loading
+    @Inject OpenGps gps;
 
     @BindView(R.id.recycler) RecyclerView recycler;
 
@@ -47,6 +54,9 @@ public class HomeView extends CoordinatorLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.bind(this);
+        App.activityComponent(getContext())
+           .newHomeComponent()
+           .inject(this);
 
         GridLayoutManager gridLayoutMan =
             new GridLayoutManager(getContext(), 2);

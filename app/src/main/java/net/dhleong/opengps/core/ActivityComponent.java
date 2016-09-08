@@ -7,6 +7,7 @@ import net.dhleong.opengps.feat.charts.ChartPickerComponent;
 import net.dhleong.opengps.feat.charts.ChartPickerModule;
 import net.dhleong.opengps.feat.connbar.ConnectionBarComponent;
 import net.dhleong.opengps.feat.fpl.FlightPlannerComponent;
+import net.dhleong.opengps.feat.home.HomeComponent;
 import net.dhleong.opengps.feat.map.MapComponent;
 import net.dhleong.opengps.feat.radios.RadiosView;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchComponent;
@@ -24,6 +25,7 @@ public interface ActivityComponent {
     AirwaySearchComponent newAirwaySearchComponent();
     ChartPickerComponent newChartPickerComponent(ChartPickerModule chartPickerModule);
     ConnectionBarComponent newConnectionBarComponent();
+    HomeComponent newHomeComponent();
     FlightPlannerComponent newFlightPlannerComponent();
     MapComponent newMapComponent();
     WaypointSearchComponent newWaypointSearchComponent();
