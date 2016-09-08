@@ -2,6 +2,9 @@ package net.dhleong.opengps.modules;
 
 import net.dhleong.opengps.connection.ConnectionDelegate;
 import net.dhleong.opengps.connection.data.RadioData;
+import net.dhleong.opengps.util.LatLngHdg;
+
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 
@@ -11,6 +14,7 @@ import rx.Observable;
 public class DummyConnection implements ConnectionDelegate {
 
     final RadioData radioData = new RadioData();
+    final LatLngHdg location = new LatLngHdg();
 
     public DummyConnection() {
         radioData.com1active = 118.7f;
@@ -19,6 +23,11 @@ public class DummyConnection implements ConnectionDelegate {
         radioData.nav1standby = 111.3f;
         radioData.comTransmit1 = true;
         radioData.comReceiveAll = true;
+
+        // laguardia
+        location.lat = 40.77725;
+        location.lng = -73.86594;
+        location.hdg = 316f - 12f; // approach hdg - magvar
     }
 
     @Override
@@ -39,10 +48,16 @@ public class DummyConnection implements ConnectionDelegate {
     @Override
     public <T> Observable<T> subscribe(Class<T> type) {
         if (type == RadioData.class) {
-
             //noinspection unchecked
             return (Observable<T>) Observable.just(radioData);
         }
+
+        if (type == LatLngHdg.class) {
+            //noinspection unchecked
+            return (Observable<T>) Observable.interval(0, 1, TimeUnit.SECONDS)
+                                             .map(any -> location);
+        }
+
         return Observable.empty();
     }
 

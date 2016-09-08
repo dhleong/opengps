@@ -30,4 +30,5 @@ public abstract class ConnectionModule {
     @Provides static Observable<RadioData> radios(ConnectionDelegate delegate) {
         return delegate.subscribe(RadioData.class);
     }
+
 }

@@ -7,6 +7,7 @@ import net.dhleong.opengps.feat.charts.ChartPickerComponent;
 import net.dhleong.opengps.feat.charts.ChartPickerModule;
 import net.dhleong.opengps.feat.connbar.ConnectionBarComponent;
 import net.dhleong.opengps.feat.fpl.FlightPlannerComponent;
+import net.dhleong.opengps.feat.map.MapComponent;
 import net.dhleong.opengps.feat.radios.RadiosView;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchComponent;
 import net.dhleong.opengps.util.scopes.PerActivity;
@@ -24,6 +25,7 @@ public interface ActivityComponent {
     ChartPickerComponent newChartPickerComponent(ChartPickerModule chartPickerModule);
     ConnectionBarComponent newConnectionBarComponent();
     FlightPlannerComponent newFlightPlannerComponent();
+    MapComponent newMapComponent();
     WaypointSearchComponent newWaypointSearchComponent();
 
     void inject(FreqsPageView freqsPageView);

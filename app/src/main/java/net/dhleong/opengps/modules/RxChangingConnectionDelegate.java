@@ -44,7 +44,8 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
              Timber.v("OPEN %s", conn);
              currentDelegate = conn;
              conn.open();
-        }).share();
+        }).share()
+          .cache();
     }
 
     @Override
