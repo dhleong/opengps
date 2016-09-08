@@ -123,9 +123,11 @@ public class MapFeatureView
         Timber.v("MAP READY");
         this.map = googleMap;
         map.setIndoorEnabled(false);
-        map.setMinZoomPreference(MIN_ZOOM_LEVEL);
         map.setMaxZoomPreference(MAX_ZOOM_LEVEL);
         map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+
+        UiSettings settings = map.getUiSettings();
+        settings.setCompassEnabled(false);
     }
 
     void onGpsUpdate(LatLngHdg update) {
@@ -135,9 +137,12 @@ public class MapFeatureView
         // wait to disable UI gestures until we actually have some location
         UiSettings settings = map.getUiSettings();
         settings.setAllGesturesEnabled(false);
-        settings.setCompassEnabled(false);
         settings.setZoomControlsEnabled(true);
         settings.setZoomGesturesEnabled(true);
+
+        // also, let them stay zoomed out until now
+        // TODO maybe remember the last location and be able to zoom there
+        map.setMinZoomPreference(MIN_ZOOM_LEVEL);
 
         CameraPosition.Builder builder =
             new CameraPosition.Builder()

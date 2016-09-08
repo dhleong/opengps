@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
+import rx.observables.ConnectableObservable;
 import timber.log.Timber;
 
 /**
@@ -45,7 +46,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
              currentDelegate = conn;
              conn.open();
         }).share()
-          .cache();
+          .replay(1);
     }
 
     @Override
@@ -65,7 +66,8 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
     @Override
     public void open() {
         if (subs != null) throw new IllegalStateException("Already open");
-        subs = connection.subscribe();
+//        subs = connection.subscribe();
+        subs = ((ConnectableObservable) connection).connect();
     }
 
     @Override
