@@ -93,7 +93,6 @@ public class NetworkModule {
     @Provides Retrofit.Builder retrofitBuilder(OkHttpClient okhttp, Gson gson) {
         return new Retrofit.Builder()
             .client(okhttp)
-            .addConverterFactory(SimpleXmlConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
     }
@@ -102,8 +101,11 @@ public class NetworkModule {
         return builder.baseUrl("http://api.aircharts.org").build();
     }
 
-    @Provides @Singleton @Named("wx") Retrofit weatherRetrofit(Retrofit.Builder builder) {
-        return builder.baseUrl("http://www.aviationweather.gov/adds/dataserver_current/").build();
+    @Provides @Singleton @Named("wx") Retrofit weatherRetrofit(OkHttpClient okhttp) {
+        return new Retrofit.Builder()
+            .client(okhttp)
+            .addConverterFactory(SimpleXmlConverterFactory.create())
+            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+            .baseUrl("http://www.aviationweather.gov/adds/dataserver_current/").build();
     }
-
 }
