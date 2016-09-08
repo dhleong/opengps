@@ -74,6 +74,8 @@ public class HomeView extends CoordinatorLayout {
         static final HomeMenuItem[] ITEMS = {
             new HomeMenuItem(R.drawable.ic_flight_plan, R.string.home_title_flight_plan,
                 R.layout.feat_fpl),
+            new HomeMenuItem(R.drawable.ic_map, R.string.home_title_map,
+                R.layout.feat_map),
             new HomeMenuItem(R.drawable.ic_waypont_info, R.string.home_title_waypoint_info,
                 R.layout.feat_waypoint),
             new HomeMenuItem(R.drawable.ic_settings, R.string.home_title_settings,
@@ -88,6 +90,7 @@ public class HomeView extends CoordinatorLayout {
             );
 
             holder.itemView.setOnClickListener(v -> {
+
                 final View newView =
                     NavigateUtil.into(parent.getContext(),
                         ITEMS[holder.getAdapterPosition()].featureLayout);

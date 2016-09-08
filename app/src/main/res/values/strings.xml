@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">opengps</string>
 
+    <string name="title_activity_maps">Map</string>
+
     <string name="airway_select">Select Airway</string>
     <string name="airway_select_exit">Select Exit</string>
 
@@ -41,5 +43,6 @@
     <string name="conn_status_connected">Connected</string>
     <string name="airport_page_wx_sky_clear">Sky Clear</string>
     <string name="home_title_waypoint_info">Waypoint</string>
+    <string name="home_title_map">Map</string>
 
 </resources>

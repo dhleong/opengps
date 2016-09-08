@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.core.ActivityModuleActivity;
 import net.dhleong.opengps.feat.connbar.ConnectionAppBarLayout;
+import net.dhleong.opengps.ui.LifecycleDelegate;
 import net.dhleong.opengps.ui.NavigateUtil;
 
 import butterknife.BindView;
@@ -50,7 +51,63 @@ public class MainActivity
         container.removeView(prev);
         container.addView(view);
         intoView = view;
+
+        if (view instanceof LifecycleDelegate) {
+            ((LifecycleDelegate) view).onCreate(null);
+            ((LifecycleDelegate) view).onResume();
+        }
+
+        if (prev instanceof LifecycleDelegate) {
+            ((LifecycleDelegate) prev).onPause();
+            ((LifecycleDelegate) prev).onDestroy();
+        }
+
         return prev;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (intoView instanceof LifecycleDelegate) {
+            ((LifecycleDelegate) intoView).onResume();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (intoView instanceof LifecycleDelegate) {
+            ((LifecycleDelegate) intoView).onPause();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (intoView instanceof LifecycleDelegate) {
+            ((LifecycleDelegate) intoView).onDestroy();
+        }
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+
+        if (intoView instanceof LifecycleDelegate) {
+            ((LifecycleDelegate) intoView).onLowMemory();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (intoView instanceof LifecycleDelegate) {
+            ((LifecycleDelegate) intoView).onSaveInstanceState(outState);
+        }
     }
 
     @Override

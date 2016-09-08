@@ -30,7 +30,7 @@ task clean(type: Delete) {
 
 ext.vs = [
     supportLib: '24.2.0',
-    playServices: '9.2.1',
+    playServices: '9.4.0',
 
     assertjAndroid: '1.1.1',
     butterknife: '8.2.1',
@@ -89,6 +89,7 @@ ext.deps = [
 
     playServices: [
         location: "com.google.android.gms:play-services-location:${vs.playServices}",
+        maps: "com.google.android.gms:play-services-maps:${vs.playServices}",
     ],
 
     support: [
