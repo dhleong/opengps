@@ -1,5 +1,6 @@
 package net.dhleong.opengps.feat.home;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.annotation.DrawableRes;
@@ -110,8 +111,14 @@ public class HomeView extends CoordinatorLayout {
                     ((WaypointSearchView) newView)
                         .result(null)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(waypoint ->
-                            NavigateUtil.intoWaypoint(parent.getContext(), waypoint));
+                        .subscribe(waypoint -> {
+                            if (waypoint == null) {
+                                // hax?
+                                ((Activity) newView.getContext()).onBackPressed();
+                            } else {
+                                NavigateUtil.intoWaypoint(parent.getContext(), waypoint);
+                            }
+                        });
                 }
             });
 

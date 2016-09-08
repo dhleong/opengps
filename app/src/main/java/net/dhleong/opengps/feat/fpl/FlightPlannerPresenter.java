@@ -18,6 +18,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import timber.log.Timber;
 
+import static net.dhleong.opengps.util.RxUtil.notNull;
+
 /**
  * @author dhleong
  */
@@ -44,6 +46,7 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
             view.addWaypointEvents()
                 .flatMap(request ->
                     DialogPrompter.prompt(context, WaypointSearchView.class, R.layout.feat_waypoint, null))
+                .filter(notNull())
                 .doOnNext(route::add)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(any -> {

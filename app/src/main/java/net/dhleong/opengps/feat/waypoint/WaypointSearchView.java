@@ -3,7 +3,6 @@ package net.dhleong.opengps.feat.waypoint;
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -19,6 +18,7 @@ import net.dhleong.opengps.R;
 import net.dhleong.opengps.ui.DialogPrompter;
 import net.dhleong.opengps.ui.UiUtil;
 import net.dhleong.opengps.util.RxUtil;
+import net.dhleong.opengps.views.BackInterceptingEditText;
 
 import java.util.List;
 import java.util.Locale;
@@ -43,7 +43,7 @@ public class WaypointSearchView
 
     @Inject OpenGps gps;
 
-    @BindView(R.id.input) EditText input;
+    @BindView(R.id.input) BackInterceptingEditText input;
     @BindView(R.id.quick_match) TextView quickMatch;
 //    @BindView(R.id.confirm) TextView confirm;
 
@@ -138,7 +138,9 @@ public class WaypointSearchView
                       }
                   }),
             RxView.clicks(quickMatch)
-                  .map(any -> quickMatchObj)
+                  .map(any -> quickMatchObj),
+
+            input.backPresses().map(any -> null)
         ).take(1).toSingle();
     }
 
