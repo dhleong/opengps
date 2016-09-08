@@ -12,20 +12,26 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import net.dhleong.opengps.App;
+import net.dhleong.opengps.GpsRoute;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.ui.LifecycleDelegate;
 import net.dhleong.opengps.util.LatLngHdg;
 
 import javax.inject.Inject;
 
+import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static net.dhleong.opengps.util.RxUtil.notNull;
 
 /**
  * Named as such to avoid confusion with Google's MapView
@@ -38,10 +44,12 @@ public class MapFeatureView
     private static final float MIN_ZOOM_LEVEL = 7f;
     private static final float MAX_ZOOM_LEVEL = 16f;
     private static final float DEFAULT_ZOOM_LEVEL = 14f;
-    
+
     @Inject Observable<LatLngHdg> gpsUpdates;
+    @Inject GpsRoute route;
 
     @BindView(R.id.map) MapView mapView;
+    @BindColor(R.color.colorAccent) int routeColor;
 
     CompositeSubscription subs = new CompositeSubscription();
     GoogleMap map;
@@ -128,6 +136,15 @@ public class MapFeatureView
 
         UiSettings settings = map.getUiSettings();
         settings.setCompassEnabled(false);
+
+        subs.add(
+            Observable.just(route)
+                      .observeOn(Schedulers.io())
+                      .map(this::routeToPolyline)
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .filter(notNull())
+                      .subscribe(map::addPolyline)
+        );
     }
 
     void onGpsUpdate(LatLngHdg update) {
@@ -161,4 +178,29 @@ public class MapFeatureView
             builder.build()
         ));
     }
+
+    PolylineOptions routeToPolyline(final GpsRoute gpsRoute) {
+        if (gpsRoute == null) return null;
+
+        final int len = gpsRoute.size();
+        if (len == 0) return null;
+
+        final float density = getResources().getDisplayMetrics().density;
+        final float lineWidth = 6 * density;
+
+        final PolylineOptions opts = new PolylineOptions()
+            .geodesic(true)
+            .color(routeColor)
+            .width(lineWidth);
+
+        for (int i=0; i < len; i++) {
+            final GpsRoute.Step s = gpsRoute.step(i);
+            if (s.type == GpsRoute.Step.Type.FIX) {
+                opts.add(new LatLng(s.ref.lat(), s.ref.lng()));
+            }
+        }
+
+        return opts;
+    }
+
 }
