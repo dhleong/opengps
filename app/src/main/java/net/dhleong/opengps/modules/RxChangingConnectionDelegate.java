@@ -1,5 +1,6 @@
 package net.dhleong.opengps.modules;
 
+import com.jakewharton.rxrelay.BehaviorRelay;
 import com.jakewharton.rxrelay.PublishRelay;
 
 import net.dhleong.opengps.connection.ConnectionConfiguration;
@@ -19,7 +20,9 @@ import timber.log.Timber;
  * @author dhleong
  */
 public class RxChangingConnectionDelegate implements ConnectionDelegate {
-    private final Observable<ConnectionDelegate> connection;
+    private final BehaviorRelay<ConnectionDelegate> connection = BehaviorRelay.create();
+
+    private final ConnectableObservable<ConnectionDelegate> connectionObs;
 
     ConnectionDelegate currentDelegate;
     Subscription subs;
@@ -27,7 +30,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
     LocalDataMerger<RadioData> radioUpdater;
 
     @Inject RxChangingConnectionDelegate(Observable<ConnectionConfiguration> configs) {
-         connection = configs.map(config -> {
+         connectionObs = configs.map(config -> {
              final ConnectionDelegate old = currentDelegate;
              currentDelegate = null;
              if (old != null) {
@@ -45,8 +48,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
              Timber.v("OPEN %s", conn);
              currentDelegate = conn;
              conn.open();
-        }).share()
-          .replay(1);
+        }).replay(1);
     }
 
     @Override
@@ -67,7 +69,8 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
     public void open() {
         if (subs != null) throw new IllegalStateException("Already open");
 //        subs = connection.subscribe();
-        subs = ((ConnectableObservable) connection).connect();
+        subs = connectionObs.connect();
+        connectionObs.subscribe(connection);
     }
 
     @Override
