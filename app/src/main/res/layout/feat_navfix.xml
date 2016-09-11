@@ -2,9 +2,18 @@
 <net.dhleong.opengps.feat.navfix.NavFixInfoView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     
     <include layout="@layout/widget_waypoint_header"
         android:id="@+id/waypoint" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/behavior_below_appbar"
+        app:belowId="@+id/waypoint"
+        />
 
 </net.dhleong.opengps.feat.navfix.NavFixInfoView>

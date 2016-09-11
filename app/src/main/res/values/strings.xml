@@ -3,6 +3,8 @@
 
     <string name="title_activity_maps">Map</string>
 
+    <string name="behavior_below_appbar">net.dhleong.opengps.ui.behavior.BelowAppBarBehavior</string>
+
     <string name="airway_select">Select Airway</string>
     <string name="airway_select_exit">Select Exit</string>
 

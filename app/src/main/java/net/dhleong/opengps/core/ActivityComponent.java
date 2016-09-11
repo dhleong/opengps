@@ -9,6 +9,7 @@ import net.dhleong.opengps.feat.connbar.ConnectionBarComponent;
 import net.dhleong.opengps.feat.fpl.FlightPlannerComponent;
 import net.dhleong.opengps.feat.home.HomeComponent;
 import net.dhleong.opengps.feat.map.MapComponent;
+import net.dhleong.opengps.feat.navfix.NavFixInfoView;
 import net.dhleong.opengps.feat.radios.RadiosView;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchComponent;
 import net.dhleong.opengps.ui.WaypointHeaderView;
@@ -32,7 +33,8 @@ public interface ActivityComponent {
     WaypointSearchComponent newWaypointSearchComponent();
 
     void inject(FreqsPageView freqsPageView);
+    void inject(NavFixInfoView navFixInfoView);
     void inject(RadiosView radiosView);
-    void inject(WxPageView wxPageView);
     void inject(WaypointHeaderView waypointHeaderView);
+    void inject(WxPageView wxPageView);
 }

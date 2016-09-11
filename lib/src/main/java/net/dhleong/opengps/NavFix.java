@@ -68,6 +68,10 @@ public class NavFix extends BaseAeroObject {
         this.refs = refs;
     }
 
+    public List<Reference> references() {
+        return refs;
+    }
+
     @Override
     public String toString() {
         return "NavFix{" +

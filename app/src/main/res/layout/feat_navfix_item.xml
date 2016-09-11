@@ -4,7 +4,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/padding_large"
+    android:padding="@dimen/padding_normal"
     android:background="?attr/selectableItemBackground"
     >
 
@@ -23,15 +23,31 @@
         android:lines="1"
         android:ellipsize="end"
         android:paddingStart="@dimen/padding_normal"
-        android:paddingEnd="@dimen/padding_normal"
+        android:paddingEnd="@dimen/padding_small"
         android:textSize="14sp"
         tools:text="LAGUARDIA"/>
+
+    <TextView
+        android:id="@+id/radial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_small"
+        android:textSize="16sp"
+        tools:text="R180"/>
+
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_small"
+        android:textSize="16sp"
+        tools:text="20 NM"/>
 
     <TextView
         android:id="@+id/freq"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_normal"
+        android:padding="@dimen/padding_small"
         android:textSize="16sp"
         tools:text="118.7"/>
 
@@ -40,7 +56,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:paddingStart="@dimen/padding_normal"
+        android:paddingStart="@dimen/padding_small"
         android:paddingEnd="0dp"
         />
 

@@ -14,4 +14,8 @@
         <attr name="indicatorColor" format="color|reference" />
         <attr name="bearing" format="float" />
     </declare-styleable>
+
+    <declare-styleable name="BelowAppBarBehavior">
+        <attr name="belowId" format="reference" />
+    </declare-styleable>
 </resources>

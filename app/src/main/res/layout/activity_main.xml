@@ -28,7 +28,7 @@
         android:id="@+id/activity_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="net.dhleong.opengps.feat.connbar.BelowAppBarBehavior"
+        app:layout_behavior="@string/behavior_below_appbar"
         >
         <include layout="@layout/feat_home" />
     </FrameLayout>
