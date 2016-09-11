@@ -1,12 +1,13 @@
 package net.dhleong.opengps.feat.airway;
 
 import android.content.Context;
-import android.support.design.widget.CoordinatorLayout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.jakewharton.rxbinding.view.RxView;
 
@@ -33,12 +34,15 @@ import rx.subscriptions.CompositeSubscription;
  * @author dhleong
  */
 public class AirwaySearchView
-        extends CoordinatorLayout
+        extends LinearLayout
         implements DialogPrompter.PrompterView<AeroObject, AirwaySearchResult> {
 
     @Inject OpenGps gps;
 
-    @BindView(R.id.load) View loadButton;
+    @BindView(R.id.airway) TextView airwayLabel;
+    @BindView(R.id.entry) TextView entryLabel;
+    @BindView(R.id.exit) TextView exitLabel;
+    @BindView(R.id.confirm) View loadButton;
 
     private AeroObject start, exit;
     private Airway airway;
@@ -63,9 +67,11 @@ public class AirwaySearchView
         super.onFinishInflate();
         ButterKnife.bind(this);
 
-        App.activityComponent(this)
-           .newAirwaySearchComponent()
-           .inject(this);
+        if (!isInEditMode()) {
+            App.activityComponent(this)
+               .newAirwaySearchComponent()
+               .inject(this);
+        }
     }
 
     @Override
@@ -78,7 +84,6 @@ public class AirwaySearchView
     public Single<AirwaySearchResult> result(AeroObject start) {
         this.start = start;
 
-        // TODO bind UI; show prompt for airway, exit
         subs.add(
             gps.airwaysFor(start)
                .subscribeOn(Schedulers.io())
@@ -88,6 +93,16 @@ public class AirwaySearchView
                    airwayCandidates = candidates;
                    pickAirway();
                })
+        );
+
+        subs.add(
+            RxView.clicks(airwayLabel)
+                  .subscribe(any -> pickAirway())
+        );
+
+        subs.add(
+            RxView.clicks(exitLabel)
+                  .subscribe(any -> pickExit())
         );
 
         return RxView.clicks(loadButton)
@@ -105,6 +120,7 @@ public class AirwaySearchView
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(chosenAirway -> {
                   airway = chosenAirway;
+                  updateUi();
                   pickExit();
               })
         );
@@ -119,9 +135,34 @@ public class AirwaySearchView
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(chosenExit -> {
                   exit = chosenExit;
-                  loadButton.setEnabled(true);
+                  updateUi();
               })
         );
+    }
+
+    void updateUi() {
+        final Airway airway = this.airway;
+        final AeroObject entry = start;
+        final AeroObject exit = this.exit;
+        loadButton.setEnabled(entry != null && exit != null && airway != null);
+
+        if (airway == null) {
+            airwayLabel.setText(null);
+        } else {
+            airwayLabel.setText(airway.name());
+        }
+
+        if (entry == null) {
+            entryLabel.setText(null);
+        } else {
+            entryLabel.setText(entry.name());
+        }
+
+        if (exit == null) {
+            exitLabel.setText(null);
+        } else {
+            exitLabel.setText(exit.name());
+        }
     }
 
     static CharSequence describeExit(AeroObject exit) {

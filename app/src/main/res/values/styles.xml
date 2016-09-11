@@ -80,4 +80,11 @@
         <item name="android:lines">1</item>
     </style>
 
+    <style name="OpenGps.Airway" />
+    <style name="OpenGps.Airway.Item">
+        <item name="android:padding">@dimen/padding_normal</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
 </resources>
