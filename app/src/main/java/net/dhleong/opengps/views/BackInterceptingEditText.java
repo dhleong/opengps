@@ -6,6 +6,8 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 
+import net.dhleong.opengps.ui.UiUtil;
+
 import rx.subjects.PublishSubject;
 
 /**
@@ -39,8 +41,9 @@ public class BackInterceptingEditText extends AppCompatEditText {
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK
-            && event.getAction() == KeyEvent.ACTION_UP) {
+                && event.getAction() == KeyEvent.ACTION_UP) {
             backPressedEvents.onNext(null);
+            UiUtil.hideKeyboard(this);
             return true;
         }
         return super.onKeyPreIme(keyCode, event);

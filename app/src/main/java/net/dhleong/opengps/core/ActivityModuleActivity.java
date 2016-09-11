@@ -56,7 +56,8 @@ public class ActivityModuleActivity extends AppCompatActivity {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(keepScreenOn -> {
                             Timber.v("set(keepScreenOn, %s)", keepScreenOn);
-                            getWindow().getDecorView().setKeepScreenOn(keepScreenOn);
+                            findViewById(android.R.id.content)
+                                .setKeepScreenOn(keepScreenOn);
                         })
         );
     }

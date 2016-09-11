@@ -20,6 +20,7 @@ import net.dhleong.opengps.OpenGps;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchView;
 import net.dhleong.opengps.ui.NavigateUtil;
+import net.dhleong.opengps.ui.UiUtil;
 
 import javax.inject.Inject;
 
@@ -107,18 +108,19 @@ public class HomeView extends CoordinatorLayout {
                         ITEMS[holder.getAdapterPosition()].featureLayout);
 
                 if (newView instanceof WaypointSearchView) {
-                    //noinspection unchecked
-                    ((WaypointSearchView) newView)
-                        .result(null)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(waypoint -> {
-                            if (waypoint == null) {
-                                // hax?
-                                ((Activity) newView.getContext()).onBackPressed();
-                            } else {
-                                NavigateUtil.intoWaypoint(parent.getContext(), waypoint);
-                            }
-                        });
+                    final WaypointSearchView waypointView = (WaypointSearchView) newView;
+                    UiUtil.onAttachSubscribe(waypointView, vv ->
+                        vv.result(null)
+                          .observeOn(AndroidSchedulers.mainThread())
+                          .subscribe(waypoint -> {
+                              if (waypoint == null) {
+                                  // hax?
+                                  ((Activity) vv.getContext()).onBackPressed();
+                              } else {
+                                  NavigateUtil.intoWaypoint(parent.getContext(), waypoint);
+                              }
+                          })
+                    );
                 }
             });
 
