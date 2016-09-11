@@ -11,6 +11,7 @@ import net.dhleong.opengps.core.ActivityModuleActivity;
 import net.dhleong.opengps.feat.connbar.ConnectionAppBarLayout;
 import net.dhleong.opengps.ui.LifecycleDelegate;
 import net.dhleong.opengps.ui.NavigateUtil;
+import net.dhleong.opengps.ui.UiUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,6 +47,11 @@ public class MainActivity
     @Override
     public View navigateInto(View view) {
         Timber.v("navigateInto(%s)", view);
+
+        // hide keyboard first, since if it was requested
+        //  it would have been from the current view
+        UiUtil.hideKeyboard(this);
+
         final View prev = container.getChildAt(0);
         appBarLayout.intercept(prev, view);
         container.removeView(prev);
