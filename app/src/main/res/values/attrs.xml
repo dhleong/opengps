@@ -9,4 +9,9 @@
         <attr name="labelColor" format="color|reference" />
         <attr name="labelBgColor" format="color|reference" />
     </declare-styleable>
+
+    <declare-styleable name="BearingIndicatorView">
+        <attr name="indicatorColor" format="color|reference" />
+        <attr name="bearing" format="float" />
+    </declare-styleable>
 </resources>

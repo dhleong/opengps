@@ -11,6 +11,7 @@ import net.dhleong.opengps.feat.home.HomeComponent;
 import net.dhleong.opengps.feat.map.MapComponent;
 import net.dhleong.opengps.feat.radios.RadiosView;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchComponent;
+import net.dhleong.opengps.ui.WaypointHeaderView;
 import net.dhleong.opengps.util.scopes.PerActivity;
 
 import dagger.Subcomponent;
@@ -33,4 +34,5 @@ public interface ActivityComponent {
     void inject(FreqsPageView freqsPageView);
     void inject(RadiosView radiosView);
     void inject(WxPageView wxPageView);
+    void inject(WaypointHeaderView waypointHeaderView);
 }

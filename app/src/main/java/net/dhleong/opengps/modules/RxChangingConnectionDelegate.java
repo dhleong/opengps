@@ -77,7 +77,8 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
     public Observable<State> state() {
         return connection.flatMap(conn ->
             conn.state()
-                .takeWhile(any -> currentDelegate == conn));
+                .takeWhile(any -> currentDelegate == conn))
+                .onBackpressureLatest();
     }
 
     @Override
@@ -92,7 +93,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
             return (Observable<T>) radioUpdater.merged();
         }
 
-        return base;
+        return base.onBackpressureLatest();
     }
 
     @Override
@@ -196,7 +197,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
             return Observable.merge(
                 baseStream,
                 localChanges
-            );
+            ).onBackpressureLatest();
         }
 
         public void update(Action1<T> updater) {

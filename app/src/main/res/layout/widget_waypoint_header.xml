@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="@dimen/padding_more">
 
     <TextView
@@ -52,6 +53,17 @@
         style="@style/OpenGps.Waypoint.Label"
         />
 
+    <net.dhleong.opengps.views.BearingIndicatorView
+        android:id="@+id/bearing_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/bearing_label"
+        android:layout_alignBottom="@id/bearing_label"
+        android:layout_alignTop="@id/bearing_label"
+        android:paddingStart="@dimen/padding_small"
+        android:paddingEnd="@dimen/padding_small"
+        app:indicatorColor="?attr/colorAccent"
+        />
 
     <TextView
         android:id="@+id/distance"
