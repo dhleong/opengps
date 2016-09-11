@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<net.dhleong.opengps.feat.navaid.NavaidInfoView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <include layout="@layout/widget_waypoint_header"
+        android:id="@+id/waypoint" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/behavior_below_appbar"
+        app:belowId="@+id/waypoint"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/padding_more"
+            tools:text="VORTAC" />
+
+        <LinearLayout
+            android:id="@+id/freq_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="@dimen/padding_more"
+            android:background="?attr/selectableItemBackground"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/navaid_frequency_label"
+                android:paddingLeft="@dimen/padding_more"
+                android:paddingRight="@dimen/padding_more"
+                />
+
+            <TextView
+                android:id="@+id/freq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/padding_more"
+                android:paddingRight="@dimen/padding_more"
+                tools:text="118.70"
+                />
+
+            <net.dhleong.opengps.views.MorseView
+                android:id="@+id/ident"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/padding_more"
+                android:paddingRight="@dimen/padding_more"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</net.dhleong.opengps.feat.navaid.NavaidInfoView>

@@ -22,6 +22,7 @@ import net.dhleong.opengps.GpsRoute;
 import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.R;
+import net.dhleong.opengps.ui.TextUtil;
 import net.dhleong.opengps.views.MorseView;
 
 import java.util.ArrayList;
@@ -286,7 +287,7 @@ public class FlightPlannerView extends CoordinatorLayout {
             }
 
             if (step.ref instanceof Navaid) {
-                freq.setText(String.format(Locale.US, "%.2f", ((Navaid) step.ref).freq()));
+                freq.setText(TextUtil.formatFreq(((Navaid) step.ref).freq()));
                 ident.setText(step.ref.id());
 
                 freq.setVisibility(VISIBLE);

@@ -1,5 +1,7 @@
 package net.dhleong.opengps.ui;
 
+import java.util.Locale;
+
 /**
  * @author dhleong
  */
@@ -43,5 +45,9 @@ public class TextUtil {
                .append('.')
                .append(second)
                .append('\'');
+    }
+
+    public static CharSequence formatFreq(double freq) {
+        return String.format(Locale.US, "%.2f", freq);
     }
 }

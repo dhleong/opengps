@@ -21,6 +21,7 @@ import net.dhleong.opengps.R;
 import net.dhleong.opengps.connection.ConnectionDelegate;
 import net.dhleong.opengps.ui.DialogPrompter;
 import net.dhleong.opengps.ui.NavigateUtil;
+import net.dhleong.opengps.ui.TextUtil;
 import net.dhleong.opengps.ui.WaypointHeaderView;
 import net.dhleong.opengps.views.MorseView;
 
@@ -167,7 +168,7 @@ public class NavFixInfoView
             }
 
             if (reference.obj instanceof Navaid) {
-                freq.setText(String.format(Locale.US, "%.2f", ((Navaid) reference.obj).freq()));
+                freq.setText(TextUtil.formatFreq(((Navaid) reference.obj).freq()));
                 ident.setText(reference.obj.id());
 
                 freq.setVisibility(VISIBLE);

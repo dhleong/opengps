@@ -10,6 +10,7 @@ import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.feat.airport.AirportInfoView;
+import net.dhleong.opengps.feat.navaid.NavaidInfoView;
 import net.dhleong.opengps.feat.navfix.NavFixInfoView;
 
 import timber.log.Timber;
@@ -74,7 +75,9 @@ public class NavigateUtil {
             NavigateUtil.into(context, AirportInfoView.class,
                 R.layout.feat_airport, (Airport) waypoint);
         } else if (waypoint instanceof Navaid) {
-            Timber.v("TODO view navaid");
+            Timber.v("view navaid");
+            NavigateUtil.into(context, NavaidInfoView.class,
+                R.layout.feat_navaid, (Navaid) waypoint);
         } else if (waypoint instanceof NavFix) {
             Timber.v("view navfix");
             NavigateUtil.into(context, NavFixInfoView.class,
