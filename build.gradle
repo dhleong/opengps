@@ -95,6 +95,7 @@ ext.deps = [
     support: [
         annotations: "com.android.support:support-annotations:${vs.supportLib}",
         appcompat: "com.android.support:appcompat-v7:${vs.supportLib}",
+        constraintlayout: 'com.android.support.constraint:constraint-layout:1.0.0-alpha7',
         design: "com.android.support:design:${vs.supportLib}",
         recyclerview: "com.android.support:recyclerview-v7:${vs.supportLib}",
     ],

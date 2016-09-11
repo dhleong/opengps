@@ -48,4 +48,36 @@
         <item name="android:padding">@dimen/padding_small</item>
     </style>
 
+    <style name="OpenGps.Waypoint" />
+    <style name="OpenGps.Waypoint.Id">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingLeft">@dimen/padding_normal</item>
+        <item name="android:paddingRight">@dimen/padding_normal</item>
+    </style>
+
+    <style name="OpenGps.Waypoint.Name">
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingLeft">@dimen/padding_normal</item>
+        <item name="android:paddingRight">@dimen/padding_normal</item>
+    </style>
+
+    <style name="OpenGps.Waypoint.Label">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="OpenGps.Waypoint.DistBrg">
+        <!--<item name="android:paddingStart">@dimen/padding_huge</item>-->
+        <!--<item name="android:paddingEnd">@dimen/padding_huge</item>-->
+        <item name="android:gravity">end</item>
+    </style>
+
+    <style name="OpenGps.Waypoint.LatLng">
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lines">1</item>
+    </style>
+
 </resources>

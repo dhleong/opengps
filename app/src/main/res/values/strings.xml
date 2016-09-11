@@ -44,5 +44,7 @@
     <string name="airport_page_wx_sky_clear">Sky Clear</string>
     <string name="home_title_waypoint_info">Waypoint</string>
     <string name="home_title_map">Map</string>
+    <string name="waypoint_distance_label">DIS:</string>
+    <string name="waypoint_bearing_label">BRG:</string>
 
 </resources>

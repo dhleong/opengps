@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<net.dhleong.opengps.ui.WaypointHeaderView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/padding_more">
+
+    <TextView
+        android:id="@+id/id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/OpenGps.Waypoint.Id"
+        tools:text="BDR"
+        />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/id"
+        style="@style/OpenGps.Waypoint.Name"
+        tools:text="BRIDGEPORT"
+        />
+
+    <android.support.v4.widget.Space
+        android:id="@+id/id_name_spacer"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_toEndOf="@id/name"
+        />
+
+    <TextView
+        android:id="@+id/distance_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/id_name_spacer"
+        android:layout_alignBaseline="@+id/id"
+        android:layout_marginStart="@dimen/padding_normal"
+        android:text="@string/waypoint_distance_label"
+        style="@style/OpenGps.Waypoint.Label"
+        />
+
+    <TextView
+        android:id="@+id/bearing_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/id_name_spacer"
+        android:layout_alignBaseline="@+id/name"
+        android:layout_marginStart="@dimen/padding_normal"
+        android:text="@string/waypoint_bearing_label"
+        style="@style/OpenGps.Waypoint.Label"
+        />
+
+
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/bearing_label"
+        android:layout_toStartOf="@+id/lat"
+        android:layout_alignBaseline="@+id/id"
+        android:text="---"
+        style="@style/OpenGps.Waypoint.DistBrg"
+        tools:text="190 NM"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        android:id="@+id/bearing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/bearing_label"
+        android:layout_toStartOf="@+id/lng"
+        android:layout_alignBaseline="@+id/name"
+        android:text="---"
+        style="@style/OpenGps.Waypoint.DistBrg"
+        tools:text="360'"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        android:id="@+id/lat"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBaseline="@+id/id"
+        android:layout_marginStart="@dimen/padding_normal"
+        tools:text="N 41'43.44'"
+        style="@style/OpenGps.Waypoint.LatLng"
+        />
+
+    <TextView
+        android:id="@+id/lng"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBaseline="@+id/name"
+        android:layout_marginStart="@dimen/padding_normal"
+        tools:text="W071'25.69'"
+        style="@style/OpenGps.Waypoint.LatLng"
+        />
+</net.dhleong.opengps.ui.WaypointHeaderView>

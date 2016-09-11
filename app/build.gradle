@@ -82,6 +82,7 @@ dependencies {
      * Support libs
      */
 
+    compile deps.support.constraintlayout
     compile deps.support.recyclerview
     compile deps.support.annotations
     compile deps.support.appcompat
