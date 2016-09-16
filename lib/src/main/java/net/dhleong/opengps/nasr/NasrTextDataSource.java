@@ -9,6 +9,7 @@ import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
 import net.dhleong.opengps.Storage;
 import net.dhleong.opengps.impl.BaseAeroObject;
+import net.dhleong.opengps.nasr.util.AiracCycle;
 import net.dhleong.opengps.nasr.util.Parser;
 
 import java.io.File;
@@ -83,20 +84,20 @@ public class NasrTextDataSource implements DataSource {
     );
     static final int AWY_TYPE_FIX = 0;
 
-
-    static final String DEFAULT_ZIP_URL =
-        "https://nfdc.faa.gov/webContent/56DaySub/56DySubscription_July_21__2016_-_September_15__2016.zip";
-
+    private final File cacheDir;
     private final File zipFile;
     private final String zipUrl;
     private ZipFile openedZipFile;
 
-    public NasrTextDataSource(File zipFile) {
-        this(zipFile, DEFAULT_ZIP_URL);
+    public NasrTextDataSource(File cacheDirectory) {
+        this(cacheDirectory, AiracCycle.current().getNasrDataUrl());
     }
-    public NasrTextDataSource(File zipFile, String zipUrl) {
-        this.zipFile = zipFile;
+    public NasrTextDataSource(File cacheDir, String zipUrl) {
+        this.cacheDir = cacheDir;
         this.zipUrl = zipUrl;
+
+        String zipName = zipUrl.substring(zipUrl.lastIndexOf('/') + 1);
+        zipFile = new File(cacheDir, zipName);
     }
 
     @Override
@@ -208,6 +209,10 @@ public class NasrTextDataSource implements DataSource {
 
     protected Observable<File> ensureZipAvailable() {
         return Observable.fromCallable(() -> {
+            if (!cacheDir.isDirectory() && !cacheDir.mkdirs()) {
+                throw new IOException("Unable to prepare cache dir " + cacheDir);
+            }
+
             if (zipFile.exists()) {
                 System.out.println("NASR zip already downloaded!");
 
@@ -221,6 +226,28 @@ public class NasrTextDataSource implements DataSource {
                     //noinspection ResultOfMethodCallIgnored
                     zipFile.delete();
                 }
+            }
+
+            // don't have it, or out of date
+            File expiredDataFile = null;
+            File[] files = cacheDir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.getName().endsWith(".zip")) {
+                        // everybody do your share
+                        //noinspection ResultOfMethodCallIgnored
+                        f.delete();
+                        expiredDataFile = f;
+                    }
+                }
+            }
+
+            // TODO better logging
+            if (expiredDataFile == null) {
+                System.out.println("Fetching initial nasr data set: " + zipUrl);
+            } else {
+                System.out.println("Existing data set (" + expiredDataFile
+                    + ") expired; fetching " + zipUrl);
             }
 
             // download

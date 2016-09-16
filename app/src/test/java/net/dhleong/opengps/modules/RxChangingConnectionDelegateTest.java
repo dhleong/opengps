@@ -5,6 +5,7 @@ import com.jakewharton.rxrelay.PublishRelay;
 import net.dhleong.opengps.connection.ConnectionConfiguration;
 import net.dhleong.opengps.connection.ConnectionDelegate;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,6 +43,12 @@ public class RxChangingConnectionDelegateTest {
                 return delegate;
             }
         };
+        conn.open();
+    }
+
+    @After
+    public void tearDown() {
+        conn.close();
     }
 
     @Test

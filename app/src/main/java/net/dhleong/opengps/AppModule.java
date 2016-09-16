@@ -51,11 +51,11 @@ public class AppModule {
 
     @Provides @Singleton OpenGps gps(@Root Context context) {
 
-        final File nasrZipFile = new File(context.getCacheDir(), "nasr-data.zip");
+        File nasrCacheDir = new File(context.getCacheDir(), "nasr");
 
         return new OpenGps.Builder()
             .storage(new InMemoryStorage())
-            .addDataSource(new NasrTextDataSource(nasrZipFile))
+            .addDataSource(new NasrTextDataSource(nasrCacheDir))
             .onError(e -> {
                 Timber.e(e, "Error loading data");
                 // TODO snackbar?
