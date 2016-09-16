@@ -1,11 +1,18 @@
 package net.dhleong.opengps;
 
+import net.dhleong.opengps.nasr.util.AiracCycle;
+import net.dhleong.opengps.nasr.util.AiracCycleAssert;
+
 import org.assertj.core.api.Assertions;
 
 /**
  * @author dhleong
  */
 public class OpenGpsAssertions extends Assertions {
+
+    public static AiracCycleAssert assertThat(AiracCycle obj) {
+        return new AiracCycleAssert(obj);
+    }
 
     public static AirportAssert assertThat(Airport obj) {
         return new AirportAssert(obj);
