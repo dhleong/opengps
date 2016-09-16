@@ -108,6 +108,30 @@ public class AirwayTest {
     }
 
     @Test
+    public void appendBetween_existingEntry_firstForward() {
+        GpsRoute route = new GpsRoute(0);
+        route.add(Airports.LGA);
+        route.add(LGA);
+
+        int lgaIndex = route.indexOfWaypoint(LGA);
+        airway.appendPointsBetween(LGA, BDR, route, lgaIndex + 1);
+
+        assertThat(route).containsFixesExactly(Airports.LGA, LGA, BDR);
+    }
+
+    @Test
+    public void appendBetween_existingEntry_firstBackward() {
+        GpsRoute route = new GpsRoute(0);
+        route.add(Airports.PVD);
+        route.add(PVD);
+
+        int lgaIndex = route.indexOfWaypoint(PVD);
+        airway.appendPointsBetween(PVD, ORW, route, lgaIndex + 1);
+
+        assertThat(route).containsFixesExactly(Airports.PVD, PVD, ORW);
+    }
+
+    @Test
     public void appendBetween_nop() {
         GpsRoute route = new GpsRoute(0);
         route.add(Navaids.BDR);

@@ -62,7 +62,9 @@ public class Airway extends BaseAeroObject {
             endIndex -= direction;
         }
 
-        if (endIndex == startIndex) {
+        // this is pretty gross, too:
+        if ((direction > 0 && endIndex < startIndex)
+                || (direction < 0 && endIndex > startIndex)) {
             // nothing to do
             return;
         }
