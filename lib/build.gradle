@@ -9,6 +9,10 @@ dependencies {
     compile deps.okio
     compile deps.rx.java
 
+    // optional dependencies for using the ENasrSidFetcher
+    compileOnly deps.gson
+    compileOnly deps.okhttp
+
     testCompile deps.test.junit
     testCompile deps.test.assertj
 }
