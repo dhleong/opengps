@@ -5,7 +5,6 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import net.dhleong.opengps.feat.charts.ChartPickerModule;
 import net.dhleong.opengps.util.scopes.Root;
 
 import java.util.concurrent.TimeUnit;
@@ -29,7 +28,7 @@ import timber.log.Timber;
 /**
  * @author dhleong
  */
-@Module(includes = ChartPickerModule.class)
+@Module
 public class NetworkModule {
 
     /** 50 mb (for pdfs) */
@@ -96,10 +95,6 @@ public class NetworkModule {
             .client(okhttp)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
-    }
-
-    @Provides @Singleton @Named("charts") Retrofit chartsRetrofit(Retrofit.Builder builder) {
-        return builder.baseUrl("http://api.aircharts.org").build();
     }
 
     @Provides @Singleton @Named("wx") Retrofit weatherRetrofit(OkHttpClient okhttp) {

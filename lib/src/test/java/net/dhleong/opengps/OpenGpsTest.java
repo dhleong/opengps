@@ -74,7 +74,7 @@ public class OpenGpsTest {
     public static OpenGps build() {
         return new OpenGps.Builder()
             .storage(new InMemoryStorage())
-            .addDataSource(new NasrTextDataSource(new File("nasr-cache.zip")))
+            .addDataSource(new NasrTextDataSource(new File(".test-cache")))
             .build();
     }
 

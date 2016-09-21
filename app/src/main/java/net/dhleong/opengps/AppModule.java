@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.jakewharton.rxrelay.PublishRelay;
 
-import net.dhleong.opengps.feat.charts.AirChartsSource;
-import net.dhleong.opengps.feat.charts.AirChartsStorage;
+import net.dhleong.opengps.faa.FaaChartsSource;
+import net.dhleong.opengps.faa.FaaChartsStorage;
 import net.dhleong.opengps.modules.ConnectionModule;
 import net.dhleong.opengps.modules.NetworkModule;
 import net.dhleong.opengps.modules.PrefsModule;
@@ -52,17 +52,20 @@ public class AppModule {
         return appContext;
     }
 
-    @Provides @Singleton OpenGps gps(@Root Context context, AirChartsSource airChartsSource) {
+    @Provides @Singleton OpenGps gps(@Root Context context) {
 
         File nasrCacheDir = new File(context.getCacheDir(), "nasr");
+        File chartsCacheDir = new File(context.getCacheDir(), "charts");
 
         return new OpenGps.Builder()
-            .storage(new DelegateStorage.Builder()
-                .add(new InMemoryStorage())
-                .add(new AirChartsStorage())
-                .build())
+            .storage(
+                new DelegateStorage.Builder()
+                    .add(new InMemoryStorage())
+                    .add(new FaaChartsStorage())
+                    .build()
+            )
             .addDataSource(new NasrTextDataSource(nasrCacheDir))
-            .addDataSource(airChartsSource)
+            .addDataSource(new FaaChartsSource(chartsCacheDir))
             .onError(e -> {
                 Timber.e(e, "Error loading data");
                 // TODO snackbar?

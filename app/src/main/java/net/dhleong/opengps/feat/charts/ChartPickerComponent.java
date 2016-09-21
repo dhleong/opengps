@@ -5,7 +5,7 @@ import dagger.Subcomponent;
 /**
  * @author dhleong
  */
-@Subcomponent(modules = ChartPickerModule.class)
+@Subcomponent
 public interface ChartPickerComponent {
 
     void inject(ChartPickerView chartPickerView);

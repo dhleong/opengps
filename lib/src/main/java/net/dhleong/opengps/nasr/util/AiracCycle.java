@@ -27,6 +27,8 @@ public class AiracCycle {
     static final String NASR_URL_FORMAT = "https://nfdc.faa.gov/webContent/56DaySub/56DySubscription_%s_-_%s.zip";
     static final String NASR_DATE_FORMAT = "MMMM_dd__yyyy";
 
+    static final String FAA_CHARTS_URL_FORMAT = "https://nfdc.faa.gov/webContent/dtpp/%d.xml";
+
     public final int number;
     public final Date startDate;
     public final Date endDate;
@@ -39,6 +41,10 @@ public class AiracCycle {
         this.endDate = endDate;
         this.nasrStart = nasrStart;
         this.nasrEnd = nasrEnd;
+    }
+
+    public String getFaaChartUrl() {
+        return String.format(Locale.US, FAA_CHARTS_URL_FORMAT, number);
     }
 
     public String getNasrDataUrl() {
@@ -84,4 +90,5 @@ public class AiracCycle {
 
         return new AiracCycle(airacNumber, airacStart, airacEnd, nasrStart, nasrEnd);
     }
+
 }

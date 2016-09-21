@@ -13,9 +13,7 @@ import net.dhleong.opengps.R;
 import net.dhleong.opengps.ui.DialogPrompter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -85,15 +83,6 @@ public class ChartDisplayView
             newCall(input.url)
             .subscribeOn(Schedulers.io())
             .flatMap(resp -> Observable.fromCallable(() -> {
-                final Matcher m = pdfPattern.matcher(resp.body().string());
-                if (m.find()) {
-                    Timber.v("Matcher=%s; g=%s", m, m.group());
-                    return m.group(1);
-                }
-                throw new IOException("Error parsing");
-             }))
-             .flatMap(this::newCall)
-             .flatMap(resp -> Observable.fromCallable(() -> {
                 BufferedSink sink = Okio.buffer(Okio.sink(chartFile));
                 sink.writeAll(resp.body().source());
                 sink.close();
