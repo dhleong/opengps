@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jakewharton.rxrelay.PublishRelay;
 
@@ -90,7 +91,11 @@ public class ChartPickerView
                        Timber.v("Got charts: %s", result.get(input.id()));
                        loading.hide();
                        adapter.setCharts(result);
-                   }, Timber::w)
+                   }, e -> {
+                       Timber.w(e);
+                       Toast.makeText(getContext(), R.string.charts_error, Toast.LENGTH_SHORT).show();
+                       adapter.selectedCharts.call(null);
+                   })
         );
 
         return adapter.selectedCharts.first().toSingle();

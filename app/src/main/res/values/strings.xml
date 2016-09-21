@@ -52,5 +52,6 @@
     <string name="waypoint_bearing_label">BRG:</string>
 
     <string name="navaid_frequency_label">Frequency:</string>
+    <string name="charts_error">Unable to load charts</string>
 
 </resources>

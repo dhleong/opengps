@@ -21,6 +21,8 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static net.dhleong.opengps.util.RxUtil.notNull;
+
 /**
  * @author dhleong
  */
@@ -61,6 +63,7 @@ public class InfoPageView
               .flatMap(any ->
                   DialogPrompter.prompt(getContext(), ChartPickerView.class,
                       R.layout.feat_charts, airport))
+              .filter(notNull())
               .subscribe(chartInfo -> {
                   NavigateUtil.into(getContext(),
                       ChartDisplayView.class, R.layout.feat_chart_display,
