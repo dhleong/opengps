@@ -3,6 +3,7 @@ package net.dhleong.opengps.storage;
 import net.dhleong.opengps.AeroObject;
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.Airway;
+import net.dhleong.opengps.ChartInfo;
 import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.LabeledFrequency;
 import net.dhleong.opengps.NavFix;
@@ -46,11 +47,6 @@ public class InMemoryStorage implements Storage {
     @Override
     public Observable<Storage> load() {
         return Observable.just(this);
-    }
-
-    @Override
-    public boolean isLoaded() {
-        return true;
     }
 
     @Override
@@ -133,6 +129,12 @@ public class InMemoryStorage implements Storage {
             .filter(obj -> obj instanceof Airway)
             .map(obj -> (Airway) obj)
             .filter(airway -> airway.contains(object));
+    }
+
+    @Override
+    public Observable<List<ChartInfo>> chartsFor(Airport airport) {
+        // we don't store this
+        return Observable.empty();
     }
 
     @Override

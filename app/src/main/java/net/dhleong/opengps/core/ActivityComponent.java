@@ -4,7 +4,6 @@ import net.dhleong.opengps.feat.airport.pages.FreqsPageView;
 import net.dhleong.opengps.feat.airport.pages.WxPageView;
 import net.dhleong.opengps.feat.airway.AirwaySearchComponent;
 import net.dhleong.opengps.feat.charts.ChartPickerComponent;
-import net.dhleong.opengps.feat.charts.ChartPickerModule;
 import net.dhleong.opengps.feat.connbar.ConnectionBarComponent;
 import net.dhleong.opengps.feat.fpl.FlightPlannerComponent;
 import net.dhleong.opengps.feat.home.HomeComponent;
@@ -26,7 +25,7 @@ import dagger.Subcomponent;
 public interface ActivityComponent {
 
     AirwaySearchComponent newAirwaySearchComponent();
-    ChartPickerComponent newChartPickerComponent(ChartPickerModule chartPickerModule);
+    ChartPickerComponent newChartPickerComponent();
     ConnectionBarComponent newConnectionBarComponent();
     HomeComponent newHomeComponent();
     FlightPlannerComponent newFlightPlannerComponent();

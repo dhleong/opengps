@@ -1,5 +1,7 @@
 package net.dhleong.opengps;
 
+import java.util.List;
+
 import rx.Observable;
 
 /**
@@ -7,8 +9,6 @@ import rx.Observable;
  */
 public interface Storage {
     Observable<Storage> load();
-
-    boolean isLoaded();
 
     void finishSource(DataSource source);
 
@@ -27,6 +27,8 @@ public interface Storage {
     void endTransaction();
 
     Observable<Airway> airwaysFor(AeroObject object);
+
+    Observable<List<ChartInfo>> chartsFor(Airport airport);
 
     Observable<AeroObject> find(String objectId);
 

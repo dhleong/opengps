@@ -89,6 +89,10 @@ public class OpenGps {
         return withStorage(storage -> storage.airwaysFor(object));
     }
 
+    public Observable<List<ChartInfo>> chartsFor(Airport airport) {
+        return withStorage(storage -> storage.chartsFor(airport));
+    }
+
     public Observable<Navaid> navaid(String navaidId) {
         return find(navaidId)
             .flatMap(obj -> {

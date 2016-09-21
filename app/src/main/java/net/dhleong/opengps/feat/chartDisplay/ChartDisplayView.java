@@ -8,8 +8,8 @@ import android.util.AttributeSet;
 import com.github.barteksc.pdfviewer.PDFView;
 
 import net.dhleong.opengps.App;
+import net.dhleong.opengps.ChartInfo;
 import net.dhleong.opengps.R;
-import net.dhleong.opengps.feat.charts.AirportCharts;
 import net.dhleong.opengps.ui.DialogPrompter;
 
 import java.io.File;
@@ -40,7 +40,7 @@ import timber.log.Timber;
  */
 public class ChartDisplayView
         extends CoordinatorLayout
-        implements DialogPrompter.PrompterView<AirportCharts.ChartInfo, Void> {
+        implements DialogPrompter.PrompterView<ChartInfo, Void> {
 
     Pattern pdfPattern = Pattern.compile("src=\"(.*PDF)\"");
 
@@ -73,7 +73,7 @@ public class ChartDisplayView
     }
 
     @Override
-    public Single<Void> result(AirportCharts.ChartInfo input) {
+    public Single<Void> result(ChartInfo input) {
 
         File chartFile = new File(getContext().getCacheDir(), "last-chart.pdf");
         //noinspection ResultOfMethodCallIgnored

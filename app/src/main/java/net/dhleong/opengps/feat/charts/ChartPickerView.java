@@ -16,6 +16,8 @@ import com.jakewharton.rxrelay.PublishRelay;
 
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.App;
+import net.dhleong.opengps.ChartInfo;
+import net.dhleong.opengps.OpenGps;
 import net.dhleong.opengps.R;
 import net.dhleong.opengps.ui.DialogPrompter;
 
@@ -36,9 +38,9 @@ import timber.log.Timber;
  */
 public class ChartPickerView
         extends CoordinatorLayout
-        implements DialogPrompter.PrompterView<Airport, AirportCharts.ChartInfo> {
+        implements DialogPrompter.PrompterView<Airport, ChartInfo> {
 
-    @Inject ChartsService service;
+    @Inject OpenGps gps;
 
     @BindView(R.id.recycler) RecyclerView recycler;
     @BindView(R.id.loading) ContentLoadingProgressBar loading;
@@ -65,7 +67,7 @@ public class ChartPickerView
         ButterKnife.bind(this);
 
         App.activityComponent(this)
-           .newChartPickerComponent(new ChartPickerModule())
+           .newChartPickerComponent()
            .inject(this);
 
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -79,23 +81,23 @@ public class ChartPickerView
     }
 
     @Override
-    public Single<AirportCharts.ChartInfo> result(Airport input) {
+    public Single<ChartInfo> result(Airport input) {
 
         recycler.setAdapter(adapter = new ChartsAdapter(input));
 
         subs.add(
-            service.getCharts(input.id())
-                   .subscribeOn(Schedulers.io())
-                   .observeOn(AndroidSchedulers.mainThread())
-                   .subscribe(result -> {
-                       Timber.v("Got charts: %s", result.get(input.id()));
-                       loading.hide();
-                       adapter.setCharts(result);
-                   }, e -> {
-                       Timber.w(e);
-                       Toast.makeText(getContext(), R.string.charts_error, Toast.LENGTH_SHORT).show();
-                       adapter.selectedCharts.call(null);
-                   })
+            gps.chartsFor(input)
+               .subscribeOn(Schedulers.io())
+               .observeOn(AndroidSchedulers.mainThread())
+               .subscribe(result -> {
+                   Timber.v("Got charts: %s", result);
+                   loading.hide();
+                   adapter.setCharts(result);
+               }, e -> {
+                   Timber.w(e);
+                   Toast.makeText(getContext(), R.string.charts_error, Toast.LENGTH_SHORT).show();
+                   adapter.selectedCharts.call(null);
+               })
         );
 
         return adapter.selectedCharts.first().toSingle();
@@ -103,10 +105,10 @@ public class ChartPickerView
 
     static class ChartsAdapter extends RecyclerView.Adapter<ChartHolder> {
 
-        final PublishRelay<AirportCharts.ChartInfo> selectedCharts = PublishRelay.create();
+        final PublishRelay<ChartInfo> selectedCharts = PublishRelay.create();
         final Airport input;
 
-        List<AirportCharts.ChartInfo> charts;
+        List<ChartInfo> charts;
 
         public ChartsAdapter(Airport input) {
             this.input = input;
@@ -130,26 +132,19 @@ public class ChartPickerView
 
         @Override
         public int getItemCount() {
-            final List<AirportCharts.ChartInfo> charts = this.charts;
+            final List<ChartInfo> charts = this.charts;
             if (charts == null) return 0;
             return charts.size();
         }
 
-        public void setCharts(AirportCharts charts) {
+        public void setCharts(List<ChartInfo> charts) {
             if (charts == null) {
                 this.charts = null;
                 notifyDataSetChanged();
                 return;
             }
 
-            AirportCharts.Result result = charts.get(input.id());
-            if (result == null) {
-                this.charts = null;
-                notifyDataSetChanged();
-                return;
-            }
-
-            this.charts = result.charts;
+            this.charts = charts;
             notifyDataSetChanged(); // lazy; won't be much changing
         }
     }
@@ -162,7 +157,7 @@ public class ChartPickerView
             label = (TextView) itemView;
         }
 
-        public void bind(AirportCharts.ChartInfo info) {
+        public void bind(ChartInfo info) {
             label.setText(info.name);
         }
     }

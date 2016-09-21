@@ -4,10 +4,13 @@ import android.content.Context;
 
 import com.jakewharton.rxrelay.PublishRelay;
 
+import net.dhleong.opengps.feat.charts.AirChartsSource;
+import net.dhleong.opengps.feat.charts.AirChartsStorage;
 import net.dhleong.opengps.modules.ConnectionModule;
 import net.dhleong.opengps.modules.NetworkModule;
 import net.dhleong.opengps.modules.PrefsModule;
 import net.dhleong.opengps.nasr.NasrTextDataSource;
+import net.dhleong.opengps.storage.DelegateStorage;
 import net.dhleong.opengps.storage.InMemoryStorage;
 import net.dhleong.opengps.util.scopes.Root;
 
@@ -49,13 +52,17 @@ public class AppModule {
         return appContext;
     }
 
-    @Provides @Singleton OpenGps gps(@Root Context context) {
+    @Provides @Singleton OpenGps gps(@Root Context context, AirChartsSource airChartsSource) {
 
         File nasrCacheDir = new File(context.getCacheDir(), "nasr");
 
         return new OpenGps.Builder()
-            .storage(new InMemoryStorage())
+            .storage(new DelegateStorage.Builder()
+                .add(new InMemoryStorage())
+                .add(new AirChartsStorage())
+                .build())
             .addDataSource(new NasrTextDataSource(nasrCacheDir))
+            .addDataSource(airChartsSource)
             .onError(e -> {
                 Timber.e(e, "Error loading data");
                 // TODO snackbar?

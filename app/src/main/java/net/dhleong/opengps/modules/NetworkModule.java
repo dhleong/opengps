@@ -5,6 +5,7 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import net.dhleong.opengps.feat.charts.ChartPickerModule;
 import net.dhleong.opengps.util.scopes.Root;
 
 import java.util.concurrent.TimeUnit;
@@ -28,7 +29,7 @@ import timber.log.Timber;
 /**
  * @author dhleong
  */
-@Module
+@Module(includes = ChartPickerModule.class)
 public class NetworkModule {
 
     /** 50 mb (for pdfs) */
