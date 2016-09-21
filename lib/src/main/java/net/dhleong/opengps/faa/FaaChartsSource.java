@@ -193,10 +193,13 @@ public class FaaChartsSource implements DataSource {
         try {
             parser = XmlPullParserFactory.newInstance().newPullParser();
         } catch (NoClassDefFoundError e) {
+            // XmlPullParser not on classpath; fall back to much slower XPath
             return findRecordNodesXpath(xmlFile, airport);
         }
 
-        final String targetState = airport.stateCode;
+        final String targetState = airport.stateCode.length() == 0
+            ? "XX"
+            : airport.stateCode;
         final String targetCity = airport.cityName;
         final String targetIcao = airport.id();
 
@@ -221,7 +224,7 @@ public class FaaChartsSource implements DataSource {
                     continue;
                 }
 
-                if ("city_name".equals(name) && !id.equals(targetCity)) {
+                if ("city_name".equals(name) && !id.startsWith(targetCity)) {
                     skip(parser);
                     continue;
                 }
@@ -230,13 +233,11 @@ public class FaaChartsSource implements DataSource {
                 if (isAirport && !parser.getAttributeValue(null, "icao_ident").equals(targetIcao)) {
                     skip(parser);
                 } else if (isAirport) {
-                    System.out.println("FOUND " + airport);
-
-                    // TODO read records
+                    // read records
                     while (parser.next() != XmlPullParser.END_TAG) {
-//                        parser.require(XmlPullParser.START_TAG, null, "record");
-                        System.out.println("FOUND " + parser.getName());
+                        charts.add(readRecord(parser));
                     }
+                    // done; break out
                     break;
                 }
             }
@@ -253,6 +254,23 @@ public class FaaChartsSource implements DataSource {
                 // don't care
             }
         }
+    }
+
+    ChartInfo readRecord(XmlPullParser parser) throws IOException, XmlPullParserException {
+        String name = null;
+        String url = null;
+        while (parser.next() != XmlPullParser.END_TAG) {
+            String nodeName = parser.getName();
+            if ("chart_name".equals(nodeName)) {
+                name = readText(parser);
+            } else if ("pdf_name".equals(nodeName)) {
+                // TODO reuse a StringBuilder to save allocations?
+                url = baseUrl + readText(parser);
+            } else {
+                skip(parser);
+            }
+        }
+        return new ChartInfo(name, url);
     }
 
     static void skip(XmlPullParser parser) throws XmlPullParserException, IOException {

@@ -9,3 +9,4 @@
 .externalNativeBuild
 .idea
 google_maps_api.xml
+.test-cache
