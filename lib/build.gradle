@@ -8,6 +8,7 @@ apply plugin: 'java'
 dependencies {
     compile deps.okio
     compile deps.rx.java
+    compileOnly deps.xpp
 
     testCompile deps.test.junit
     testCompile deps.test.assertj

@@ -55,6 +55,8 @@ public class Airport extends BaseAeroObject {
     private final String number;
 
     public float elevation;
+    public String stateCode;
+    public String cityName;
 
     private HashMap<FrequencyType, ArrayList<LabeledFrequency>> frequencies = new HashMap<>();
 

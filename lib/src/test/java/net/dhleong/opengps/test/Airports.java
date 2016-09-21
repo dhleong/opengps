@@ -17,4 +17,9 @@ public class Airports {
         "22024.*A", Airport.Type.AIRPORT, "KPVD", "THEODORE FRANCIS GREEN STATE",
         dmsToDegrees(41, 43, 26.397), dmsToDegrees(-71, -25, -41.596)
     );
+
+    static {
+        LGA.stateCode = "NY";
+        LGA.cityName = "NEW YORK";
+    }
 }

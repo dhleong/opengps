@@ -306,11 +306,11 @@ public class NasrTextDataSource implements DataSource {
             apts.skip(10); // effective date
             apts.skip(3); // region code
             apts.skip(4); // district/field office code (ex: CHI)
-            apts.skip(2); // state post office code
+            String stateCode = apts.string(2); // state post office code
             apts.skip(20); // state name
             apts.skip(21); // county name
             apts.skip(2); // county state
-            apts.skip(40); // city name
+            String city = apts.string(40); // city name
             String name = apts.string(50);
 
             // ownership data
@@ -334,6 +334,8 @@ public class NasrTextDataSource implements DataSource {
             result = new Airport(number, facilityType, actualId, name, lat, lng);
             result.elevation = elevation;
             result.magVar = magVar;
+            result.stateCode = stateCode;
+            result.cityName = city;
         } else {
             result = null;
         }

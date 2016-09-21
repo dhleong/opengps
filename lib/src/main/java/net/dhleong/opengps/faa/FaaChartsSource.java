@@ -9,9 +9,14 @@ import net.dhleong.opengps.nasr.util.AiracCycle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,44 +132,152 @@ public class FaaChartsSource implements DataSource {
             List<ChartInfo> cached = cache.get(airport);
             if (cached != null) return cached;
 
-            ArrayList<ChartInfo> charts = new ArrayList<>();
+            final List<ChartInfo> charts = findRecordNodes(xmlFile, airport);
+            if (charts != null) {
+                cache.put(airport, charts);
+            }
+            return charts;
+        });
+    }
 
-            final Document doc =
-                DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder()
-                    .parse(xmlFile);
+    List<ChartInfo> findRecordNodesXpath(File xmlFile, Airport airport) throws Exception {
+        long start = System.currentTimeMillis();
+        final Document doc =
+            DocumentBuilderFactory.newInstance()
+                                  .newDocumentBuilder()
+                                  .parse(xmlFile);
 
-            final XPath path = XPathFactory.newInstance().newXPath();
-            final XPathExpression exp =
-                path.compile("/digital_tpp/state_code/city_name/airport_name[@icao_ident='"
-                    + airport.id() + "']/record");
+        final String rawPath = "/digital_tpp/state_code" +
+            (airport.stateCode == null
+                ? ""
+                : "[@ID='" + airport.stateCode + "']") +
+            "/city_name/airport_name[@icao_ident='"
+            + airport.id() + "']/record";
 
-            NodeList nodes = (NodeList) exp.evaluate(doc, XPathConstants.NODESET);
-            for (int i=0, len=nodes.getLength(); i < len; i++) {
-                Node n = nodes.item(i);
-                NodeList record = n.getChildNodes();
+        final XPath path = XPathFactory.newInstance().newXPath();
+        final XPathExpression exp = path.compile(rawPath);
+        final NodeList nodes = (NodeList) exp.evaluate(doc, XPathConstants.NODESET);
 
-                String name = null;
-                String url = null;
-                for (int j=0, jlen=record.getLength(); j < jlen; j++) {
-                    Node jn = record.item(j);
-                    if ("chart_name".equals(jn.getNodeName())) {
-                        name = jn.getTextContent();
-                    } else if ("pdf_name".equals(jn.getNodeName())) {
-                        // TODO reuse a StringBuilder to save allocations?
-                        url = baseUrl + jn.getTextContent();
-                    }
+        ArrayList<ChartInfo> charts = new ArrayList<>();
 
-                    if (name != null && url != null) break;
+        for (int i=0, len=nodes.getLength(); i < len; i++) {
+            Node n = nodes.item(i);
+            NodeList record = n.getChildNodes();
+
+            String name = null;
+            String url = null;
+            for (int j=0, jlen=record.getLength(); j < jlen; j++) {
+                Node jn = record.item(j);
+                if ("chart_name".equals(jn.getNodeName())) {
+                    name = jn.getTextContent();
+                } else if ("pdf_name".equals(jn.getNodeName())) {
+                    // TODO reuse a StringBuilder to save allocations?
+                    url = baseUrl + jn.getTextContent();
                 }
 
-                if (name != null && url != null) {
-                    charts.add(new ChartInfo(name, url));
+                if (name != null && url != null) break;
+            }
+
+            if (name != null && url != null) {
+                charts.add(new ChartInfo(name, url));
+            }
+        }
+
+        long end = System.currentTimeMillis();
+        System.out.println("XPath query took " + (end - start) + "ms: " + rawPath); // TODO logging
+        return charts;
+    }
+
+    List<ChartInfo> findRecordNodes(File xmlFile, Airport airport) throws Exception {
+        final XmlPullParser parser;
+        try {
+            parser = XmlPullParserFactory.newInstance().newPullParser();
+        } catch (NoClassDefFoundError e) {
+            return findRecordNodesXpath(xmlFile, airport);
+        }
+
+        final String targetState = airport.stateCode;
+        final String targetCity = airport.cityName;
+        final String targetIcao = airport.id();
+
+        final long start = System.currentTimeMillis();
+        final InputStream in = new FileInputStream(xmlFile);
+        try {
+            parser.setInput(in, null);
+            parser.nextTag();
+
+            List<ChartInfo> charts = new ArrayList<>();
+
+            parser.require(XmlPullParser.START_TAG, null, "digital_tpp");
+            while (parser.next() != XmlPullParser.END_TAG) {
+                if (parser.getEventType() != XmlPullParser.START_TAG) {
+                    continue;
+                }
+
+                final String name = parser.getName();
+                final String id = parser.getAttributeValue(null, "ID");
+                if ("state_code".equals(name) && !id.equals(targetState)) {
+                    skip(parser);
+                    continue;
+                }
+
+                if ("city_name".equals(name) && !id.equals(targetCity)) {
+                    skip(parser);
+                    continue;
+                }
+
+                final boolean isAirport ="airport_name".equals(name);
+                if (isAirport && !parser.getAttributeValue(null, "icao_ident").equals(targetIcao)) {
+                    skip(parser);
+                } else if (isAirport) {
+                    System.out.println("FOUND " + airport);
+
+                    // TODO read records
+                    while (parser.next() != XmlPullParser.END_TAG) {
+//                        parser.require(XmlPullParser.START_TAG, null, "record");
+                        System.out.println("FOUND " + parser.getName());
+                    }
+                    break;
                 }
             }
 
-            cache.put(airport, charts);
+            long end = System.currentTimeMillis();
+            System.out.println("XPP query took " + (end - start) + "ms"); // TODO logging
             return charts;
-        });
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                // don't care
+            }
+        }
+    }
+
+    static void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
+        if (parser.getEventType() != XmlPullParser.START_TAG) {
+            throw new IllegalStateException();
+        }
+        int depth = 1;
+        while (depth != 0) {
+            switch (parser.next()) {
+            case XmlPullParser.END_TAG:
+                depth--;
+                break;
+            case XmlPullParser.START_TAG:
+                depth++;
+                break;
+            }
+        }
+    }
+
+    static String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
+        String result = "";
+        if (parser.next() == XmlPullParser.TEXT) {
+            result = parser.getText();
+            parser.nextTag();
+        }
+        return result;
     }
 }

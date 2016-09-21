@@ -64,6 +64,7 @@ ext.deps = [
     retrofitSimpleXml: "com.squareup.retrofit2:converter-simplexml:${vs.retrofit}",
     stetho: "com.facebook.stetho:stetho:1.2.0",
     timber: 'com.jakewharton.timber:timber:4.3.0',
+    xpp: 'xpp3:xpp3:1.1.3.3',
 
     icepick: [
         api: "frankiesardo:icepick:${vs.icepick}",
