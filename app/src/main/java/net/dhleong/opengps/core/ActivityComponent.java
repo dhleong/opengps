@@ -11,6 +11,7 @@ import net.dhleong.opengps.feat.map.MapComponent;
 import net.dhleong.opengps.feat.navaid.NavaidInfoView;
 import net.dhleong.opengps.feat.navfix.NavFixInfoView;
 import net.dhleong.opengps.feat.radios.RadiosView;
+import net.dhleong.opengps.feat.routes.PreferredRoutesComponent;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchComponent;
 import net.dhleong.opengps.ui.WaypointHeaderView;
 import net.dhleong.opengps.util.scopes.PerActivity;
@@ -30,6 +31,7 @@ public interface ActivityComponent {
     HomeComponent newHomeComponent();
     FlightPlannerComponent newFlightPlannerComponent();
     MapComponent newMapComponent();
+    PreferredRoutesComponent newPreferredRoutesComponent();
     WaypointSearchComponent newWaypointSearchComponent();
 
     void inject(FreqsPageView freqsPageView);

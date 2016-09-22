@@ -39,7 +39,7 @@ import timber.log.Timber;
  */
 public class WaypointSearchView
         extends CoordinatorLayout
-        implements DialogPrompter.PrompterView<Void, AeroObject> {
+        implements DialogPrompter.PrompterView<Class<? extends AeroObject>, AeroObject> {
 
     @Inject OpenGps gps;
 
@@ -50,6 +50,7 @@ public class WaypointSearchView
     CompositeSubscription subs = new CompositeSubscription();
     AeroObject quickMatchObj;
     List<AeroObject> allMatches;
+    Class<? extends AeroObject> expectedType = AeroObject.class;
 
     public WaypointSearchView(Context context) {
         super(context);
@@ -85,6 +86,7 @@ public class WaypointSearchView
                           Timber.v("Search `%s`...", search))
                       .flatMap(search ->
                           gps.find(cleanInput(search))
+                             .filter(obj -> expectedType.isAssignableFrom(obj.getClass()))
                              .toList())
                       .observeOn(AndroidSchedulers.mainThread())
                       .subscribe(quickMatches -> {
@@ -107,18 +109,8 @@ public class WaypointSearchView
     }
 
     @Override
-    public Single<AeroObject> result(Void ignore) {
-//        return Observable.<AeroObject>empty().toSingle();
-        // TODO for real
-//        return gps.find("BDR").first().toSingle();
-//        return RxView.clicks(confirm)
-//                     .flatMap(any -> {
-//                         String id = cleanInput(input.getText());
-//                         Timber.v("Search for `%s`", id);
-//                         return gps.find(id)
-//                                   .take(1)
-//                                   .doOnNext(wpt -> Timber.v("Found %s", wpt));
-//                     }).take(1).toSingle();
+    public Single<AeroObject> result(Class<? extends AeroObject> expectedType) {
+        this.expectedType = expectedType == null ? AeroObject.class : expectedType;
         return Observable.merge(
             RxUtil.doneActions(input)
                   .doOnNext(any -> Timber.v("DONE!"))

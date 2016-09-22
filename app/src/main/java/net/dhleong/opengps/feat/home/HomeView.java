@@ -90,6 +90,8 @@ public class HomeView extends CoordinatorLayout {
                 R.layout.feat_map),
             new HomeMenuItem(R.drawable.ic_waypont_info, R.string.home_title_waypoint_info,
                 R.layout.feat_waypoint),
+            new HomeMenuItem(R.drawable.ic_preferred_routes, R.string.home_title_preferred_routes,
+                R.layout.feat_routes),
             new HomeMenuItem(R.drawable.ic_settings, R.string.home_title_settings,
                 R.layout.feat_settings),
         };
