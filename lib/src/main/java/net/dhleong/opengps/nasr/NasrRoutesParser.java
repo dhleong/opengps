@@ -102,7 +102,7 @@ class NasrRoutesParser {
         pfr.skip(2); // fix state
         pfr.skip(2); // icao region
         pfr.skip(2); // navaid facility type
-        pfr.skip(84); // navaid facility type (described)
+        pfr.skip(20); // navaid facility type (described)
 
         int radial = 0;
         boolean hasRadial = false;
@@ -120,6 +120,6 @@ class NasrRoutesParser {
 
         builder.append(id);
 
-        if (hasRadial) builder.append(radial).append("R");
+        if (hasRadial) builder.append(radial);
     }
 }

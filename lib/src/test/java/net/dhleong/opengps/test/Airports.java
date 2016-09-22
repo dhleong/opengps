@@ -18,11 +18,24 @@ public class Airports {
         dmsToDegrees(41, 43, 26.397), dmsToDegrees(-71, -25, -41.596)
     );
 
+    public static final Airport SNA = new Airport(
+        "02230.*A", Airport.Type.AIRPORT, "KSNA", "JOHN WAYNE",
+        dmsToDegrees(33, 40, 32.4), dmsToDegrees(-117, -52, -5.6)
+    );
+
+    public static final Airport HHR = new Airport(
+        "01647.*A", Airport.Type.AIRPORT, "KHHR", "HAWTHORNE",
+        dmsToDegrees(33, 55, 22.223), dmsToDegrees(-118, -20, -6.674)
+    );
+
     static {
         LGA.stateCode = "NY";
         LGA.cityName = "NEW YORK";
         LGA.simpleId = "LGA";
 
         PVD.simpleId = "PVD";
+
+        SNA.simpleId = "SNA";
+        HHR.simpleId = "HHR";
     }
 }

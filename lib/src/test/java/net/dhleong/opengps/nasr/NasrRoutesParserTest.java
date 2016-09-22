@@ -33,15 +33,21 @@ public class NasrRoutesParserTest {
         // this JFK thing is fake; just for testing:
         "PFR1LGA  JFK  TEC 1TOWER ENROUTE CONTROL                                                                                    9000                                                                                                                                                       \n";
 
+    static final String DATA2 =
+        "PFR1SNA  HHR  TEC 1TOWER ENROUTE CONTROL         (FUL LGB SLI SNA TOA(RWY11)) TO (HHR (RWY 25))                             JM70PQ40                                                                                                                               CSTN6               \n" +
+        "PFR2SNA  HHR  TEC 1005SLI                                             NAVAID     C VORTAC                                                                                                                                                                                              \n" +
+        "PFR2SNA  HHR  TEC 1010SLI                                             NAVAID     C VORTAC              340                                                                                                                                                                             \n" +
+        "PFR2SNA  HHR  TEC 1015WELLZ                                           FIX    CAK2                                                                                                                                                                                                      \n";
+
     Parser parser;
 
     @Before
     public void setUp() {
-        parser = Parser.of(OkioTest.source(DATA));
+        parser = Parser.of(OkioTest.source(DATA + DATA2));
     }
 
     @Test
-    public void test() throws IOException {
+    public void lgaToPvd() throws IOException {
         PreferredRoute expected = new PreferredRoute();
         expected.from = Airports.LGA;
         expected.to = Airports.PVD;
@@ -52,6 +58,23 @@ public class NasrRoutesParserTest {
         expected.aircraftLimitations = "";
 
         assertThat(NasrRoutesParser.find(parser, Airports.LGA, Airports.PVD))
+            .hasSize(1)
+            .containsExactly(expected);
+    }
+
+    @Test
+    public void snaToHrr() throws IOException {
+        // has a radial in the route
+        PreferredRoute expected = new PreferredRoute();
+        expected.from = Airports.SNA;
+        expected.to = Airports.HHR;
+        expected.altitude = "JM70PQ40";
+        expected.routeString = "SLI SLI340 WELLZ";
+        expected.area = "(FUL LGB SLI SNA TOA(RWY11)) TO (HHR (RWY 25))";
+        expected.direction = "CSTN6";
+        expected.aircraftLimitations = "";
+
+        assertThat(NasrRoutesParser.find(parser, Airports.SNA, Airports.HHR))
             .hasSize(1)
             .containsExactly(expected);
     }
