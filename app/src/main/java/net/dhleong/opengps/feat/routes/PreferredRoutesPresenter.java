@@ -31,6 +31,8 @@ public class PreferredRoutesPresenter extends BasePresenter<PreferredRoutesView>
     @Override
     public void onViewAttached(PreferredRoutesView view) {
 
+        trySearch(view);
+
         subscribe(
             view.selectOriginRequests()
                 .flatMap(this::pickAirport)
@@ -64,15 +66,28 @@ public class PreferredRoutesPresenter extends BasePresenter<PreferredRoutesView>
     void trySearch(PreferredRoutesView view) {
         final Airport from = origin;
         final Airport to = dest;
-        if (from == null || to == null) return;
+        if (from == null || to == null) {
+            view.setLoading(false);
+            view.setEmpty(false);
+            return;
+        }
 
-        // TODO: loading indicator (and empty state)
+        // reset state
+        view.setEmpty(false);
+        view.setLoading(true);
+
         Timber.v("Find routes between %s and %s", from, to);
         subscribe(
             gps.preferredRoutes(from, to)
                .subscribeOn(Schedulers.io())
                .toList()
                .observeOn(AndroidSchedulers.mainThread())
+               .doOnNext(routes -> {
+                   view.setLoading(false);
+                   if (routes.isEmpty()) {
+                       view.setEmpty(true);
+                   }
+               })
                .subscribe(view::setRoutes)
         );
     }

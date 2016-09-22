@@ -56,5 +56,6 @@
     <string name="charts_error">Unable to load charts</string>
     <string name="routes_origin">Origin</string>
     <string name="routes_destination">Destination</string>
+    <string name="routes_none_found">No routes found</string>
 
 </resources>

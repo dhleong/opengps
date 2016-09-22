@@ -2,6 +2,7 @@ package net.dhleong.opengps.feat.routes;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -34,6 +35,8 @@ public class PreferredRoutesView extends CoordinatorLayout {
     @Inject PreferredRoutesPresenter presenter;
 
     @BindView(R.id.recycler) RecyclerView recycler;
+    @BindView(R.id.loading) ContentLoadingProgressBar loading;
+    @BindView(R.id.empty) View emptyView;
 
     public PreferredRoutesView(Context context) {
         super(context);
@@ -95,6 +98,18 @@ public class PreferredRoutesView extends CoordinatorLayout {
 
     public void setRoutes(List<PreferredRoute> routes) {
         adapter.setRoutes(routes);
+    }
+
+    public void setLoading(boolean isLoading) {
+        if (isLoading) {
+            loading.show();
+        } else {
+            loading.hide();
+        }
+    }
+
+    public void setEmpty(boolean isEmpty) {
+        emptyView.setVisibility(isEmpty ? VISIBLE : GONE);
     }
 
     static class Adapter extends RecyclerView.Adapter<BaseViewHolder> {
