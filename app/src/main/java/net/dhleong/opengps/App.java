@@ -6,8 +6,10 @@ import android.view.View;
 
 import net.dhleong.opengps.core.ActivityComponent;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import dagger.Subcomponent;
 import timber.log.Timber;
 
 /**
@@ -69,7 +71,7 @@ public class App extends Application {
             // this should never happen in production
             return (ActivityComponent) Proxy.newProxyInstance(view.getClass().getClassLoader(),
                 new Class<?>[]{ActivityComponent.class},
-                (proxy, method, args) -> null);
+                (proxy, method, args) -> subComponentOrNil(method));
         }
         return activityComponent(view.getContext());
     }
@@ -84,15 +86,15 @@ public class App extends Application {
 //        }
 //        return component(view.getContext());
 //    }
-//
-//    private static Object subComponentOrNil(Method method) {
-//        Class<?> returns = method.getReturnType();
-//        if (returns.isInterface() && returns.isAnnotationPresent(Subcomponent.class)) {
-//            return Proxy.newProxyInstance(method.getDeclaringClass().getClassLoader(),
-//                new Class<?>[]{returns},
-//                (proxy, subCompMethod, args) -> subComponentOrNil(subCompMethod));
-//        }
-//
-//        return null;
-//    }
+
+    private static Object subComponentOrNil(Method method) {
+        Class<?> returns = method.getReturnType();
+        if (returns.isInterface() && returns.isAnnotationPresent(Subcomponent.class)) {
+            return Proxy.newProxyInstance(method.getDeclaringClass().getClassLoader(),
+                new Class<?>[]{returns},
+                (proxy, subCompMethod, args) -> subComponentOrNil(subCompMethod));
+        }
+
+        return null;
+    }
 }

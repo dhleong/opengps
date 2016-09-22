@@ -58,19 +58,19 @@ public class PreferredRoutesView extends CoordinatorLayout {
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
 
-        presenter.onViewCreated(this);
+        if (!isInEditMode()) presenter.onViewCreated(this);
     }
 
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        presenter.onViewAttached(this);
+        if (!isInEditMode()) presenter.onViewAttached(this);
     }
 
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        presenter.onViewDetached(this);
+        if (!isInEditMode()) presenter.onViewDetached(this);
     }
 
     public Observable<Void> selectDestRequests() {
