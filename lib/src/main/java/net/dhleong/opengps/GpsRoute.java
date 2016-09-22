@@ -15,19 +15,30 @@ public final class GpsRoute {
             AIRWAY,
             AIRWAY_EXIT,
             BEARING_TO,
-            FIX
+            FIX,
+            ROUTE_STRING,
         }
 
         public final Type type;
         public final AeroObject ref;
         public final float bearing;
         public final float distance;
+        public final CharSequence info;
 
         Step(Type type, AeroObject ref, float bearing, float distance) {
             this.type = type;
             this.ref = ref;
             this.bearing = bearing;
             this.distance = distance;
+            this.info = null;
+        }
+
+        Step(Type type, CharSequence info) {
+            this.type = type;
+            this.ref = null;
+            this.bearing = 0;
+            this.distance = 0;
+            this.info = info;
         }
 
         @Override
@@ -77,6 +88,10 @@ public final class GpsRoute {
 
         public static Step to(AeroObject obj, float bearing, float distance) {
             return new Step(Type.BEARING_TO, obj, bearing, distance);
+        }
+
+        public static Step routeString(CharSequence routeString) {
+            return new Step(Type.ROUTE_STRING, routeString);
         }
 
     }
@@ -153,6 +168,12 @@ public final class GpsRoute {
      */
     public void removeStep(int step) {
         final Step victim = steps.get(step);
+        if (victim.type == Step.Type.ROUTE_STRING) {
+            // route strings are simple; we can just remove them
+            steps.remove(step);
+            return;
+        }
+
         if (victim.type != Step.Type.FIX) {
             throw new IllegalArgumentException("Cannot directly remove " + victim);
         }
@@ -180,6 +201,8 @@ public final class GpsRoute {
                 add(prevFixStep, steps.remove(prevFixStep).ref);
             }
         }
+
+        trimRouteString();
     }
 
     public void removeStepsAfter(int step) {
@@ -192,8 +215,16 @@ public final class GpsRoute {
         for (int i=0, count=steps.size() - step -1; i < count; i++) {
             steps.remove(step + 1);
         }
+
+        trimRouteString();
     }
 
+    private void trimRouteString() {
+        final int size = steps.size();
+        if (size > 0 && size <= 2 && steps.get(0).type == Step.Type.ROUTE_STRING) {
+            removeStep(0);
+        }
+    }
 
     /** @deprecated Don't access the list directly; use {@link #step(int)} */
     @Deprecated

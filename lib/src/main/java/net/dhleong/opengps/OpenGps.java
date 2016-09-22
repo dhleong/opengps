@@ -122,7 +122,6 @@ public class OpenGps {
              final GpsRoute route = new GpsRoute(flags);
              route.add(start);
 
-             System.out.println("FOUND: " + objs);
              for (int i=0, len=objs.size(); i < len; i++) {
                  final AeroObject obj = objs.get(i);
                  final Airway awy = obj instanceof Airway

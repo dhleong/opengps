@@ -1,5 +1,7 @@
 package net.dhleong.opengps;
 
+import java.util.Arrays;
+
 import rx.Observable;
 
 /**
@@ -15,7 +17,13 @@ public class PreferredRoute {
     public String direction;
 
     public Observable<GpsRoute> gpsRoute(OpenGps gps) {
-        throw new UnsupportedOperationException("TODO");
+        return gps.parseRoute(from, to, Arrays.asList(routeString.toString().split(" ")))
+            .map(route -> {
+                if (route.size() > 0) {
+                    route.add(0, GpsRoute.Step.routeString(routeString));
+                }
+                return route;
+            });
     }
 
     @Override

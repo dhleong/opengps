@@ -3,18 +3,24 @@ package net.dhleong.opengps.feat.routes;
 import android.content.Context;
 
 import net.dhleong.opengps.Airport;
+import net.dhleong.opengps.GpsRoute;
 import net.dhleong.opengps.OpenGps;
 import net.dhleong.opengps.R;
+import net.dhleong.opengps.feat.routeinfo.RouteInfoView;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchView;
 import net.dhleong.opengps.ui.DialogPrompter;
+import net.dhleong.opengps.ui.NavigateUtil;
 import net.dhleong.opengps.util.BasePresenter;
 
 import javax.inject.Inject;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static net.dhleong.opengps.util.RxUtil.notNull;
 
 /**
  * @author dhleong
@@ -23,6 +29,8 @@ public class PreferredRoutesPresenter extends BasePresenter<PreferredRoutesView>
 
     @Inject Context context;
     @Inject OpenGps gps;
+
+    @Inject Action1<GpsRoute> routeUpdater;
 
     Airport origin, dest;
 
@@ -55,9 +63,21 @@ public class PreferredRoutesPresenter extends BasePresenter<PreferredRoutesView>
 
         subscribe(
             view.selectedRoutes()
-                .subscribe(route -> {
-                    // TODO show more information; prompt to load into GPS
-                    Timber.v("Selected %s", route);
+                .flatMap(route ->
+                    DialogPrompter.prompt(context, RouteInfoView.class, R.layout.feat_routeinfo, route))
+                .filter(notNull())
+                // NB: if we get here, they chose to load the route
+                .flatMap(route -> route.gpsRoute(gps))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(gpsRoute -> {
+                    Timber.v("loaded: %s", gpsRoute);
+
+                    // save gpsRoute
+                    routeUpdater.call(gpsRoute);
+
+                    // also, go back to the Home (and into the FlightPlanner)
+                    NavigateUtil.backFrom(view);
+                    NavigateUtil.into(context, R.layout.feat_fpl);
                 })
         );
 

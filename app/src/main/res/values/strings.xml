@@ -57,5 +57,6 @@
     <string name="routes_origin">Origin</string>
     <string name="routes_destination">Destination</string>
     <string name="routes_none_found">No routes found</string>
+    <string name="routeinfo_load">Load Route</string>
 
 </resources>

@@ -99,4 +99,9 @@
         <item name="android:textColor">@color/routes_header</item>
     </style>
 
+    <style name="OpenGps.RouteInfo" />
+    <style name="OpenGps.RouteInfo.Line">
+        <item name="android:padding">@dimen/padding_small</item>
+    </style>
+
 </resources>
