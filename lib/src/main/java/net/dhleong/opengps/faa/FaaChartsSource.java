@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -242,10 +243,27 @@ public class FaaChartsSource implements DataSource {
                 }
             }
 
+            // rip out the AIRPORT DIAGRAM and move it to the front (lazy way)
+            ChartInfo diagram = null;
+            Iterator<ChartInfo> iter = charts.iterator();
+            while (iter.hasNext()) {
+                ChartInfo info = iter.next();
+                if ("AIRPORT DIAGRAM".equals(info.name)) {
+                    iter.remove();
+                    diagram = info;
+                    break;
+                }
+            }
+
+            if (diagram != null) {
+                charts.add(0, diagram);
+            }
+
             long end = System.currentTimeMillis();
             System.out.println("XPP query took " + (end - start) + "ms"); // TODO logging
             return charts;
         } catch (Exception e) {
+            // just make sure it doesn't get suppressed by the finally
             throw e;
         } finally {
             try {

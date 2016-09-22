@@ -31,9 +31,9 @@ public class FaaChartsSourceTest {
         List<ChartInfo> charts = source.chartsFor(Airports.LGA).toBlocking().first();
         assertThat(charts).isNotEmpty();
 
-        // NB: we might change sorting in the future so this is the case,
-        //  but the FAA intentionally sorts it differently
-//        assertThat(charts.get(0).name).isEqualTo("AIRPORT DIAGRAM");
+        // the FAA intentionally sorts it differently, but it's convenient
+        //  for this to be up-front
+        assertThat(charts.get(0).name).isEqualTo("AIRPORT DIAGRAM");
     }
 
 }
