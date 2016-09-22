@@ -9,6 +9,7 @@ import net.dhleong.opengps.faa.FaaChartsStorage;
 import net.dhleong.opengps.modules.ConnectionModule;
 import net.dhleong.opengps.modules.NetworkModule;
 import net.dhleong.opengps.modules.PrefsModule;
+import net.dhleong.opengps.nasr.NasrPreferredRoutesStorage;
 import net.dhleong.opengps.nasr.NasrTextDataSource;
 import net.dhleong.opengps.storage.DelegateStorage;
 import net.dhleong.opengps.storage.InMemoryStorage;
@@ -62,6 +63,7 @@ public class AppModule {
                 new DelegateStorage.Builder()
                     .add(new InMemoryStorage())
                     .add(new FaaChartsStorage())
+                    .add(new NasrPreferredRoutesStorage())
                     .build()
             )
             .addDataSource(new NasrTextDataSource(nasrCacheDir))

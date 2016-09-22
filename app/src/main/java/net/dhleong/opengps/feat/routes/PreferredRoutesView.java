@@ -149,8 +149,10 @@ public class PreferredRoutesView extends CoordinatorLayout {
         }
 
         public void setRoutes(List<PreferredRoute> routes) {
-            boolean hadRoutes = this.routes == null;
+            final boolean hadRoutes = this.routes != null;
+
             this.routes = routes;
+
             if (hadRoutes) {
                 // remove + add is probably not worth it...
                 notifyDataSetChanged();

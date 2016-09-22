@@ -10,6 +10,16 @@ import rx.Observable;
 public abstract class AbstractStorage implements Storage {
 
     @Override
+    public Observable<Storage> load() {
+        return Observable.just(this);
+    }
+
+    @Override
+    public boolean hasDataSource(DataSource source) {
+        return false;
+    }
+
+    @Override
     public void put(Airport airport) {
         // nop
     }
@@ -76,6 +86,11 @@ public abstract class AbstractStorage implements Storage {
 
     @Override
     public Observable<AeroObject> findNear(double lat, double lng, float range) {
+        return Observable.empty();
+    }
+
+    @Override
+    public Observable<PreferredRoute> preferredRoutes(Airport origin, Airport dest) {
         return Observable.empty();
     }
 }

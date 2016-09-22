@@ -8,6 +8,7 @@ import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.LabeledFrequency;
 import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
+import net.dhleong.opengps.PreferredRoute;
 import net.dhleong.opengps.Storage;
 
 import java.util.ArrayList;
@@ -162,6 +163,12 @@ public class DelegateStorage implements Storage {
     public Observable<AeroObject> findNear(double lat, double lng, float range) {
         return Observable.from(storage)
                          .flatMap(s -> s.findNear(lat, lng, range));
+    }
+
+    @Override
+    public Observable<PreferredRoute> preferredRoutes(Airport origin, Airport dest) {
+        return Observable.from(storage)
+                         .flatMap(s -> s.preferredRoutes(origin, dest));
     }
 
     public static class Builder {

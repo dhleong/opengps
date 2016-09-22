@@ -47,4 +47,6 @@ public interface Storage {
      *  nm away from the given lat-lng, but they won't be very far.
      */
     Observable<AeroObject> findNear(double lat, double lng, float range);
+
+    Observable<PreferredRoute> preferredRoutes(Airport origin, Airport dest);
 }

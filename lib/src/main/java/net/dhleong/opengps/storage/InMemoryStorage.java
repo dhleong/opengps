@@ -8,6 +8,7 @@ import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.LabeledFrequency;
 import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
+import net.dhleong.opengps.PreferredRoute;
 import net.dhleong.opengps.Storage;
 import net.dhleong.opengps.impl.Const;
 
@@ -133,6 +134,12 @@ public class InMemoryStorage implements Storage {
 
     @Override
     public Observable<List<ChartInfo>> chartsFor(Airport airport) {
+        // we don't store this
+        return Observable.empty();
+    }
+
+    @Override
+    public Observable<PreferredRoute> preferredRoutes(Airport origin, Airport dest) {
         // we don't store this
         return Observable.empty();
     }

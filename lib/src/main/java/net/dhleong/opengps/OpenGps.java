@@ -158,6 +158,10 @@ public class OpenGps {
          });
     }
 
+    public Observable<PreferredRoute> preferredRoutes(Airport origin, Airport dest) {
+        return withStorage(storage -> storage.preferredRoutes(origin, dest));
+    }
+
     private <T> Observable<T> withStorage(Func1<Storage, Observable<T>> func) {
         return storage.first().flatMap(func);
     }

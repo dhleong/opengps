@@ -12,6 +12,8 @@ import net.dhleong.opengps.util.BasePresenter;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -60,10 +62,19 @@ public class PreferredRoutesPresenter extends BasePresenter<PreferredRoutesView>
     }
 
     void trySearch(PreferredRoutesView view) {
-        if (origin == null || dest == null) return;
+        final Airport from = origin;
+        final Airport to = dest;
+        if (from == null || to == null) return;
 
-        // TODO
-        Timber.v("Find routes between %s and %s", origin, dest);
+        // TODO: loading indicator (and empty state)
+        Timber.v("Find routes between %s and %s", from, to);
+        subscribe(
+            gps.preferredRoutes(from, to)
+               .subscribeOn(Schedulers.io())
+               .toList()
+               .observeOn(AndroidSchedulers.mainThread())
+               .subscribe(view::setRoutes)
+        );
     }
 
     Observable<Airport> pickAirport(Void ignore) {
