@@ -21,5 +21,8 @@ public class Airports {
     static {
         LGA.stateCode = "NY";
         LGA.cityName = "NEW YORK";
+        LGA.simpleId = "LGA";
+
+        PVD.simpleId = "PVD";
     }
 }

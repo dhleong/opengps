@@ -58,6 +58,9 @@ public class Airport extends BaseAeroObject {
     public String stateCode;
     public String cityName;
 
+    /** The non-icao ID; used internally in some places */
+    public String simpleId;
+
     private HashMap<FrequencyType, ArrayList<LabeledFrequency>> frequencies = new HashMap<>();
 
     public Airport(String number, Type type, String id, String name,

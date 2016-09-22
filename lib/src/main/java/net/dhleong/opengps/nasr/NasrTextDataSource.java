@@ -7,6 +7,7 @@ import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.LabeledFrequency;
 import net.dhleong.opengps.NavFix;
 import net.dhleong.opengps.Navaid;
+import net.dhleong.opengps.PreferredRoute;
 import net.dhleong.opengps.Storage;
 import net.dhleong.opengps.impl.BaseAeroObject;
 import net.dhleong.opengps.nasr.util.AiracCycle;
@@ -207,6 +208,19 @@ public class NasrTextDataSource implements DataSource {
         .doAfterTerminate(storage::endTransaction);
     }
 
+    public Observable<PreferredRoute> preferredRoutes(Airport from, Airport to) {
+        return ensureZipAvailable()
+        .subscribeOn(Schedulers.io())
+        .flatMap(file -> {
+            try {
+                Parser pfr = Parser.of(Okio.buffer(openRoutesFile()));
+                return Observable.from(NasrRoutesParser.find(pfr, from, to));
+            } catch (IOException e) {
+                return Observable.error(e);
+            }
+        });
+    }
+
     protected Observable<File> ensureZipAvailable() {
         return Observable.fromCallable(() -> {
             if (!cacheDir.isDirectory() && !cacheDir.mkdirs()) {
@@ -289,13 +303,17 @@ public class NasrTextDataSource implements DataSource {
         return openZipFile("NAV.txt");
     }
 
+    protected Source openRoutesFile() throws IOException {
+        return openZipFile("PFR.txt");
+    }
+
     private Source openZipFile(String fileName) throws IOException {
         final ZipFile zip = openedZipFile;
         final ZipEntry entry = zip.getEntry(fileName);
         return Okio.source(zip.getInputStream(entry));
     }
 
-        static Airport readAirport(Parser apts) throws IOException {
+    static Airport readAirport(Parser apts) throws IOException {
         final int headerType = apts.select(APT_HEADERS);
         final Airport result;
         if (headerType == APT_TYPE_MAIN) {
@@ -332,6 +350,7 @@ public class NasrTextDataSource implements DataSource {
                 : icao;
 
             result = new Airport(number, facilityType, actualId, name, lat, lng);
+            result.simpleId = id;
             result.elevation = elevation;
             result.magVar = magVar;
             result.stateCode = stateCode;
