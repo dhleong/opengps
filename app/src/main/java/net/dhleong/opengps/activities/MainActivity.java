@@ -120,4 +120,9 @@ public class MainActivity
     public View inflate(@LayoutRes int layoutResId) {
         return LayoutInflater.from(this).inflate(layoutResId, container, false);
     }
+
+    @Override
+    public View current() {
+        return container.getChildAt(0);
+    }
 }

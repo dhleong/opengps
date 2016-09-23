@@ -104,4 +104,13 @@
         <item name="android:padding">@dimen/padding_small</item>
     </style>
 
+    <style name="OpenGps.Tuner" />
+    <style name="OpenGps.Tuner.Number">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginLeft">@dimen/padding_normal</item>
+        <item name="android:layout_marginRight">@dimen/padding_normal</item>
+    </style>
+
 </resources>

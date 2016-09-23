@@ -15,6 +15,8 @@ import net.dhleong.opengps.R;
 import net.dhleong.opengps.connection.ConnectionDelegate;
 import net.dhleong.opengps.connection.data.RadioData;
 import net.dhleong.opengps.modules.DummyConnection;
+import net.dhleong.opengps.ui.NavigateUtil;
+import net.dhleong.opengps.util.RadioType;
 
 import java.util.List;
 
@@ -116,8 +118,21 @@ public class RadiosView extends LinearLayout {
                      })
         );
 
-        subs.add(radioCom.swaps().subscribe(any -> connection.swapCom1()));
-        subs.add(radioNav.swaps().subscribe(any -> connection.swapNav1()));
+        subs.add(
+            radioCom.swaps()
+                    .doOnNext(any -> NavigateUtil.backFromRadio(getContext()))
+                    .subscribe(any -> connection.swapCom1())
+        );
+        subs.add(
+            radioNav.swaps()
+                    .doOnNext(any -> NavigateUtil.backFromRadio(getContext()))
+                    .subscribe(any -> connection.swapNav1())
+        );
+
+        subs.add(radioCom.changeRequests().subscribe(any ->
+            NavigateUtil.intoRadio(getContext(), RadioType.COM)));
+        subs.add(radioNav.changeRequests().subscribe(any ->
+            NavigateUtil.intoRadio(getContext(), RadioType.NAV)));
 
         // yuck: FIXME refactor this to not assume anything about these views
         subs.add(RxView.clicks(radioMic).subscribe(any ->

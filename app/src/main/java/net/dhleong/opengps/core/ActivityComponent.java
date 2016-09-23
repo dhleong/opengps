@@ -12,6 +12,7 @@ import net.dhleong.opengps.feat.navaid.NavaidInfoView;
 import net.dhleong.opengps.feat.navfix.NavFixInfoView;
 import net.dhleong.opengps.feat.radios.RadiosView;
 import net.dhleong.opengps.feat.routes.PreferredRoutesComponent;
+import net.dhleong.opengps.feat.tuner.RadioTunerView;
 import net.dhleong.opengps.feat.waypoint.WaypointSearchComponent;
 import net.dhleong.opengps.ui.WaypointHeaderView;
 import net.dhleong.opengps.util.scopes.PerActivity;
@@ -38,6 +39,7 @@ public interface ActivityComponent {
     void inject(NavaidInfoView navaidInfoView);
     void inject(NavFixInfoView navFixInfoView);
     void inject(RadiosView radiosView);
+    void inject(RadioTunerView radioTunerView);
     void inject(WaypointHeaderView waypointHeaderView);
     void inject(WxPageView wxPageView);
 }

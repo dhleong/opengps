@@ -18,4 +18,8 @@
     <declare-styleable name="BelowAppBarBehavior">
         <attr name="belowId" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="IncrementRadioFreqView">
+        <attr name="android:textSize" />
+    </declare-styleable>
 </resources>

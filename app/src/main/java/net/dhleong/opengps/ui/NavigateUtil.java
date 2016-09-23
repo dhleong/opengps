@@ -1,6 +1,7 @@
 package net.dhleong.opengps.ui;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.support.annotation.LayoutRes;
 import android.view.View;
 
@@ -12,6 +13,8 @@ import net.dhleong.opengps.R;
 import net.dhleong.opengps.feat.airport.AirportInfoView;
 import net.dhleong.opengps.feat.navaid.NavaidInfoView;
 import net.dhleong.opengps.feat.navfix.NavFixInfoView;
+import net.dhleong.opengps.feat.tuner.RadioTunerView;
+import net.dhleong.opengps.util.RadioType;
 
 import timber.log.Timber;
 
@@ -25,12 +28,7 @@ import timber.log.Timber;
 public class NavigateUtil {
 
     public static View into(Context context, @LayoutRes int layoutResId) {
-        // TODO ContextWrappers?
-        if (!(context instanceof IntoNavigator)) {
-            throw new IllegalArgumentException("Given Context must implement IntoNavigator");
-        }
-
-        IntoNavigator nav = (IntoNavigator) context;
+        IntoNavigator nav = navigator(context);
         View v = nav.inflate(layoutResId);
 
         View prev = nav.navigateInto(v);
@@ -85,6 +83,50 @@ public class NavigateUtil {
         }
     }
 
+    public static boolean intoRadio(Context context, RadioType type) {
+        IntoNavigator navigator = navigator(context);
+        View view = navigator.current();
+        if (view instanceof RadioTunerView) {
+            if (((RadioTunerView) view).getType() == type) {
+                // same kind of radio; nop
+                return false;
+            } else {
+                // other kind of radio; pop back first
+                backFrom(view);
+            }
+        }
+
+        into(view.getContext(), RadioTunerView.class, R.layout.feat_tuner, type);
+        return true;
+    }
+
+    /**
+     * Executes {@link #backFrom(View)} IF the *current*
+     *  view is some kind of {@link RadioTunerView}
+     */
+    public static boolean backFromRadio(Context context) {
+        final IntoNavigator navigator = navigator(context);
+        final View view = navigator.current();
+        if (view instanceof RadioTunerView) {
+            backFrom(view);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static IntoNavigator navigator(Context context) {
+        // handle ContextWrappers
+        while (!(context instanceof IntoNavigator) && context instanceof ContextWrapper) {
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        if (!(context instanceof IntoNavigator)) {
+            throw new IllegalArgumentException("Given Context must implement IntoNavigator");
+        }
+        return (IntoNavigator) context;
+    }
+
+
     public interface IntoNavigator {
         View navigateInto(View view);
 
@@ -94,5 +136,7 @@ public class NavigateUtil {
          *  but DO NOT attach
          */
         View inflate(@LayoutRes int layoutResId);
+
+        View current();
     }
 }

@@ -104,7 +104,7 @@ public final class GpsRoute {
     final int flags;
 
     public GpsRoute() {
-        this(FLAG_INCLUDE_FIXES);
+        this(FLAGS_DEFAULT);
     }
 
     public GpsRoute(int flags) {

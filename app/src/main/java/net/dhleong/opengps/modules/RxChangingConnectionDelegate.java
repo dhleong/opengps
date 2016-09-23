@@ -1,12 +1,13 @@
 package net.dhleong.opengps.modules;
 
 import com.jakewharton.rxrelay.BehaviorRelay;
-import com.jakewharton.rxrelay.PublishRelay;
 
 import net.dhleong.opengps.connection.ConnectionConfiguration;
 import net.dhleong.opengps.connection.ConnectionDelegate;
 import net.dhleong.opengps.connection.SimConnectConnection;
 import net.dhleong.opengps.connection.data.RadioData;
+
+import java.util.HashMap;
 
 import javax.inject.Inject;
 
@@ -28,6 +29,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
     Subscription subs;
 
     LocalDataMerger<RadioData> radioUpdater;
+    HashMap<Class<?>, Observable<?>> observables = new HashMap<>();
 
     @Inject RxChangingConnectionDelegate(Observable<ConnectionConfiguration> configs) {
          connectionObs = configs.map(config -> {
@@ -84,16 +86,23 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
     @Override
     @SuppressWarnings("unchecked")
     public <T> Observable<T> subscribe(Class<T> type) {
+        final Observable<T> existing = (Observable<T>) observables.get(type);
+        if (existing != null) return existing;
+
         Observable<T> base = connection.flatMap(conn -> conn.subscribe(type));
 
         // FIXME NB: if we subscribe to the same data in multiple places, this breaks
         // We don't do that right now, so lazy is fine
         if (type == RadioData.class) {
             radioUpdater = LocalDataMerger.wrap((Observable<RadioData>) base);
-            return (Observable<T>) radioUpdater.merged();
+            Observable<T> merged = (Observable<T>) radioUpdater.merged();
+            observables.put(type, merged);
+            return merged;
         }
 
-        return base.onBackpressureLatest();
+        Observable<T> withBackPressure = base.onBackpressureLatest();
+        observables.put(type, withBackPressure);
+        return withBackPressure;
     }
 
     @Override
@@ -180,7 +189,7 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
 
         final Observable<T> baseStream;
         T lastData;
-        PublishRelay<T> localChanges = PublishRelay.create();
+        BehaviorRelay<T> localChanges = BehaviorRelay.create();
         long changePending;
 
         LocalDataMerger(Observable<T> baseStream) {
@@ -190,6 +199,11 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
 
             this.baseStream.subscribe(updated -> {
                 lastData = updated;
+
+                if (!localChanges.hasValue()) {
+                    // initial value
+                    localChanges.call(updated);
+                }
             });
         }
 
