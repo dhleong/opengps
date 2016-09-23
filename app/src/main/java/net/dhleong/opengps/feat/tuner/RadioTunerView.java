@@ -2,8 +2,11 @@ package net.dhleong.opengps.feat.tuner;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.jakewharton.rxbinding.view.RxView;
 
 import net.dhleong.opengps.App;
 import net.dhleong.opengps.R;
@@ -43,6 +46,8 @@ public class RadioTunerView
         R.id.number_0
     }) List<TextView> numbers;
 
+    @BindView(R.id.backspace) View backspace;
+
     RadioType mode;
 
     CompositeSubscription subs = new CompositeSubscription();
@@ -63,7 +68,7 @@ public class RadioTunerView
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.bind(this);
-        App.activityComponent(getContext())
+        App.activityComponent(this)
            .inject(this);
     }
 
@@ -80,6 +85,11 @@ public class RadioTunerView
                              : data.com1standby;
                          freq.set(initialValue);
                      })
+        );
+
+        subs.add(
+            RxView.clicks(backspace)
+                  .subscribe(any -> freq.backspace())
         );
 
         for (TextView numberView : numbers) {

@@ -48,6 +48,10 @@ public class IncrementRadioFreqView extends View {
     protected void onFinishInflate() {
         super.onFinishInflate();
         setWillNotDraw(false);
+
+        if (isInEditMode()) {
+            setMode(RadioType.COM);
+        }
     }
 
     @Override
@@ -72,6 +76,7 @@ public class IncrementRadioFreqView extends View {
         } else {
             state = new NavRadioFreqState();
         }
+        state.set(state.minValue);
     }
 
     public void set(float currentFrequency) {
@@ -82,9 +87,18 @@ public class IncrementRadioFreqView extends View {
     }
 
     public void feed(int decimal) {
-         if (state == null) throw new IllegalStateException("You must call setMode() first");
+        if (state == null) throw new IllegalStateException("You must call setMode() first");
 
         if (state.feed(decimal)) {
+            invalidate();
+            performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+        }
+    }
+
+    public void backspace() {
+        if (state == null) throw new IllegalStateException("You must call setMode() first");
+
+        if (state.backspace()) {
             invalidate();
             performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
         }
@@ -191,6 +205,18 @@ public class IncrementRadioFreqView extends View {
             } else {
                 nextIndex = index + 1;
             }
+            return true;
+        }
+
+        public boolean backspace() {
+            final int index = nextIndex;
+            if (index <= 0) return false;
+
+            final int prev = (index - 1 == DECIMAL_INDEX)
+                ? DECIMAL_INDEX - 1
+                : index - 1;
+            chars[prev] = '0';
+            nextIndex = prev;
             return true;
         }
     }

@@ -59,4 +59,6 @@
     <string name="routes_none_found">No routes found</string>
     <string name="routeinfo_load">Load Route</string>
 
+    <string name="backspace">\u232B</string>
+
 </resources>
