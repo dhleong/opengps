@@ -90,4 +90,14 @@ public class DummyConnection implements ConnectionDelegate {
     public void setNav1Standby(float frequency) {
         // nop
     }
+
+    @Override
+    public void setCom1Active(float frequency) {
+        // nop
+    }
+
+    @Override
+    public void setNav1Active(float frequency) {
+        // nop
+    }
 }

@@ -79,4 +79,25 @@ public class IncrementRadioFreqViewTest {
         assertThat(navState.asFloat()).isEqualTo(109.55f);
     }
 
+    @Test
+    public void navTyping_backspace() {
+        navState.set(108.45f);
+
+        assertThat(navState.feed(1)).isTrue();
+        assertThat(navState.feed(0)).isTrue();
+        assertThat(navState.feed(9)).isTrue();
+        assertThat(navState.feed(5)).isTrue();
+        assertThat(navState.feed(5)).isTrue();
+        assertThat(navState.asFloat()).isEqualTo(109.55f);
+
+        assertThat(navState.backspace()).isTrue();
+        assertThat(navState.asFloat()).isEqualTo(109.50f);
+
+        assertThat(navState.backspace()).isTrue();
+        assertThat(navState.asFloat()).isEqualTo(109.00f);
+
+        assertThat(navState.backspace()).isTrue();
+        assertThat(navState.asFloat()).isEqualTo(108.00f); // NB: don't backspace into illegality!
+    }
+
 }

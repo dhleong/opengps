@@ -167,6 +167,24 @@ public class RxChangingConnectionDelegate implements ConnectionDelegate {
         }
     }
 
+    @Override
+    public void setCom1Active(float frequency) {
+        currentDelegate.setCom1Active(frequency);
+        if (radioUpdater != null) {
+            radioUpdater.update(radioData ->
+                radioData.com1active = frequency);
+        }
+    }
+
+    @Override
+    public void setNav1Active(float frequency) {
+        currentDelegate.setNav1Active(frequency);
+        if (radioUpdater != null) {
+            radioUpdater.update(radioData ->
+                radioData.nav1active = frequency);
+        }
+    }
+
     ConnectionDelegate initConnectionFromConfig(ConnectionConfiguration config) {
         Timber.v("init(type=%s, host=%s, port=%d)", config.type, config.host, config.port);
         switch (config.type) {

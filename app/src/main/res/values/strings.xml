@@ -60,5 +60,7 @@
     <string name="routeinfo_load">Load Route</string>
 
     <string name="backspace">\u232B</string>
+    <string name="tuner_activate">Activate</string>
+    <string name="tuner_enter">STANDBY</string>
 
 </resources>

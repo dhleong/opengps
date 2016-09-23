@@ -36,4 +36,8 @@ public interface ConnectionDelegate {
 
     void setCom1Standby(float frequency);
     void setNav1Standby(float frequency);
+
+    void setCom1Active(float freq);
+    void setNav1Active(float freq);
+
 }

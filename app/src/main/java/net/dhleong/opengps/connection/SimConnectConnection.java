@@ -83,4 +83,16 @@ public class SimConnectConnection implements ConnectionDelegate {
         instance.sendEvent("NAV1_STBY_SET",
             RadioUtil.frequencyAsParam((int) (frequency * 1000)));
     }
+
+    @Override
+    public void setCom1Active(float frequency) {
+        instance.sendEvent("COM_RADIO_SET",
+            RadioUtil.frequencyAsParam((int) (frequency * 1000)));
+    }
+
+    @Override
+    public void setNav1Active(float frequency) {
+        instance.sendEvent("NAV1_RADIO_SET",
+            RadioUtil.frequencyAsParam((int) (frequency * 1000)));
+    }
 }

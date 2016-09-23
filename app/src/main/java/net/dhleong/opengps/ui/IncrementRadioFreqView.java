@@ -5,7 +5,9 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 
@@ -20,6 +22,9 @@ public class IncrementRadioFreqView extends View {
     IncrementRadioFreqState state;
 
     Paint textPaint = new Paint();
+    Paint cursorPaint = new Paint();
+    @ColorInt int primaryTextColor;
+    @ColorInt int disabledTextColor;
 
     public IncrementRadioFreqView(Context context) {
         this(context, null);
@@ -33,6 +38,13 @@ public class IncrementRadioFreqView extends View {
         super(context, attrs, defStyleAttr);
 
         textPaint.setTypeface(Typeface.MONOSPACE);
+
+        TypedValue val = new TypedValue();
+        context.getTheme().resolveAttribute(R.attr.colorAccent, val, true);
+        cursorPaint.setColor(val.data);
+
+        primaryTextColor = 0xff000000;
+        disabledTextColor = 0xffDADADA;
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IncrementRadioFreqView);
@@ -64,8 +76,37 @@ public class IncrementRadioFreqView extends View {
         canvas.save();
         canvas.translate(getPaddingLeft(), getPaddingTop());
 
-        // TODO colors, typing indicator, etc.
-        canvas.drawText(state.chars, 0, state.chars.length, 0, textPaint.getTextSize(), textPaint);
+        final float y = textPaint.getTextSize();
+
+        textPaint.setColor(primaryTextColor);
+        if (state.isTyping()) {
+            float drawn = textPaint.measureText(state.chars, 0, state.nextIndex);
+            canvas.drawText(state.chars, 0, state.nextIndex, 0, y, textPaint);
+            canvas.translate(drawn, 0);
+
+            // highlight the "next" index (IE: the "cursor")
+            if (state.nextIndex < state.chars.length) {
+                int measureIdx = state.nextIndex;
+                if (state.nextIndex == IncrementRadioFreqState.DECIMAL_INDEX) {
+                    measureIdx++;
+                    canvas.translate(
+                        textPaint.measureText(state.chars, IncrementRadioFreqState.DECIMAL_INDEX, 1),
+                        0
+                    );
+                }
+                float singleWidth = textPaint.measureText(state.chars, measureIdx, 1);
+
+                canvas.drawRect(0, 0, singleWidth, y + textPaint.descent(), cursorPaint);
+            }
+
+            textPaint.setColor(disabledTextColor);
+            canvas.drawText(state.chars, state.nextIndex, state.chars.length - state.nextIndex,
+                0, y, textPaint);
+
+        } else {
+            // not typing; be simple
+            canvas.drawText(state.chars, 0, state.chars.length, 0, y, textPaint);
+        }
 
         canvas.restore();
     }
@@ -102,6 +143,11 @@ public class IncrementRadioFreqView extends View {
             invalidate();
             performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
         }
+    }
+
+    public float asFloat() {
+        if (state == null) throw new IllegalStateException("You must call setMode() first");
+        return state.asFloat();
     }
 
     static abstract class IncrementRadioFreqState {
@@ -215,7 +261,16 @@ public class IncrementRadioFreqView extends View {
             final int prev = (index - 1 == DECIMAL_INDEX)
                 ? DECIMAL_INDEX - 1
                 : index - 1;
-            chars[prev] = '0';
+            if (prev == 0) {
+                set(minValue);
+            } else {
+                chars[prev] = '0';
+
+                if (asFloat() < minValue) {
+                    // enforce legal value
+                    set(minValue);
+                }
+            }
             nextIndex = prev;
             return true;
         }

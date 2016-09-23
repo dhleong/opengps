@@ -13,6 +13,8 @@
         android:paddingRight="@dimen/padding_large"
         >
 
+        <!-- TODO: search for frequencies -->
+
         <net.dhleong.opengps.ui.IncrementRadioFreqView
             android:id="@+id/freq"
             android:layout_width="wrap_content"
@@ -128,7 +130,13 @@
         android:paddingRight="@dimen/padding_large"
         >
 
-        <!-- TODO swap button -->
+        <Button
+            android:id="@+id/activate"
+            android:text="@string/tuner_activate"
+            android:layout_marginStart="0dp"
+            tools:ignore="HardcodedText"
+            style="@style/OpenGps.Tuner.Number"
+            />
 
         <Button
             android:id="@+id/number_0"
@@ -137,7 +145,13 @@
             style="@style/OpenGps.Tuner.Number"
             />
 
-        <!-- TODO enter button -->
+        <Button
+            android:id="@+id/enter"
+            android:text="@string/tuner_enter"
+            android:layout_marginEnd="0dp"
+            tools:ignore="HardcodedText"
+            style="@style/OpenGps.Tuner.Number"
+            />
 
     </LinearLayout>
 

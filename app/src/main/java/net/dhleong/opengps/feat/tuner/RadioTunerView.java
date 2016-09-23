@@ -14,6 +14,7 @@ import net.dhleong.opengps.connection.ConnectionDelegate;
 import net.dhleong.opengps.connection.data.RadioData;
 import net.dhleong.opengps.ui.DialogPrompter;
 import net.dhleong.opengps.ui.IncrementRadioFreqView;
+import net.dhleong.opengps.ui.NavigateUtil;
 import net.dhleong.opengps.util.RadioType;
 
 import java.util.List;
@@ -47,6 +48,9 @@ public class RadioTunerView
     }) List<TextView> numbers;
 
     @BindView(R.id.backspace) View backspace;
+
+    @BindView(R.id.activate) View activate;
+    @BindView(R.id.enter) View enter;
 
     RadioType mode;
 
@@ -92,6 +96,30 @@ public class RadioTunerView
                   .subscribe(any -> freq.backspace())
         );
 
+        subs.add(
+            activatedFrequencies()
+                .subscribe(freq -> {
+                    if (mode == RadioType.NAV) {
+                        delegate.setNav1Active(freq);
+                    } else {
+                        delegate.setCom1Active(freq);
+                    }
+                    NavigateUtil.backFrom(this);
+                })
+        );
+
+        subs.add(
+            standbyFrequencies()
+                .subscribe(freq -> {
+                    if (mode == RadioType.NAV) {
+                        delegate.setNav1Standby(freq);
+                    } else {
+                        delegate.setCom1Standby(freq);
+                    }
+                    NavigateUtil.backFrom(this);
+                })
+        );
+
         for (TextView numberView : numbers) {
             numberView.setOnClickListener(v -> {
                 int number = Integer.parseInt(((TextView) v).getText().toString());
@@ -106,4 +134,13 @@ public class RadioTunerView
     public RadioType getType() {
         return mode;
     }
+
+    public Observable<Float> activatedFrequencies() {
+        return RxView.clicks(activate).map(any -> freq.asFloat());
+    }
+
+    public Observable<Float> standbyFrequencies() {
+        return RxView.clicks(enter).map(any -> freq.asFloat());
+    }
+
 }
