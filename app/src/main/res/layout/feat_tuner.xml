@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:padding="@dimen/padding_normal"
-            android:textSize="22sp"
+            android:textSize="26sp"
             />
 
         <Button
@@ -30,6 +30,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:text="@string/backspace"
+            android:paddingTop="@dimen/padding_large"
+            android:paddingBottom="@dimen/padding_large"
+            style="@style/OpenGps.Tuner.Button"
             />
     </FrameLayout>
 
@@ -135,7 +138,7 @@
             android:text="@string/tuner_activate"
             android:layout_marginStart="0dp"
             tools:ignore="HardcodedText"
-            style="@style/OpenGps.Tuner.Number"
+            style="@style/OpenGps.Tuner.Button"
             />
 
         <Button
@@ -150,7 +153,7 @@
             android:text="@string/tuner_enter"
             android:layout_marginEnd="0dp"
             tools:ignore="HardcodedText"
-            style="@style/OpenGps.Tuner.Number"
+            style="@style/OpenGps.Tuner.Button"
             />
 
     </LinearLayout>
