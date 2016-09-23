@@ -24,16 +24,18 @@
             android:textSize="26sp"
             />
 
-        <Button
+        <ImageButton
             android:id="@+id/backspace"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="@string/backspace"
+            android:src="@drawable/ic_backspace"
             android:paddingTop="@dimen/padding_large"
             android:paddingBottom="@dimen/padding_large"
+            android:paddingLeft="@dimen/padding_huge"
+            android:paddingRight="@dimen/padding_huge"
             style="@style/OpenGps.Tuner.Button"
-            />
+            android:contentDescription="@string/tuner_backspace"/>
     </FrameLayout>
 
     <LinearLayout
