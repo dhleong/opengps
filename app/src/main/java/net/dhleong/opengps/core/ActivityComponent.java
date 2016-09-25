@@ -7,6 +7,7 @@ import net.dhleong.opengps.feat.charts.ChartPickerComponent;
 import net.dhleong.opengps.feat.connbar.ConnectionBarComponent;
 import net.dhleong.opengps.feat.fpl.FlightPlannerComponent;
 import net.dhleong.opengps.feat.home.HomeComponent;
+import net.dhleong.opengps.feat.loading.LoadingStatusView;
 import net.dhleong.opengps.feat.map.MapComponent;
 import net.dhleong.opengps.feat.navaid.NavaidInfoView;
 import net.dhleong.opengps.feat.navfix.NavFixInfoView;
@@ -36,6 +37,7 @@ public interface ActivityComponent {
     WaypointSearchComponent newWaypointSearchComponent();
 
     void inject(FreqsPageView freqsPageView);
+    void inject(LoadingStatusView loadingStatusView);
     void inject(NavaidInfoView navaidInfoView);
     void inject(NavFixInfoView navFixInfoView);
     void inject(RadiosView radiosView);

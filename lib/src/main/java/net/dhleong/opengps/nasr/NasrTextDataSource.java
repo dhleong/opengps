@@ -12,6 +12,8 @@ import net.dhleong.opengps.Storage;
 import net.dhleong.opengps.impl.BaseAeroObject;
 import net.dhleong.opengps.nasr.util.AiracCycle;
 import net.dhleong.opengps.nasr.util.Parser;
+import net.dhleong.opengps.status.DataKind;
+import net.dhleong.opengps.status.StatusUpdate;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +32,7 @@ import okio.Okio;
 import okio.Options;
 import okio.Source;
 import rx.Observable;
+import rx.Observer;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -85,6 +88,12 @@ public class NasrTextDataSource implements DataSource {
     );
     static final int AWY_TYPE_FIX = 0;
 
+    private static final Observer<StatusUpdate> DUMMY_UPDATER = new Observer<StatusUpdate>() {
+        @Override public void onCompleted() { }
+        @Override public void onError(Throwable e) { }
+        @Override public void onNext(StatusUpdate statusUpdate) { }
+    };
+
     private final File cacheDir;
     private final File zipFile;
     private final String zipUrl;
@@ -107,9 +116,16 @@ public class NasrTextDataSource implements DataSource {
     }
 
     @Override
-    public Observable<Boolean> loadInto(Storage storage) {
+    public String name() {
+        // technically "National Aerospace System Resources,"
+        //  but that's gonna be really hard to fit
+        return "FAA AeroNav Data";
+    }
+
+    @Override
+    public Observable<Boolean> loadInto(Storage storage, Observer<StatusUpdate> updates) {
         final long start = System.currentTimeMillis();
-        return ensureZipAvailable()
+        return ensureZipAvailable(updates)
         .subscribeOn(Schedulers.io())
         .flatMap(file -> Observable.fromCallable(() -> { // indirection to handle IOEs
             storage.beginTransaction();
@@ -124,6 +140,7 @@ public class NasrTextDataSource implements DataSource {
             }
             apts.close();
 
+            updates.onNext(new StatusUpdate(this, DataKind.AIRPORTS));
             return true;
         }))
         .flatMap(any -> Observable.merge(
@@ -179,6 +196,7 @@ public class NasrTextDataSource implements DataSource {
                 }
                 fix.close();
 
+                updates.onNext(new StatusUpdate(this, DataKind.NAVAIDS));
                 return true;
             }).subscribeOn(Schedulers.io())
 
@@ -188,6 +206,7 @@ public class NasrTextDataSource implements DataSource {
             Parser awy = Parser.of(Okio.buffer(openAirwaysFile()));
             readAirways(awy, storage);
             awy.close();
+            updates.onNext(new StatusUpdate(this, DataKind.AIRWAYS));
             return true;
         }))
         .doOnNext(any -> {
@@ -212,7 +231,7 @@ public class NasrTextDataSource implements DataSource {
     }
 
     public Observable<PreferredRoute> preferredRoutes(Airport from, Airport to) {
-        return ensureZipAvailable()
+        return ensureZipAvailable(DUMMY_UPDATER)
         .subscribeOn(Schedulers.io())
         .flatMap(file -> {
             try {
@@ -224,7 +243,7 @@ public class NasrTextDataSource implements DataSource {
         });
     }
 
-    protected Observable<File> ensureZipAvailable() {
+    protected Observable<File> ensureZipAvailable(Observer<StatusUpdate> updates) {
         return Observable.fromCallable(() -> {
             if (!cacheDir.isDirectory() && !cacheDir.mkdirs()) {
                 throw new IOException("Unable to prepare cache dir " + cacheDir);
@@ -235,6 +254,7 @@ public class NasrTextDataSource implements DataSource {
 
                 try {
                     openedZipFile = new ZipFile(zipFile);
+                    updates.onNext(new StatusUpdate(this, DataKind.RAW));
                     return zipFile;
                 } catch (ZipException e) {
                     // corrupt
@@ -242,6 +262,7 @@ public class NasrTextDataSource implements DataSource {
                     e.printStackTrace();
                     //noinspection ResultOfMethodCallIgnored
                     zipFile.delete();
+                    updates.onNext(new StatusUpdate(this, DataKind.RAW_UPDATE));
                 }
             }
 
@@ -265,6 +286,7 @@ public class NasrTextDataSource implements DataSource {
             } else {
                 System.out.println("Existing data set (" + expiredDataFile
                     + ") expired; fetching " + zipUrl);
+                updates.onNext(new StatusUpdate(this, DataKind.RAW_UPDATE));
             }
 
             // download
@@ -276,6 +298,7 @@ public class NasrTextDataSource implements DataSource {
             in.close();
             final long end = System.currentTimeMillis();
             System.out.println("Downloaded NASR data in " + (end - start) + "ms");
+            updates.onNext(new StatusUpdate(this, DataKind.RAW));
 
             openedZipFile = new ZipFile(zipFile);
             return zipFile;

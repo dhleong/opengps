@@ -2,6 +2,7 @@ package net.dhleong.opengps.nasr;
 
 import net.dhleong.opengps.Airport;
 import net.dhleong.opengps.LabeledFrequency;
+import net.dhleong.opengps.status.StatusUpdate;
 import net.dhleong.opengps.storage.InMemoryStorage;
 
 import org.junit.Before;
@@ -12,6 +13,7 @@ import java.io.IOException;
 
 import okio.Source;
 import rx.Observable;
+import rx.Observer;
 
 import static net.dhleong.opengps.OpenGpsAssertions.assertThat;
 import static net.dhleong.opengps.test.OkioTest.source;
@@ -20,6 +22,12 @@ import static net.dhleong.opengps.test.OkioTest.source;
  * @author dhleong
  */
 public class NasrTextDataSourceTest {
+
+    private Observer<StatusUpdate> updates = new Observer<StatusUpdate>() {
+        @Override public void onCompleted() { }
+        @Override public void onError(Throwable e) { }
+        @Override public void onNext(StatusUpdate statusUpdate) { }
+    };
 
     static class TestableNasrDataSource extends NasrTextDataSource {
         private final String apt;
@@ -37,7 +45,7 @@ public class NasrTextDataSourceTest {
         }
 
         @Override
-        protected Observable<File> ensureZipAvailable() {
+        protected Observable<File> ensureZipAvailable(Observer<StatusUpdate> updates) {
             return Observable.just(new File(""));
         }
 
@@ -91,7 +99,7 @@ public class NasrTextDataSourceTest {
             "" // TODO
         );
 
-        assertThat(dataSource.loadInto(storage).toBlocking().single()).isTrue();
+        assertThat(dataSource.loadInto(storage, updates).toBlocking().single()).isTrue();
         Airport airport = storage.find("KLGA")
                                  .map(obj -> (Airport) obj)
                                  .toBlocking()

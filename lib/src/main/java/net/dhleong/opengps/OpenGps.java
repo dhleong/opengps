@@ -1,5 +1,8 @@
 package net.dhleong.opengps;
 
+import net.dhleong.opengps.status.DataKind;
+import net.dhleong.opengps.status.StatusUpdate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +10,7 @@ import rx.Observable;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
+import rx.subjects.ReplaySubject;
 
 /**
  * OpenGps is the primary means of accessing data stored
@@ -28,28 +32,32 @@ public class OpenGps {
     }
 
     BehaviorSubject<Storage> storage = BehaviorSubject.create();
+    ReplaySubject<StatusUpdate> updates = ReplaySubject.create();
 
     private OpenGps(Builder builder) {
         // begin eager load
-        builder.storage.load().flatMap(s ->
-            Observable.from(builder.sources)
-                      .flatMap(dataSource -> {
-                          if (!s.hasDataSource(dataSource)) {
-                              return dataSource
-                                  .loadInto(s)
-                                  .flatMap(result -> {
-                                      // TODO better logging
-                                      if (!result) {
-                                          System.err.println("Failed to load " + dataSource);
-                                          return Observable.empty();
-                                      }
-                                      return Observable.just(s);
-                                  });
-                          } else {
-                              return Observable.just(s);
-                          }
-                      })
-        ).last().subscribe(storage::onNext, e -> {
+        builder.storage.load()
+                       .doOnNext(any -> updates.onNext(new StatusUpdate(null, DataKind.CACHE)))
+                       .flatMap(s ->
+                           Observable.from(builder.sources)
+                                     .flatMap(dataSource -> {
+                                         if (!s.hasDataSource(dataSource)) {
+                                             return dataSource
+                                                 .loadInto(s, updates)
+                                                 .flatMap(result -> {
+                                                     // TODO better logging
+                                                     if (!result) {
+                                                         System.err.println("Failed to load " + dataSource);
+                                                         return Observable.empty();
+                                                     }
+
+                                                     return Observable.just(s);
+                                                 });
+                                         } else {
+                                             return Observable.just(s);
+                                         }
+                                     })
+                       ).last().subscribe(storage::onNext, e -> {
             if (builder.onError != null) {
                 builder.onError.onError(e);
             } else {
@@ -57,6 +65,10 @@ public class OpenGps {
                 e.printStackTrace();
             }
         });
+    }
+
+    public Observable<StatusUpdate> statusUpdates() {
+        return updates;
     }
 
     public Observable<AeroObject> find(String objectId) {

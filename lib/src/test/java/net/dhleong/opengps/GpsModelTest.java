@@ -1,5 +1,6 @@
 package net.dhleong.opengps;
 
+import net.dhleong.opengps.status.StatusUpdate;
 import net.dhleong.opengps.storage.InMemoryStorage;
 
 import org.junit.Before;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 import rx.Observable;
+import rx.Observer;
 
 import static net.dhleong.opengps.test.TestUtil.dmsToDegrees;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +25,12 @@ public class GpsModelTest {
         }
 
         @Override
-        public Observable<Boolean> loadInto(Storage storage) {
+        public String name() {
+            return "Dummy";
+        }
+
+        @Override
+        public Observable<Boolean> loadInto(Storage storage, Observer<StatusUpdate> updates) {
             return Observable.just(true);
         }
     };

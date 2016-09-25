@@ -24,11 +24,20 @@
             style="@style/OpenGps.Toolbar" />
     </net.dhleong.opengps.feat.connbar.ConnectionAppBarLayout>
 
+    <net.dhleong.opengps.feat.loading.LoadingStatusView
+        android:id="@+id/loading_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        app:layout_behavior="@string/behavior_below_appbar"
+        />
+
     <FrameLayout
         android:id="@+id/activity_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/behavior_below_appbar"
+        app:belowId="@+id/loading_status"
         >
         <include layout="@layout/feat_home" />
     </FrameLayout>

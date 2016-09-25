@@ -1,6 +1,7 @@
 package net.dhleong.opengps.faa;
 
 import net.dhleong.opengps.ChartInfo;
+import net.dhleong.opengps.status.StatusUpdate;
 import net.dhleong.opengps.test.Airports;
 
 import org.junit.Before;
@@ -8,6 +9,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.List;
+
+import rx.Observer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,12 +21,17 @@ public class FaaChartsSourceTest {
 
     FaaChartsSource source;
     FaaChartsStorage storage;
+    final Observer<StatusUpdate> updates = new Observer<StatusUpdate>() {
+        @Override public void onCompleted() { }
+        @Override public void onError(Throwable e) { }
+        @Override public void onNext(StatusUpdate statusUpdate) { }
+    };
 
     @Before
     public void setUp() {
         storage = new FaaChartsStorage();
         source = new FaaChartsSource(new File(".test-cache"));
-        assertThat(source.loadInto(storage).toBlocking().first()).isTrue();
+        assertThat(source.loadInto(storage, updates).toBlocking().first()).isTrue();
     }
 
     @Test

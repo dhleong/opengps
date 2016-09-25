@@ -5,6 +5,8 @@ import net.dhleong.opengps.ChartInfo;
 import net.dhleong.opengps.DataSource;
 import net.dhleong.opengps.Storage;
 import net.dhleong.opengps.nasr.util.AiracCycle;
+import net.dhleong.opengps.status.DataKind;
+import net.dhleong.opengps.status.StatusUpdate;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -33,6 +35,7 @@ import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
 import rx.Observable;
+import rx.Observer;
 
 /**
  * @author dhleong
@@ -70,8 +73,13 @@ public class FaaChartsSource implements DataSource {
     }
 
     @Override
-    public Observable<Boolean> loadInto(Storage storage) {
-        return ensureXmlAvailable().map(file -> {
+    public String name() {
+        return "FAA Charts";
+    }
+
+    @Override
+    public Observable<Boolean> loadInto(Storage storage, Observer<StatusUpdate> updates) {
+        return ensureXmlAvailable(updates).map(file -> {
             if (file.exists()) {
                 storage.finishSource(this);
                 return true;
@@ -81,7 +89,7 @@ public class FaaChartsSource implements DataSource {
         });
     }
 
-    protected Observable<File> ensureXmlAvailable() {
+    protected Observable<File> ensureXmlAvailable(Observer<StatusUpdate> updates) {
         return Observable.fromCallable(() -> {
             if (!cacheDir.isDirectory() && !cacheDir.mkdirs()) {
                 throw new IOException("Unable to prepare cache dir " + cacheDir);
@@ -89,6 +97,7 @@ public class FaaChartsSource implements DataSource {
 
             if (xmlFile.exists()) {
                 System.out.println("FAA Charts xml already downloaded!");
+                updates.onNext(new StatusUpdate(this, DataKind.RAW));
                 return xmlFile;
             }
 
@@ -112,6 +121,7 @@ public class FaaChartsSource implements DataSource {
             } else {
                 System.out.println("Existing faa charts set (" + expiredDataFile
                     + ") expired; fetching " + xmlUrl);
+                updates.onNext(new StatusUpdate(this, DataKind.RAW_UPDATE));
             }
 
             // download
@@ -123,6 +133,7 @@ public class FaaChartsSource implements DataSource {
             in.close();
             final long end = System.currentTimeMillis();
             System.out.println("Downloaded faa charts data in " + (end - start) + "ms");
+            updates.onNext(new StatusUpdate(this, DataKind.RAW));
             return xmlFile;
         });
     }
