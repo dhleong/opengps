@@ -194,11 +194,14 @@ public class NasrTextDataSource implements DataSource {
             storage.markTransactionSuccessful();
             storage.finishSource(this);
 
-            try {
-                openedZipFile.close();
-            } catch (IOException e) {
-                // don't care?
-                e.printStackTrace();
+            final ZipFile openedZipFile = this.openedZipFile;
+            if (openedZipFile != null) {
+                try {
+                    openedZipFile.close();
+                } catch (IOException e) {
+                    // don't care?
+                    e.printStackTrace();
+                }
             }
 
             // TODO better logging

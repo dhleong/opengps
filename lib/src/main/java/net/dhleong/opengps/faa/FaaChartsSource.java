@@ -184,6 +184,7 @@ public class FaaChartsSource implements DataSource {
             }
         }
 
+        sort(charts);
         long end = System.currentTimeMillis();
         System.out.println("XPath query took " + (end - start) + "ms: " + rawPath); // TODO logging
         return charts;
@@ -243,22 +244,7 @@ public class FaaChartsSource implements DataSource {
                 }
             }
 
-            // rip out the AIRPORT DIAGRAM and move it to the front (lazy way)
-            ChartInfo diagram = null;
-            Iterator<ChartInfo> iter = charts.iterator();
-            while (iter.hasNext()) {
-                ChartInfo info = iter.next();
-                if ("AIRPORT DIAGRAM".equals(info.name)) {
-                    iter.remove();
-                    diagram = info;
-                    break;
-                }
-            }
-
-            if (diagram != null) {
-                charts.add(0, diagram);
-            }
-
+            sort(charts);
             long end = System.currentTimeMillis();
             System.out.println("XPP query took " + (end - start) + "ms"); // TODO logging
             return charts;
@@ -316,4 +302,23 @@ public class FaaChartsSource implements DataSource {
         }
         return result;
     }
+
+    static void sort(List<ChartInfo> charts) {
+        // rip out the AIRPORT DIAGRAM and move it to the front (lazy way)
+        ChartInfo diagram = null;
+        Iterator<ChartInfo> iter = charts.iterator();
+        while (iter.hasNext()) {
+            ChartInfo info = iter.next();
+            if ("AIRPORT DIAGRAM".equals(info.name)) {
+                iter.remove();
+                diagram = info;
+                break;
+            }
+        }
+
+        if (diagram != null) {
+            charts.add(0, diagram);
+        }
+    }
+
 }

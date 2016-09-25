@@ -33,6 +33,9 @@ public class FaaChartsSourceTest {
 
         // the FAA intentionally sorts it differently, but it's convenient
         //  for this to be up-front
+        assertThat(charts)
+            .usingElementComparatorOnFields("name")
+            .startsWith(new ChartInfo("AIRPORT DIAGRAM", null));
         assertThat(charts.get(0).name).isEqualTo("AIRPORT DIAGRAM");
     }
 

@@ -25,7 +25,7 @@ public class Navaids {
         dmsToDegrees(41, 33, 23.053),
         dmsToDegrees(-71, -59, -57.672),
         0);
-    public static final Navaid PVD = new Navaid(Navaid.Type.VORTAC, "PVD", "PROVIDENCE",
+    public static final Navaid PVD = new Navaid(Navaid.Type.VORDME, "PVD", "PROVIDENCE",
         dmsToDegrees(41, 43, 27.639),
         dmsToDegrees(-71, -25, -46.699),
         0);
