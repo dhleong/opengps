@@ -56,7 +56,7 @@ public class HomeView extends CoordinatorLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.bind(this);
-        App.activityComponent(getContext())
+        App.activityComponent(this)
            .newHomeComponent()
            .inject(this);
 

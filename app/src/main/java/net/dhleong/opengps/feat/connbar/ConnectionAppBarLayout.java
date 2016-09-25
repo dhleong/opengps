@@ -59,14 +59,16 @@ public class ConnectionAppBarLayout extends AppBarLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        subs = connectionType.observeOn(AndroidSchedulers.mainThread())
-            .subscribe(type -> {
-                if (type == ConnectionType.NONE) {
-                    switchToToolbar();
-                } else {
-                    switchToConnection();
-                }
-            });
+        if (!isInEditMode()) {
+            subs = connectionType.observeOn(AndroidSchedulers.mainThread())
+                                 .subscribe(type -> {
+                                     if (type == ConnectionType.NONE) {
+                                         switchToToolbar();
+                                     } else {
+                                         switchToConnection();
+                                     }
+                                 });
+        }
     }
 
     void switchToToolbar() {
@@ -91,7 +93,9 @@ public class ConnectionAppBarLayout extends AppBarLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        subs.unsubscribe();
+        // should only be null in edit mode
+        final Subscription subs = this.subs;
+        if (subs != null) subs.unsubscribe();
     }
 
     public void intercept(View oldView, View newView) {

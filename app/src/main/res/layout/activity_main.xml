@@ -29,6 +29,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
+        android:padding="@dimen/padding_normal"
+        android:textColor="#eee"
+        android:textSize="18sp"
         app:layout_behavior="@string/behavior_below_appbar"
         />
 

@@ -11,6 +11,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.ReplaySubject;
+import rx.subjects.SerializedSubject;
 
 /**
  * OpenGps is the primary means of accessing data stored
@@ -32,32 +33,37 @@ public class OpenGps {
     }
 
     BehaviorSubject<Storage> storage = BehaviorSubject.create();
-    ReplaySubject<StatusUpdate> updates = ReplaySubject.create();
+    SerializedSubject<StatusUpdate, StatusUpdate> updates =
+        ReplaySubject.<StatusUpdate>create()
+            .toSerialized();
 
     private OpenGps(Builder builder) {
         // begin eager load
-        builder.storage.load()
-                       .doOnNext(any -> updates.onNext(new StatusUpdate(null, DataKind.CACHE)))
-                       .flatMap(s ->
-                           Observable.from(builder.sources)
-                                     .flatMap(dataSource -> {
-                                         if (!s.hasDataSource(dataSource)) {
-                                             return dataSource
-                                                 .loadInto(s, updates)
-                                                 .flatMap(result -> {
-                                                     // TODO better logging
-                                                     if (!result) {
-                                                         System.err.println("Failed to load " + dataSource);
-                                                         return Observable.empty();
-                                                     }
+        builder.storage
+            .load()
+            .doOnNext(any -> updates.onNext(new StatusUpdate(null, DataKind.STORAGE_READY)))
+            .flatMap(s ->
+                Observable.from(builder.sources)
+                          .flatMap(dataSource -> {
+                              if (!s.hasDataSource(dataSource)) {
+                                  return dataSource
+                                      .loadInto(s, updates)
+                                      .flatMap(result -> {
+                                          // TODO better logging
+                                          if (!result) {
+                                              System.err.println("Failed to load " + dataSource);
+                                              return Observable.empty();
+                                          }
 
-                                                     return Observable.just(s);
-                                                 });
-                                         } else {
-                                             return Observable.just(s);
-                                         }
-                                     })
-                       ).last().subscribe(storage::onNext, e -> {
+                                          return Observable.just(s);
+                                      });
+                              } else {
+                                  return Observable.just(s);
+                              }
+                          })
+            ).last()
+            .doOnNext(any -> updates.onNext(new StatusUpdate(null, DataKind.ALL_READY)))
+            .subscribe(storage::onNext, e -> {
             if (builder.onError != null) {
                 builder.onError.onError(e);
             } else {

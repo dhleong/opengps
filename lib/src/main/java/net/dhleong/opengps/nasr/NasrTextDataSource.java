@@ -212,6 +212,7 @@ public class NasrTextDataSource implements DataSource {
         .doOnNext(any -> {
             storage.markTransactionSuccessful();
             storage.finishSource(this);
+            updates.onNext(new StatusUpdate(this, DataKind.READY));
 
             final ZipFile openedZipFile = this.openedZipFile;
             if (openedZipFile != null) {
@@ -254,7 +255,7 @@ public class NasrTextDataSource implements DataSource {
 
                 try {
                     openedZipFile = new ZipFile(zipFile);
-                    updates.onNext(new StatusUpdate(this, DataKind.RAW));
+                    updates.onNext(new StatusUpdate(this, DataKind.RAW_FETCHED));
                     return zipFile;
                 } catch (ZipException e) {
                     // corrupt
@@ -283,6 +284,7 @@ public class NasrTextDataSource implements DataSource {
             // TODO better logging
             if (expiredDataFile == null) {
                 System.out.println("Fetching initial nasr data set: " + zipUrl);
+                updates.onNext(new StatusUpdate(this, DataKind.RAW_INIT));
             } else {
                 System.out.println("Existing data set (" + expiredDataFile
                     + ") expired; fetching " + zipUrl);
@@ -298,7 +300,7 @@ public class NasrTextDataSource implements DataSource {
             in.close();
             final long end = System.currentTimeMillis();
             System.out.println("Downloaded NASR data in " + (end - start) + "ms");
-            updates.onNext(new StatusUpdate(this, DataKind.RAW));
+            updates.onNext(new StatusUpdate(this, DataKind.RAW_FETCHED));
 
             openedZipFile = new ZipFile(zipFile);
             return zipFile;

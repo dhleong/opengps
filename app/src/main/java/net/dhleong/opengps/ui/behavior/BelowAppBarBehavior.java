@@ -40,10 +40,10 @@ public class BelowAppBarBehavior extends CoordinatorLayout.Behavior<View> {
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) child.getLayoutParams();
-        params.topMargin = dependency.getTop()
-            + (dependency.getVisibility() == View.GONE
-                ? 0
-                : dependency.getMeasuredHeight());
+        params.topMargin = (int) (dependency.getTop()
+                + (dependency.getVisibility() == View.GONE
+                    ? 0
+                    : dependency.getMeasuredHeight() + dependency.getTranslationY()));
         child.setLayoutParams(params);
         child.requestLayout();
         return true;

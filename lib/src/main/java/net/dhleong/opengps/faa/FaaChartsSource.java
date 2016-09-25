@@ -82,6 +82,8 @@ public class FaaChartsSource implements DataSource {
         return ensureXmlAvailable(updates).map(file -> {
             if (file.exists()) {
                 storage.finishSource(this);
+                updates.onNext(new StatusUpdate(this, DataKind.CHARTS));
+                updates.onNext(new StatusUpdate(this, DataKind.READY));
                 return true;
             }
 
@@ -97,7 +99,7 @@ public class FaaChartsSource implements DataSource {
 
             if (xmlFile.exists()) {
                 System.out.println("FAA Charts xml already downloaded!");
-                updates.onNext(new StatusUpdate(this, DataKind.RAW));
+                updates.onNext(new StatusUpdate(this, DataKind.RAW_FETCHED));
                 return xmlFile;
             }
 
@@ -118,6 +120,7 @@ public class FaaChartsSource implements DataSource {
             // TODO better logging
             if (expiredDataFile == null) {
                 System.out.println("Fetching initial faa charts set: " + xmlUrl);
+                updates.onNext(new StatusUpdate(this, DataKind.RAW_INIT));
             } else {
                 System.out.println("Existing faa charts set (" + expiredDataFile
                     + ") expired; fetching " + xmlUrl);
@@ -133,7 +136,7 @@ public class FaaChartsSource implements DataSource {
             in.close();
             final long end = System.currentTimeMillis();
             System.out.println("Downloaded faa charts data in " + (end - start) + "ms");
-            updates.onNext(new StatusUpdate(this, DataKind.RAW));
+            updates.onNext(new StatusUpdate(this, DataKind.RAW_FETCHED));
             return xmlFile;
         });
     }

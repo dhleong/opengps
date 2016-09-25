@@ -63,4 +63,15 @@
     <string name="tuner_activate">Activate</string>
     <string name="tuner_enter">Standby</string>
 
+    <string name="status_all_ready">Ready!</string>
+    <string name="status_ready">%1$s: READY</string>
+    <string name="status_raw_init">%1$s: Downloading dataset</string>
+    <string name="status_raw_update">%1$s: Updating dataset</string>
+    <string name="status_raw_fetched">%1$s: Fetched Dataset</string>
+    <string name="status_airports">%1$s: Loaded Airports</string>
+    <string name="status_storage_ready">Prepared Cache</string>
+    <string name="status_navaids">%1$s: Loaded Navaids</string>
+    <string name="status_airways">%1$s: Loaded Airways</string>
+    <string name="status_charts">%1$s: Loaded Charts</string>
+
 </resources>
