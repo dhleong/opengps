@@ -99,7 +99,8 @@ public class NasrTextDataSourceTest {
             "" // TODO
         );
 
-        assertThat(dataSource.loadInto(storage, updates).toBlocking().single()).isTrue();
+        // NB: Loading errors will be *thrown*:
+        assertThat(dataSource.loadInto(storage, updates).toBlocking().value()).isNotNull();
         Airport airport = storage.find("KLGA")
                                  .map(obj -> (Airport) obj)
                                  .toBlocking()

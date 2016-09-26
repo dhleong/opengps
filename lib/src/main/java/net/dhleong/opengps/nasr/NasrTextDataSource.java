@@ -33,6 +33,7 @@ import okio.Options;
 import okio.Source;
 import rx.Observable;
 import rx.Observer;
+import rx.Single;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -123,7 +124,7 @@ public class NasrTextDataSource implements DataSource {
     }
 
     @Override
-    public Observable<Boolean> loadInto(Storage storage, Observer<StatusUpdate> updates) {
+    public Single<NasrTextDataSource> loadInto(Storage storage, Observer<StatusUpdate> updates) {
         final long start = System.currentTimeMillis();
         return ensureZipAvailable(updates)
         .subscribeOn(Schedulers.io())
@@ -141,7 +142,7 @@ public class NasrTextDataSource implements DataSource {
             apts.close();
 
             updates.onNext(new StatusUpdate(this, DataKind.AIRPORTS));
-            return true;
+            return this;
         }))
         .flatMap(any -> Observable.merge(
             // do these all in parallel:
@@ -157,7 +158,7 @@ public class NasrTextDataSource implements DataSource {
                     }
                 }
                 ils.close();
-                return true;
+                return this;
             }).subscribeOn(Schedulers.io()),
 
             // read in ATC/ATIS frequencies
@@ -172,7 +173,7 @@ public class NasrTextDataSource implements DataSource {
                 }
                 twr.close();
 
-                return true;
+                return this;
             }).subscribeOn(Schedulers.io()),
 
             // navaids & fixes:
@@ -197,7 +198,7 @@ public class NasrTextDataSource implements DataSource {
                 fix.close();
 
                 updates.onNext(new StatusUpdate(this, DataKind.NAVAIDS));
-                return true;
+                return this;
             }).subscribeOn(Schedulers.io())
 
         ).last()) // just wait for the last to finish
@@ -207,7 +208,7 @@ public class NasrTextDataSource implements DataSource {
             readAirways(awy, storage);
             awy.close();
             updates.onNext(new StatusUpdate(this, DataKind.AIRWAYS));
-            return true;
+            return this;
         }))
         .doOnNext(any -> {
             storage.markTransactionSuccessful();
@@ -228,7 +229,8 @@ public class NasrTextDataSource implements DataSource {
             final long end = System.currentTimeMillis();
             System.out.println("Loaded NASR data in " + (end - start) + "ms");
         })
-        .doAfterTerminate(storage::endTransaction);
+        .doAfterTerminate(storage::endTransaction)
+        .toSingle();
     }
 
     public Observable<PreferredRoute> preferredRoutes(Airport from, Airport to) {

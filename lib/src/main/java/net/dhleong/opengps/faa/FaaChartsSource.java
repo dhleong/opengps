@@ -36,6 +36,7 @@ import okio.BufferedSource;
 import okio.Okio;
 import rx.Observable;
 import rx.Observer;
+import rx.Single;
 
 /**
  * @author dhleong
@@ -78,17 +79,17 @@ public class FaaChartsSource implements DataSource {
     }
 
     @Override
-    public Observable<Boolean> loadInto(Storage storage, Observer<StatusUpdate> updates) {
-        return ensureXmlAvailable(updates).map(file -> {
-            if (file.exists()) {
-                storage.finishSource(this);
-                updates.onNext(new StatusUpdate(this, DataKind.CHARTS));
-                updates.onNext(new StatusUpdate(this, DataKind.READY));
-                return true;
+    public Single<FaaChartsSource> loadInto(Storage storage, Observer<StatusUpdate> updates) {
+        return ensureXmlAvailable(updates).flatMap(file -> {
+            if (!file.exists()) {
+                return Observable.error(new IOException("Unable to load FAA Charts XML"));
             }
 
-            return false;
-        });
+            storage.finishSource(this);
+            updates.onNext(new StatusUpdate(this, DataKind.CHARTS));
+            updates.onNext(new StatusUpdate(this, DataKind.READY));
+            return Observable.just(this);
+        }).toSingle();
     }
 
     protected Observable<File> ensureXmlAvailable(Observer<StatusUpdate> updates) {
@@ -262,9 +263,6 @@ public class FaaChartsSource implements DataSource {
             long end = System.currentTimeMillis();
             System.out.println("XPP query took " + (end - start) + "ms"); // TODO logging
             return charts;
-        } catch (Exception e) {
-            // just make sure it doesn't get suppressed by the finally
-            throw e;
         } finally {
             try {
                 in.close();

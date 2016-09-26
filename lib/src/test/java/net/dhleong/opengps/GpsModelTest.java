@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Single;
 
 import static net.dhleong.opengps.test.TestUtil.dmsToDegrees;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,8 +31,8 @@ public class GpsModelTest {
         }
 
         @Override
-        public Observable<Boolean> loadInto(Storage storage, Observer<StatusUpdate> updates) {
-            return Observable.just(true);
+        public Single<? extends DataSource> loadInto(Storage storage, Observer<StatusUpdate> updates) {
+            return Observable.just(this).toSingle();
         }
     };
 

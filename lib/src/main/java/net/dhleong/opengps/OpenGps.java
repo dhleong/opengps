@@ -1,5 +1,6 @@
 package net.dhleong.opengps;
 
+import net.dhleong.opengps.exc.GpsInitException;
 import net.dhleong.opengps.status.DataKind;
 import net.dhleong.opengps.status.StatusUpdate;
 
@@ -48,16 +49,10 @@ public class OpenGps {
                               if (!s.hasDataSource(dataSource)) {
                                   return dataSource
                                       .loadInto(s, updates)
-                                      .flatMap(result -> {
-                                          // TODO better logging
-                                          if (!result) {
-                                              System.err.println("Failed to load " + dataSource);
-                                              return Observable.empty();
-                                          }
-
-                                          return Observable.just(s);
-                                      });
+                                      .toObservable()
+                                      .map(any -> s);
                               } else {
+                                  // already loaded into source
                                   return Observable.just(s);
                               }
                           })
@@ -67,8 +62,7 @@ public class OpenGps {
             if (builder.onError != null) {
                 builder.onError.onError(e);
             } else {
-                System.err.println("ERR loading data");
-                e.printStackTrace();
+                throw new GpsInitException(e);
             }
         });
     }

@@ -2,8 +2,8 @@ package net.dhleong.opengps;
 
 import net.dhleong.opengps.status.StatusUpdate;
 
-import rx.Observable;
 import rx.Observer;
+import rx.Single;
 
 /**
  * @author dhleong
@@ -15,5 +15,12 @@ public interface DataSource {
     /** user-facing name */
     String name();
 
-    Observable<Boolean> loadInto(Storage storage, Observer<StatusUpdate> updates);
+    /**
+     * Load data into the given Storage, emitting
+     *  status updates to `updates`
+     *
+     * @return A Single which emits this DataSource
+     *  again on success, or an Error on failure
+     */
+    Single<? extends DataSource> loadInto(Storage storage, Observer<StatusUpdate> updates);
 }

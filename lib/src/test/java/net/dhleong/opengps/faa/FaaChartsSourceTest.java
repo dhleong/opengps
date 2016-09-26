@@ -31,7 +31,8 @@ public class FaaChartsSourceTest {
     public void setUp() {
         storage = new FaaChartsStorage();
         source = new FaaChartsSource(new File(".test-cache"));
-        assertThat(source.loadInto(storage, updates).toBlocking().first()).isTrue();
+        assertThat(source.loadInto(storage, updates).toBlocking().value()).isNotNull();
+        // NB: if an error occured, it will have thrown from value()
     }
 
     @Test
