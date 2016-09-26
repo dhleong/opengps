@@ -59,11 +59,14 @@ public class OpenGps {
             ).last()
             .doOnNext(any -> updates.onNext(new StatusUpdate(null, DataKind.ALL_READY)))
             .subscribe(storage::onNext, e -> {
-            if (builder.onError != null) {
-                builder.onError.onError(e);
-            } else {
-                throw new GpsInitException(e);
-            }
+                if (builder.onError != null) {
+                    builder.onError.onError(e);
+                } else if (builder.throwOnError) {
+                    throw new GpsInitException(e);
+                }
+
+                // always notify status updates
+                updates.onError(e);
         });
     }
 
@@ -181,6 +184,7 @@ public class OpenGps {
         Storage storage;
         List<DataSource> sources = new ArrayList<>();
         OnErrorListener onError;
+        boolean throwOnError = true;
 
         public Builder storage(Storage storage) {
             this.storage = storage;
@@ -194,6 +198,24 @@ public class OpenGps {
 
         public Builder onError(OnErrorListener errorListener) {
             this.onError = errorListener;
+            return this;
+        }
+
+        /**
+         * By default, if an exception is raised while initializing
+         *  OpenGps, it will be thrown if {@link #onError(OnErrorListener)}
+         *  has not been provided, in addition to being emitted on the
+         *  {@link #statusUpdates()} Observable. If you call this, however,
+         *  any exceptions will never be thrown, and instead will only emitted
+         *  on {@link #statusUpdates()} and passed to {@link #onError(OnErrorListener)}
+         *  if provided.
+         *
+         * In other words, if you plan to listen to {@link #statusUpdates()}
+         *  to handle loading issues, you probably want to call this so the
+         *  exception isn't also *thrown* where you can't catch it.
+         */
+        public Builder dontThrowOnError() {
+            this.throwOnError = false;
             return this;
         }
 

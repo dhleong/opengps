@@ -73,5 +73,6 @@
     <string name="status_navaids">%1$s: Loaded Navaids</string>
     <string name="status_airways">%1$s: Loaded Airways</string>
     <string name="status_charts">%1$s: Loaded Charts</string>
+    <string name="status_error">ERROR: %1$s</string>
 
 </resources>

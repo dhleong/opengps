@@ -24,7 +24,6 @@ import dagger.Module;
 import dagger.Provides;
 import rx.Observable;
 import rx.functions.Action1;
-import timber.log.Timber;
 
 /**
  * @author dhleong
@@ -68,10 +67,7 @@ public class AppModule {
             )
             .addDataSource(new NasrTextDataSource(nasrCacheDir))
             .addDataSource(new FaaChartsSource(chartsCacheDir))
-            .onError(e -> {
-                Timber.e(e, "Error loading data");
-                // TODO snackbar?
-            })
+            .dontThrowOnError() // we'll handle in LoadingStatusView
             .build();
     }
 

@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Indicates the status of OpenGps
@@ -66,7 +67,7 @@ public class LoadingStatusView extends TextView {
                    .onBackpressureBuffer()
                    .map(this::stringify)
                    .observeOn(AndroidSchedulers.mainThread())
-                   .subscribe(RxTextView.text(this))
+                   .subscribe(RxTextView.text(this), this::onError)
             );
         }
     }
@@ -75,6 +76,13 @@ public class LoadingStatusView extends TextView {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         subs.clear();
+    }
+
+    void onError(Throwable e) {
+        Timber.e(e, "ERROR Initializing OpenGps!");
+        setText(getContext().getString(
+            R.string.status_error,
+            e.getMessage()));
     }
 
     void onLoadingDone() {
