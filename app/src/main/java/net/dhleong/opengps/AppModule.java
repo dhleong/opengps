@@ -58,13 +58,9 @@ public class AppModule {
         File chartsCacheDir = new File(context.getCacheDir(), "charts");
 
         return new OpenGps.Builder()
-            .storage(
-                new DelegateStorage.Builder()
-                    .add(new InMemoryStorage())
-                    .add(new FaaChartsStorage())
-                    .add(new NasrPreferredRoutesStorage())
-                    .build()
-            )
+            .addStorage(new InMemoryStorage())
+            .addStorage(new FaaChartsStorage())
+            .addStorage(new NasrPreferredRoutesStorage())
             .addDataSource(new NasrTextDataSource(nasrCacheDir))
             .addDataSource(new FaaChartsSource(chartsCacheDir))
             .dontThrowOnError() // we'll handle in LoadingStatusView

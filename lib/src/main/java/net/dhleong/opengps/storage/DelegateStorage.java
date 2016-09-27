@@ -183,6 +183,9 @@ public class DelegateStorage implements Storage {
         public Storage build() {
             if (storage.isEmpty()) {
                 throw new IllegalStateException("You must provide at least one Storage");
+            } else if (storage.size() == 1) {
+                // just use it directly
+                return storage.get(0);
             }
 
             return new DelegateStorage(storage);

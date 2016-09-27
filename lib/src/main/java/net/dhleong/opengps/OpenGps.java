@@ -3,6 +3,7 @@ package net.dhleong.opengps;
 import net.dhleong.opengps.exc.GpsInitException;
 import net.dhleong.opengps.status.DataKind;
 import net.dhleong.opengps.status.StatusUpdate;
+import net.dhleong.opengps.storage.DelegateStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +39,9 @@ public class OpenGps {
         ReplaySubject.<StatusUpdate>create()
             .toSerialized();
 
-    private OpenGps(Builder builder) {
+    private OpenGps(Builder builder, Storage myStorage) {
         // begin eager load
-        builder.storage
+        myStorage
             .load()
             .doOnNext(any -> updates.onNext(new StatusUpdate(null, DataKind.STORAGE_READY)))
             .flatMap(s ->
@@ -181,13 +182,13 @@ public class OpenGps {
     }
 
     public static class Builder {
-        Storage storage;
+        DelegateStorage.Builder storageBuilder = new DelegateStorage.Builder();
         List<DataSource> sources = new ArrayList<>();
         OnErrorListener onError;
         boolean throwOnError = true;
 
-        public Builder storage(Storage storage) {
-            this.storage = storage;
+        public Builder addStorage(Storage storage) {
+            this.storageBuilder.add(storage);
             return this;
         }
 
@@ -220,9 +221,9 @@ public class OpenGps {
         }
 
         public OpenGps build() {
-            if (storage == null) throw new IllegalArgumentException("Missing data storage");
             if (sources.isEmpty()) throw new IllegalArgumentException("At least one data source required");
-            return new OpenGps(this);
+            final Storage storage = storageBuilder.build(); // throws exceptions if needed
+            return new OpenGps(this, storage);
         }
     }
 }

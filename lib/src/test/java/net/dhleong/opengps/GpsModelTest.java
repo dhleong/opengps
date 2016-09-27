@@ -53,7 +53,7 @@ public class GpsModelTest {
         storage.finishSource(dummySource);
 
         gps = new OpenGps.Builder()
-            .storage(storage)
+            .addStorage(storage)
             .addDataSource(dummySource)
             .build();
 

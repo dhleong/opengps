@@ -73,7 +73,7 @@ public class OpenGpsTest {
 
     public static OpenGps build() {
         return new OpenGps.Builder()
-            .storage(new InMemoryStorage())
+            .addStorage(new InMemoryStorage())
             .addDataSource(new NasrTextDataSource(new File(".test-cache")))
             .build();
     }

@@ -53,7 +53,9 @@ On the other hand, the app:
 
 ### The Library
 
-TODO
+The OpenGps library provides a reactive interface to the [free National Airspace Systems Resources (NASR)][2]
+dataset provided by the FAA. It supports loading data for a specific Airac cycle, or automatically
+using the most recent. For more information, see [its readme][4].
 
 ### RxConnectr
 
@@ -77,3 +79,4 @@ download the source and build a copy for free.
 [1]: https://www.navigraph.com/Subscription.aspx
 [2]: https://nfdc.faa.gov/xwiki/bin/view/NFDC/56DaySub-2016-07
 [3]: http://lc0277.gratisim.fr/jsimconnect.html
+[4]: lib/REAMDE.md
