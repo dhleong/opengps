@@ -53,13 +53,16 @@ On the other hand, the app:
 
 ### The Library
 
-The OpenGps library provides a reactive interface to the [free National Airspace Systems Resources (NASR)][2]
+The OpenGps library provides a Reactive interface to the [free National Airspace Systems Resources (NASR)][2]
 dataset provided by the FAA. It supports loading data for a specific Airac cycle, or automatically
-using the most recent. For more information, see [its readme][4].
+using the most recent. For more information, see [its README][4].
 
 ### RxConnectr
 
-TODO
+RxConnectr provides a simple, Reactive interface to SimConnect, supporting automatic object
+mapping so you don't have to deal with defining custom types yourself---just annotate the
+fields of a class with the variable name you want and the unit it should be in, and it'll be there.
+For more information, see [its README][5].
 
 ## Why
 
@@ -79,4 +82,5 @@ download the source and build a copy for free.
 [1]: https://www.navigraph.com/Subscription.aspx
 [2]: https://nfdc.faa.gov/xwiki/bin/view/NFDC/56DaySub-2016-07
 [3]: http://lc0277.gratisim.fr/jsimconnect.html
-[4]: lib/REAMDE.md
+[4]: lib/README.md
+[5]: rxconnectr/README.md
