@@ -88,5 +88,11 @@ Since the dataset is limited to the US currently, this may not currently be a pr
 become one in the future. If it does then we can probably refactor it to use a List off of each ID,
 but we should probably just implement real database `Storage`s.
 
+## Special Thanks
+
+- [jSimConnect 0.8][3] ([LGPL][4]): Java library that talks to SimConnect
+
 [1]: https://nfdc.faa.gov/xwiki/bin/view/NFDC/56+Day+NASR+Subscription
 [2]: https://github.com/ReactiveX/RxJava/
+[3]: http://lc0277.gratisim.fr/jsimconnect.html
+[4]: https://www.gnu.org/licenses/lgpl.html

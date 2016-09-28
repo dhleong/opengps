@@ -67,7 +67,7 @@ handle parsing it out for you. For more information, see [its README][5].
 
 Flight simulation is *expensive*. Simulated versions of real GPS devices can cost $50 USD and more,
 and may not even come with the latest navigation data. To get that navigation data from Garmin, for
-example, can cost [hundreds of dollars][7]. A yearly [subscription to Navigraph][1] FMS data for some
+example, can cost [hundreds of dollars][3]. A yearly [subscription to Navigraph][1] FMS data for some
 payware aircraft costs almost $70 USD—much cheaper, but it's still a recurring cost. 
 The FAA [publishes navigation data for the US][2] for free, so why not have a simulated GPS that uses 
 that data and is also free?
@@ -75,14 +75,9 @@ that data and is also free?
 OpenGps is my contribution to the flight sim community. It will always be open source, and anyone can
 download that source and build a copy for free. 
 
-## Special Thanks
-
-- [jSimConnect 0.8][3] (LGPL) - RxConnectr dependency
-
 [1]: https://www.navigraph.com/Subscription.aspx
 [2]: https://nfdc.faa.gov/xwiki/bin/view/NFDC/56+Day+NASR+Subscription
-[3]: http://lc0277.gratisim.fr/jsimconnect.html
+[3]: https://fly.garmin.com/fly-garmin/pilotpak/
 [4]: lib/README.md
 [5]: rxconnectr/README.md
 [6]: https://github.com/ReactiveX/RxJava/
-[7]: https://fly.garmin.com/fly-garmin/pilotpak/
