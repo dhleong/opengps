@@ -18,8 +18,8 @@ import net.dhleong.opengps.ui.DialogPrompter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.Single;
-import rx.subjects.PublishSubject;
 
 /**
  * @author dhleong
@@ -57,7 +57,7 @@ public class AirportInfoView
         tabs.setupWithViewPager(pager);
 
         // just something that never auto-completes
-        return PublishSubject.<Void>create().toSingle();
+        return Observable.<Void>never().toSingle();
     }
 
     static class AirportInfoTabsAdapter extends PagerAdapter {

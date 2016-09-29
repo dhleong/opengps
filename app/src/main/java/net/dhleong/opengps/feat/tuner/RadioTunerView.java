@@ -26,7 +26,6 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Single;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -128,7 +127,7 @@ public class RadioTunerView
         }
 
         // just something that never auto-completes
-        return PublishSubject.<Void>create().toSingle();
+        return Observable.<Void>never().toSingle();
     }
 
     public RadioType getType() {

@@ -32,9 +32,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -94,7 +94,7 @@ public class NavFixInfoView
         );
 
         // just something that never auto-completes
-        return PublishSubject.<Void>create().toSingle();
+        return Observable.<Void>never().toSingle();
     }
 
     @Override
