@@ -122,6 +122,7 @@ public final class GpsRoute {
         }
 
         if (!steps.isEmpty() && index > 0) {
+
             // find the previous FIX (usually right behind, but not always)
             int prevIndex = index - 1;
             Step prev;
@@ -132,10 +133,27 @@ public final class GpsRoute {
             float bearing = prev.ref.bearingTo(obj);
             float distance = prev.ref.distanceTo(obj);
 
-            steps.add(index++, new Step(Step.Type.BEARING_TO, obj, bearing, distance));
+            final Step bearingToStep = new Step(Step.Type.BEARING_TO, obj, bearing, distance);
+            if (index > 0
+                    && steps.size() > index - 1
+                    && steps.get(index - 1).type == Step.Type.BEARING_TO) {
+                // there's already a bearing; replace it
+                steps.set(index - 1, bearingToStep);
+            } else {
+                steps.add(index++, bearingToStep);
+            }
         }
 
         steps.add(index, Step.fix(obj));
+
+        final int nextIdx = index + 1;
+        if (steps.size() > nextIdx && steps.get(nextIdx).type == Step.Type.FIX) {
+            AeroObject next = steps.get(nextIdx).ref;
+            float bearing = obj.bearingTo(next);
+            float distance = obj.distanceTo(next);
+
+            steps.add(nextIdx, new Step(Step.Type.BEARING_TO, next, bearing, distance));
+        }
     }
 
     void add(int index, Step step) {

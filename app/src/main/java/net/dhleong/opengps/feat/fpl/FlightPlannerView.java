@@ -92,6 +92,10 @@ public class FlightPlannerView extends CoordinatorLayout {
         return adapter.addWaypointEvents;
     }
 
+    public Observable<AeroObject> insertBeforeWaypointEvents() {
+        return adapter.insertBeforeEvents;
+    }
+
     public Observable<AeroObject> removeWaypointEvents() {
         return adapter.removeWaypointEvents;
     }
@@ -116,6 +120,7 @@ public class FlightPlannerView extends CoordinatorLayout {
 
         private GpsRoute route;
         public PublishRelay<Void> addWaypointEvents = PublishRelay.create();
+        public PublishRelay<AeroObject> insertBeforeEvents = PublishRelay.create();
         public PublishRelay<AeroObject> removeWaypointEvents = PublishRelay.create();
         public PublishRelay<AeroObject> removeAfterWaypointEvents = PublishRelay.create();
         public PublishRelay<AeroObject> viewWaypointEvents = PublishRelay.create();
@@ -280,7 +285,7 @@ public class FlightPlannerView extends CoordinatorLayout {
 
         @Override
         public void bind(GpsRoute.Step step) {
-            // TODO type icon, ident morse, ...
+            // TODO type icon, ...
             id.setText(step.ref.id());
 
             if (step.ref instanceof NavFix) {
@@ -331,7 +336,8 @@ public class FlightPlannerView extends CoordinatorLayout {
     }
 
     static ListPopupWindow popupFor(Adapter adapter, Context context, AeroObject ref) {
-        final List<CharSequence> items = new ArrayList<>(3);
+        final List<CharSequence> items = new ArrayList<>(6);
+        items.add(context.getString(R.string.fpl_waypoint_insert_before));
         items.add(context.getString(R.string.fpl_waypoint_remove));
         items.add(context.getString(R.string.fpl_waypoint_remove_after));
         items.add(context.getString(R.string.fpl_waypoint_info));
@@ -347,11 +353,12 @@ public class FlightPlannerView extends CoordinatorLayout {
             items));
         win.setOnItemClickListener((parent, view, position, id) -> {
             switch (position) {
-            case 0: adapter.removeWaypointEvents.call(ref); break;
-            case 1: adapter.removeAfterWaypointEvents.call(ref); break;
-            case 2: adapter.viewWaypointEvents.call(ref); break;
-            case 3: adapter.loadAirwayEvents.call(ref); break;
-            case 4: adapter.tuneNavaidEvents.call((Navaid) ref); break;
+            case 0: adapter.insertBeforeEvents.call(ref); break;
+            case 1: adapter.removeWaypointEvents.call(ref); break;
+            case 2: adapter.removeAfterWaypointEvents.call(ref); break;
+            case 3: adapter.viewWaypointEvents.call(ref); break;
+            case 4: adapter.loadAirwayEvents.call(ref); break;
+            case 5: adapter.tuneNavaidEvents.call((Navaid) ref); break;
             }
 
             win.dismiss();

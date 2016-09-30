@@ -10,6 +10,7 @@
     <string name="airway_load">Load Airway</string>
 
     <string name="fpl_add_waypoint">Add Waypoint</string>
+    <string name="fpl_waypoint_insert_before">Insert before</string>
     <string name="fpl_waypoint_remove">Remove</string>
     <string name="fpl_waypoint_info">Info</string>
     <string name="fpl_waypoint_load_airway">Load Airway</string>

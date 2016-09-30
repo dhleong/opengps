@@ -55,6 +55,19 @@ public class FlightPlannerPresenter extends BasePresenter<FlightPlannerView> {
         );
 
         subscribe(
+            view.insertBeforeWaypointEvents()
+                .flatMap(waypoint ->
+                    DialogPrompter.prompt(context, WaypointSearchView.class, R.layout.feat_waypoint, null)
+                                  .doOnNext(newWaypoint -> {
+                                      int idx = route.indexOfWaypoint(waypoint);
+                                      route.add(idx, newWaypoint);
+                                  }))
+                .filter(notNull())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(any -> updateRoute(view, route))
+        );
+
+        subscribe(
             view.removeWaypointEvents()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(waypoint -> {

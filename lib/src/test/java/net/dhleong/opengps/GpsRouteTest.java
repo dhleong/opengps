@@ -151,4 +151,42 @@ public class GpsRouteTest {
             .containsFixesExactly(BDR);
     }
 
+    @Test
+    public void insert() {
+        GpsRoute route = new GpsRoute();
+        route.add(ORW);
+        assertThat(route).hasSize(1);
+
+        int idx = route.indexOfWaypoint(ORW);
+        route.add(idx, BDR);
+        assertThat(route)
+            .hasSize(3)
+            .containsFixesExactly(BDR, ORW)
+            .containsExactly(
+                GpsRoute.Step.fix(BDR),
+                GpsRoute.Step.to(ORW, 77f, 56f),
+                GpsRoute.Step.fix(ORW)
+            );
+    }
+
+    @Test
+    public void insert_between() {
+        GpsRoute route = new GpsRoute();
+        route.add(BDR);
+        route.add(ORW);
+        assertThat(route).hasSize(3); // including the step
+
+        int idx = route.indexOfWaypoint(ORW);
+        route.add(idx, MAD);
+        assertThat(route)
+            .hasSize(5)
+            .containsFixesExactly(BDR, MAD, ORW)
+            .containsExactly(
+                GpsRoute.Step.fix(BDR),
+                GpsRoute.Step.to(MAD, 76.6f, 21.6f),
+                GpsRoute.Step.fix(MAD),
+                GpsRoute.Step.to(ORW, 77.7f, 34.4f),
+                GpsRoute.Step.fix(ORW)
+            );
+    }
 }
