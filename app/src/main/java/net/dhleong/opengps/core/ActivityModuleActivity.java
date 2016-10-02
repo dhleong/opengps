@@ -3,6 +3,8 @@ package net.dhleong.opengps.core;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.f2prateek.rx.preferences.Preference;
 
@@ -51,22 +53,37 @@ public class ActivityModuleActivity extends AppCompatActivity {
             connection.open();
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         subs.add(
             keepScreenOn.asObservable()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(keepScreenOn -> {
-                            Timber.v("set(keepScreenOn, %s)", keepScreenOn);
-                            findViewById(android.R.id.content)
-                                .setKeepScreenOn(keepScreenOn);
+                            Window w = getWindow();
+                            Timber.v("setKeepScreenOn(%s, %s)", w, keepScreenOn);
+                            if (keepScreenOn) {
+                                w.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                            } else {
+                                w.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                            }
                         })
         );
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
 
         subs.clear();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
 
         if (visibleActivities.decrementAndGet() == 0) {
             connection.close();

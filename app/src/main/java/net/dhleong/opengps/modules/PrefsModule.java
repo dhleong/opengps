@@ -34,7 +34,7 @@ public class PrefsModule {
     public static final String PREF_CONNECTION_PORT = "pref_connection_port";
 
     @Provides SharedPreferences defaultSharedPrefs(@Root Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context);
+        return get(context);
     }
 
     @Provides RxSharedPreferences rxPrefs(SharedPreferences prefs) {
@@ -95,6 +95,10 @@ public class PrefsModule {
             hostPref.get(),
             portPref.get()
          )).share();
+    }
+
+    public static SharedPreferences get(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
 }

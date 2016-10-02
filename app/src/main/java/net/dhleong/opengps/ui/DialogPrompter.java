@@ -5,6 +5,10 @@ import android.support.annotation.LayoutRes;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+
+import net.dhleong.opengps.modules.PrefsModule;
 
 import java.util.List;
 
@@ -35,14 +39,16 @@ public class DialogPrompter {
 
         PublishSubject<R> result = PublishSubject.create();
 
-        new AlertDialog.Builder(context)
-            .setTitle(title)
-            .setOnDismissListener(dialog -> result.onCompleted())
-            .setItems(items, (dialog, which) -> {
-                result.onNext(candidates.get(which));
-                dialog.dismiss();
-            })
-            .show();
+        setKeepScreenOn(
+            new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setOnDismissListener(dialog -> result.onCompleted())
+                .setItems(items, (dialog, which) -> {
+                    result.onNext(candidates.get(which));
+                    dialog.dismiss();
+                })
+                .show()
+        );
 
         return result;
     }
@@ -84,6 +90,22 @@ public class DialogPrompter {
                 dialog.dismiss();
         }, error -> dialog.dismiss());
 
+        setKeepScreenOn(dialog);
+
         return results;
+    }
+
+    private static void setKeepScreenOn(AlertDialog dialog) {
+        boolean keepScreenOn = PrefsModule.get(dialog.getContext())
+                                          .getBoolean(PrefsModule.PREF_KEEP_SCREEN, false);
+        if (keepScreenOn) {
+            Window w = dialog.getWindow();
+            if (w == null) {
+                Timber.w("Dialog didn't have a window; can't set KEEP_SCREEN_ON");
+            } else {
+                w.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                Timber.v("setKeepScreenOn(%s, true)", w);
+            }
+        }
     }
 }
