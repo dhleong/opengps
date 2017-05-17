@@ -13,19 +13,24 @@ import java.util.Locale;
 public class AiracCycle {
     static final Calendar AIRAC1601 = Calendar.getInstance();
     static final Calendar NASR2016 = Calendar.getInstance();
+    static final Calendar NASR2017 = Calendar.getInstance();
 
     static {
         AIRAC1601.set(2016, Calendar.JANUARY, 7);
         NASR2016.set(2016, Calendar.FEBRUARY, 4);
+        NASR2017.set(2017, Calendar.MARCH, 2);
     }
 
     static final long DAY_IN_MILLIS = 24 * 3600 * 1000;
 
     static final int AIRAC_PERIOD_DAYS = 28;
-    static final int NASR_PERIOD_DAYS = 56;
+    static final int NASR_2016_PERIOD_DAYS = 56;
+    static final int NASR_2017_PERIOD_DAYS = 28;
 
-    static final String NASR_URL_FORMAT = "https://nfdc.faa.gov/webContent/56DaySub/56DySubscription_%s_-_%s.zip";
-    static final String NASR_DATE_FORMAT = "MMMM_dd__yyyy";
+    static final String NASR_2016_URL_FORMAT = "https://nfdc.faa.gov/webContent/56DaySub/56DySubscription_%s_-_%s.zip";
+    static final String NASR_2016_DATE_FORMAT = "MMMM_dd__yyyy";
+    static final String NASR_2017_URL_FORMAT = "https://nfdc.faa.gov/webContent/28DaySub/28DaySubscription_Effective_%s.zip";
+    static final String NASR_2017_DATE_FORMAT = "yyyy-MM-dd";
 
     static final String FAA_CHARTS_URL_FORMAT = "https://nfdc.faa.gov/webContent/dtpp/%d.xml";
 
@@ -48,10 +53,16 @@ public class AiracCycle {
     }
 
     public String getNasrDataUrl() {
-        SimpleDateFormat format = new SimpleDateFormat(NASR_DATE_FORMAT, Locale.US);
-        String start = format.format(nasrStart);
-        String end = format.format(nasrEnd);
-        return String.format(NASR_URL_FORMAT, start, end);
+        if (nasrStart.getTime() < NASR2017.getTimeInMillis()) {
+            SimpleDateFormat format = new SimpleDateFormat(NASR_2016_DATE_FORMAT, Locale.US);
+            String start = format.format(nasrStart);
+            String end = format.format(nasrEnd);
+            return String.format(NASR_2016_URL_FORMAT, start, end);
+        } else {
+            SimpleDateFormat format = new SimpleDateFormat(NASR_2017_DATE_FORMAT, Locale.US);
+            String start = format.format(nasrStart);
+            return String.format(NASR_2017_URL_FORMAT, start);
+        }
     }
 
     public static AiracCycle current() {
@@ -77,15 +88,24 @@ public class AiracCycle {
         cal.add(Calendar.DAY_OF_YEAR, AIRAC_PERIOD_DAYS);
         final Date airacEnd = cal.getTime();
 
-        // NB: The NASR subscription is 56 days, instead of being tied directly to an airac cycle
-        final long nasr2016Millis = NASR2016.getTimeInMillis();
-        final long nasrDelta = now - nasr2016Millis;
+        // NB: The NASR subscription is not tied directly to an airac cycle
+        final long nasrFirst;
+        final int nasrPeriodDays;
+        if (now < NASR2017.getTimeInMillis()) {
+            nasrFirst = NASR2016.getTimeInMillis();
+            nasrPeriodDays = NASR_2016_PERIOD_DAYS;
+        } else {
+            nasrFirst = NASR2017.getTimeInMillis();
+            nasrPeriodDays = NASR_2017_PERIOD_DAYS;
+        }
+
+        final long nasrDelta = now - nasrFirst;
         final long nasrDays = nasrDelta / DAY_IN_MILLIS;
-        final int nasrPeriods = (int) (nasrDays / NASR_PERIOD_DAYS);
-        cal.setTimeInMillis(nasr2016Millis);
-        cal.add(Calendar.DAY_OF_YEAR, nasrPeriods * NASR_PERIOD_DAYS);
+        final int nasrPeriods = (int) (nasrDays / nasrPeriodDays);
+        cal.setTimeInMillis(nasrFirst);
+        cal.add(Calendar.DAY_OF_YEAR, nasrPeriods * nasrPeriodDays);
         final Date nasrStart = cal.getTime();
-        cal.add(Calendar.DAY_OF_YEAR, NASR_PERIOD_DAYS);
+        cal.add(Calendar.DAY_OF_YEAR, nasrPeriodDays);
         final Date nasrEnd = cal.getTime();
 
         return new AiracCycle(airacNumber, airacStart, airacEnd, nasrStart, nasrEnd);

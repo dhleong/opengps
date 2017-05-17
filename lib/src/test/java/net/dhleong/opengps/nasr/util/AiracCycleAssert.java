@@ -65,6 +65,29 @@ public class AiracCycleAssert extends AbstractAssert<AiracCycleAssert, AiracCycl
         return myself;
     }
 
+    public AiracCycleAssert nasrMatchesAirac() {
+        isNotNull();
+
+        Calendar start = Calendar.getInstance();
+        start.setTime(actual.startDate);
+        Calendar end = Calendar.getInstance();
+        end.setTime(actual.endDate);
+
+        nasrStarts(
+            start.get(Calendar.YEAR),
+            start.get(Calendar.MONTH),
+            start.get(Calendar.DAY_OF_MONTH)
+        );
+
+        nasrEnds(
+            end.get(Calendar.YEAR),
+            end.get(Calendar.MONTH),
+            end.get(Calendar.DAY_OF_MONTH)
+        );
+
+        return this;
+    }
+
     public AiracCycleAssert hasNasrUrl(String expected) {
         isNotNull();
 

@@ -65,4 +65,34 @@ public class AiracCycleTest {
             .starts(2017, Calendar.JANUARY, 5)
             .ends(2017, Calendar.FEBRUARY, 2);
     }
+
+    @Test
+    public void for1704() {
+        // 1704 is from Mar 30 to Apr 27. This is actually the first time
+        // the NASR set matches the Airac cycle exactly.
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2017, Calendar.MARCH, 31);
+        assertThat(AiracCycle.forCalendar(calendar))
+            .hasNumber(1704)
+            .starts(2017, Calendar.MARCH, 30) // see above
+            .ends(2017, Calendar.APRIL, 27)
+            // the nasr period is the same!
+            .nasrMatchesAirac()
+            .hasNasrUrl("https://nfdc.faa.gov/webContent/28DaySub/28DaySubscription_Effective_2017-03-30.zip");
+    }
+
+    @Test
+    public void for1705() {
+        // 1705 is from Apr 27 to May 25
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2017, Calendar.APRIL, 30);
+
+        assertThat(AiracCycle.forCalendar(calendar))
+            .hasNumber(1705)
+            .starts(2017, Calendar.APRIL, 27) // see above
+            .ends(2017, Calendar.MAY, 25)
+            // the nasr period is the same!
+            .nasrMatchesAirac()
+            .hasNasrUrl("https://nfdc.faa.gov/webContent/28DaySub/28DaySubscription_Effective_2017-04-27.zip");
+    }
 }
