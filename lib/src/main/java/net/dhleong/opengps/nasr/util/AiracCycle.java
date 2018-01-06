@@ -32,7 +32,8 @@ public class AiracCycle {
     static final String NASR_2017_URL_FORMAT = "https://nfdc.faa.gov/webContent/28DaySub/28DaySubscription_Effective_%s.zip";
     static final String NASR_2017_DATE_FORMAT = "yyyy-MM-dd";
 
-    static final String FAA_CHARTS_URL_FORMAT = "https://nfdc.faa.gov/webContent/dtpp/%d.xml";
+//    static final String FAA_CHARTS_URL_FORMAT = "https://nfdc.faa.gov/webContent/dtpp/%d.xml";
+    static final String FAA_CHARTS_URL_FORMAT = "http://aeronav.faa.gov/d-tpp/%d/xml_data/d-TPP_Metafile.xml";
 
     public final int number;
     public final Date startDate;

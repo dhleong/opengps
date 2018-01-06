@@ -5,19 +5,13 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.5.6'
-        classpath 'com.novoda:gradle-android-command-plugin:1.6.2'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2'
+        classpath 'com.novoda:gradle-android-command-plugin:1.7.1'
     }
-}
-
-plugins {
-    id "me.tatarka.retrolambda" version "3.2.5"
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.getkeepsafe.dexcount'
-apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'android-command'
 
 android {
@@ -49,7 +43,7 @@ dependencies {
     compile project(':rxconnectr')
     compile fileTree(dir: '../rxconnectr/libs', include: ['*.jar'])
 
-    apt deps.butterknife.processor
+    annotationProcessor deps.butterknife.processor
     compile deps.butterknife.api
 
     compile deps.rx.android
@@ -74,7 +68,7 @@ dependencies {
      * Dagger Stuff
      */
 
-    apt deps.dagger.processor
+    annotationProcessor deps.dagger.processor
     compile deps.dagger.api
     provided 'org.glassfish:javax.annotation:10.0-b28' // for dagger-generated classes
 
@@ -101,7 +95,3 @@ dependencies {
     testCompile deps.test.mockito
 }
 
-retrolambda {
-    //noinspection GroovyAssignabilityCheck
-    javaVersion JavaVersion.VERSION_1_7
-}
